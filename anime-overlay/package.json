@@ -1,0 +1,23 @@
+{
+  "name": "anime-overlay",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "build:watch": "node esbuild.config.mjs --watch",
+    "start": "npm run build && electron .",
+    "dev": "concurrently \"node esbuild.config.mjs --watch\" \"wait-on dist/main.js && electron .\""
+  },
+  "dependencies": {
+    "electron": "^26.0.0",
+    "pixi.js": "^6.5.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "esbuild": "^0.21.5",
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0",
+    "typescript": "^5.5.4"
+  }
+}

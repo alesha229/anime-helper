@@ -1,0 +1,16 @@
+.vscode/**
+typings/**
+out/test/**
+test/**
+src/**
+**/*.map
+.gitignore
+tsconfig.json
+vsc-extension-quickstart.md
+anime-overlay/src/**
+anime-overlay/package-lock.json
+anime-overlay/package.json
+anime-overlay/tsconfig.json
+anime-overlay/tsconfig.node.json
+anime-overlay/tsconfig.app.json
+anime-overlay/tsconfig.spec.json

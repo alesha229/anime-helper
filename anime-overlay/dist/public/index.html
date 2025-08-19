@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Anime Overlay</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: transparent;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+          sans-serif;
+      }
+      #overlay {
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: auto;
+      }
+      .glass {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border-radius: 10px;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+      }
+      #controls {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        z-index: 10;
+        -webkit-app-region: drag;
+      }
+      #controls .toolbar {
+        -webkit-app-region: no-drag;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .btn-primary {
+        background: rgba(86, 156, 214, 0.3);
+        border-color: rgba(86, 156, 214, 0.5);
+      }
+      .btn-danger {
+        background: rgba(214, 86, 86, 0.3);
+        border-color: rgba(214, 86, 86, 0.5);
+      }
+      .label {
+        color: #fff;
+        font-size: 12px;
+        margin-left: 6px;
+      }
+
+      /* Dropdowns */
+      .select,
+      select {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        padding: 6px 28px 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ffffff' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+      }
+      .select:hover,
+      select:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      #widget {
+        color: white;
+      }
+      #widget .card {
+        padding: 8px;
+      }
+
+      #model {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .hidden {
+        display: none !important;
+      }
+      #uiToggle {
+        position: absolute;
+        left: 8px;
+        bottom: 8px;
+        z-index: 20;
+        -webkit-app-region: no-drag;
+      }
+      #uiToggle .btn {
+        padding: 4px 8px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.8/dist/browser/pixi.min.js"></script>
+  </head>
+  <body>
+    <div id="overlay">
+      <div
+        id="widget"
+        style="
+          position: absolute;
+          right: 8px;
+          bottom: 8px;
+          z-index: 20;
+          color: white;
+          font-family: sans-serif;
+          text-align: right;
+        "
+      >
+        <div
+          style="
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+          "
+        >
+          <div id="timerLabel">Работа</div>
+          <div style="font-size: 18px; font-weight: bold" id="timerDisplay">
+            25:00
+          </div>
+          <div
+            style="
+              margin-top: 6px;
+              display: flex;
+              gap: 6px;
+              justify-content: flex-end;
+            "
+          >
+            <button class="btn" id="startBtn">Старт</button>
+            <button class="btn" id="pauseBtn">Пауза</button>
+            <button class="btn" id="resetBtn">Сброс</button>
+          </div>
+        </div>
+        <div
+          style="
+            background: rgba(0, 0, 0, 0.35);
+            padding: 6px;
+            border-radius: 8px;
+          "
+        >
+          <div>Уровень: <span id="level">1</span></div>
+          <div>XP: <span id="xp">0</span></div>
+          <div>Помидоры: <span id="tomatoes">0</span></div>
+        </div>
+      </div>
+      <div id="controls" class="glass">
+        <div class="toolbar">
+          <button id="pin" class="btn">Pin</button>
+          <label class="label"
+            >Scale
+            <input
+              id="opacity"
+              type="range"
+              min="0.5"
+              max="1.5"
+              step="0.05"
+              value="1"
+          /></label>
+          <button id="toggleUI" class="btn">Hide UI</button>
+          <button id="close" class="btn btn-danger">Close</button>
+        </div>
+      </div>
+      <div id="uiToggle">
+        <button id="showUIBtn" class="btn btn-primary hidden">Show UI</button>
+      </div>
+      <div id="model"></div>
+    </div>
+    <script src="../dist/renderer/index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "start": {
+    "audio": [
+      "audio/start.wav",
+      "audio/start2.wav",
+      "audio/start3.wav",
+      "audio/start4.wav",
+      "audio/start5.wav"
+    ]
+  },
+  "finish": {
+    "audio": [
+      "audio/finish.ogg",
+      "audio/finish1.ogg",
+      "audio/finish2.ogg",
+      "audio/finish3.ogg",
+      "audio/finish4.ogg"
+    ]
+  },
+  "break": {
+    "audio": [
+      "audio/break.wav",
+      "audio/break1.wav",
+      "audio/break2.wav",
+      "audio/break3.wav",
+      "audio/break4.wav",
+      "audio/break5.wav"
+    ]
+  },
+  "xp": {
+    "audio": [
+      "audio/xp.ogg",
+      "audio/xp1.ogg",
+      "audio/xp2.ogg",
+      "audio/xp3.ogg",
+      "audio/xp4.ogg"
+    ]
+  },
+  "fun": { "audio": ["audio/fun.ogg", "audio/fun1.ogg", "audio/fun2.ogg"] }
+}

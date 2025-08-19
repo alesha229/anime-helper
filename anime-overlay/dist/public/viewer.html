@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Live2D Viewer</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #111;
+        color: #ddd;
+        font-family: system-ui, Arial, sans-serif;
+      }
+      #layout {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+      }
+      #sidebar {
+        width: 300px;
+        border-right: 1px solid #333;
+        display: flex;
+        flex-direction: column;
+      }
+      #tree {
+        flex: 1;
+        overflow: auto;
+        padding: 8px;
+      }
+      #main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      #toolbar {
+        padding: 8px;
+        border-bottom: 1px solid #333;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      #list {
+        flex: 1;
+        overflow: auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        width: 100vw;
+      }
+      .card {
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 8px;
+        cursor: pointer;
+      }
+      .card:hover {
+        border-color: #555;
+      }
+      .img-card {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      #stageWrap {
+        height: 420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0e0e0e;
+        border-top: 1px solid #333;
+      }
+      #stage {
+        width: 100%;
+        height: 100%;
+        display: flex;
+      }
+      .crumb a {
+        color: #9cdcfe;
+        text-decoration: none;
+        margin-right: 4px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.8/dist/browser/pixi.min.js"></script>
+  </head>
+  <body>
+    <div id="layout">
+      <div id="sidebar" style="display: none">
+        <div
+          style="padding: 8px; border-bottom: 1px solid #333; font-weight: 600"
+        >
+          Каталог
+        </div>
+        <div id="tree"></div>
+      </div>
+      <div id="main">
+        <div id="toolbar">
+          <div
+            id="breadcrumb"
+            class="crumb"
+            style="flex: 1; overflow: auto; white-space: nowrap"
+          ></div>
+
+          <button style="position: absolute; bottom: 0" id="backBtn">
+            Готово
+          </button>
+        </div>
+        <div id="list"></div>
+        <div id="stageWrap"><div id="stage"></div></div>
+      </div>
+    </div>
+
+    <script src="../dist/renderer/viewer.js"></script>
+  </body>
+</html>

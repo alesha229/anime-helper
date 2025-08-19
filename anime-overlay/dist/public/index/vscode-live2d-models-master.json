@@ -1,0 +1,3792 @@
+{
+  "name": "iCharlesZ/vscode-live2d-models",
+  "children": [
+    {
+      "name": "model-library",
+      "children": [
+        {
+          "name": "Epsilon",
+          "children": [
+            {
+              "name": "Epsilon.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png", "texture_02.png"]
+            },
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "Epsilon_idle_01.mtn",
+                "Epsilon_m_01.mtn",
+                "Epsilon_m_02.mtn",
+                "Epsilon_m_03.mtn",
+                "Epsilon_m_04.mtn",
+                "Epsilon_m_05.mtn",
+                "Epsilon_m_06.mtn",
+                "Epsilon_m_07.mtn",
+                "Epsilon_m_08.mtn",
+                "Epsilon_m_sp_01.mtn",
+                "Epsilon_m_sp_02.mtn",
+                "Epsilon_m_sp_03.mtn",
+                "Epsilon_m_sp_04.mtn",
+                "Epsilon_m_sp_05.mtn",
+                "Epsilon_shake_01.mtn"
+              ]
+            }
+          ],
+          "files": [
+            "Epsilon.moc",
+            "Epsilon.model.json",
+            "Epsilon.physics.json",
+            "Epsilon.pose.json"
+          ]
+        },
+        {
+          "name": "Kobayaxi",
+          "children": [
+            {
+              "name": "Kobayaxi.2048",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "expressions",
+              "children": [],
+              "files": ["f01.exp.json", "f02.exp.json", "f03.exp.json"]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "idle",
+                  "children": [],
+                  "files": [
+                    "haru_idle_01.mtn",
+                    "haru_idle_02.mtn",
+                    "haru_idle_03.mtn"
+                  ]
+                },
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "haru_normal_01.mp3",
+                    "haru_normal_01.mtn",
+                    "haru_normal_02.mp3",
+                    "haru_normal_02.mtn",
+                    "haru_normal_03.mp3",
+                    "haru_normal_03.mtn"
+                  ]
+                },
+                {
+                  "name": "tap_body",
+                  "children": [],
+                  "files": ["haru_m_01.mtn", "haru_m_02.mtn", "haru_m_03.mtn"]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": [
+            "Kobayaxi.moc",
+            "Kobayaxi.model.json",
+            "Kobayaxi.settings.json",
+            "physics.json",
+            "pose.json"
+          ]
+        },
+        {
+          "name": "bilibili-22",
+          "children": [
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "idle-01.mtn",
+                "idle-02.mtn",
+                "idle-03.mtn",
+                "thanking.mtn",
+                "touch.mtn"
+              ]
+            },
+            {
+              "name": "texture_00",
+              "children": [],
+              "files": ["closet-default-v2.png"]
+            },
+            {
+              "name": "texture_01",
+              "children": [],
+              "files": [
+                "cba-normal-upper.png",
+                "cba-super-upper.png",
+                "default-upper.png",
+                "newyear-upper.png",
+                "school2017-upper.png",
+                "spring-2018-upper.png",
+                "summer2017-high-upper.png",
+                "summer2017-low-upper.png",
+                "tomo-high-upper.png",
+                "tomo-low-upper.png",
+                "valley2017-upper.png",
+                "vdays-upper.png",
+                "xmas-upper.png"
+              ]
+            },
+            {
+              "name": "texture_02",
+              "children": [],
+              "files": [
+                "cba-normal-lower.png",
+                "cba-super-lower.png",
+                "default-lower.png",
+                "newyear-lower.png",
+                "school2017-lower.png",
+                "spring-2018-lower.png",
+                "summer2017-high-lower.png",
+                "summer2017-low-lower.png",
+                "tomo-high-lower.png",
+                "tomo-low-lower.png",
+                "valley2017-lower.png",
+                "vdays-lower.png",
+                "xmas-lower.png"
+              ]
+            },
+            {
+              "name": "texture_03",
+              "children": [],
+              "files": [
+                "cba-hat.png",
+                "default-hat.png",
+                "newyear-hat.png",
+                "school2017-hat.png",
+                "spring-2018-hat.png",
+                "summer2017-hat.png",
+                "tomo-high-hat.png",
+                "tomo-low-hat.png",
+                "valley2017-hat.png",
+                "vdays-hat.png",
+                "xmas-hat.png",
+                "xmas-headwear.png"
+              ]
+            }
+          ],
+          "files": [
+            "index.json",
+            "model.moc",
+            "textures.cache",
+            "textures_order.json"
+          ]
+        },
+        {
+          "name": "bilibili-33",
+          "children": [
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "idle-01.mtn",
+                "idle-02.mtn",
+                "idle-03.mtn",
+                "thanking.mtn",
+                "touch.mtn"
+              ]
+            },
+            {
+              "name": "texture_00",
+              "children": [],
+              "files": ["closet-default-v2.png"]
+            },
+            {
+              "name": "texture_01",
+              "children": [],
+              "files": [
+                "cba-normal-upper.png",
+                "cba-super-upper.png",
+                "default-upper.png",
+                "newyear-upper.png",
+                "school2017-upper.png",
+                "spring-2018-upper.png",
+                "summer2017-high-upper.png",
+                "summer2017-low-upper.png",
+                "tomo-high-upper.png",
+                "tomo-low-upper.png",
+                "valley2017-upper.png",
+                "vdays-upper.png",
+                "xmas-upper.png"
+              ]
+            },
+            {
+              "name": "texture_02",
+              "children": [],
+              "files": [
+                "cba-normal-lower.png",
+                "cba-super-lower.png",
+                "default-lower.png",
+                "newyear-lower.png",
+                "school2017-lower.png",
+                "spring-2018-lower.png",
+                "summer2017-high-lower.png",
+                "summer2017-low-lower.png",
+                "tomo-high-lower.png",
+                "tomo-low-lower.png",
+                "valley2017-lower.png",
+                "vdays-lower.png",
+                "xmas-lower.png"
+              ]
+            },
+            {
+              "name": "texture_03",
+              "children": [],
+              "files": [
+                "cba-hat.png",
+                "default-hat.png",
+                "newyear-hat.png",
+                "school2017-hat.png",
+                "spring-2018-hat.png",
+                "summer2017-hat.png",
+                "tomo-high-hat.png",
+                "tomo-low-hat.png",
+                "valley2017-hat.png",
+                "vdays-hat.png",
+                "xmas-hat.png",
+                "xmas-headwear.png"
+              ]
+            }
+          ],
+          "files": [
+            "index.json",
+            "model.moc",
+            "textures.cache",
+            "textures_order.json"
+          ]
+        },
+        {
+          "name": "chiaki_kitty",
+          "children": [
+            {
+              "name": "chiaki_kitty.2048",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "idle",
+                  "children": [],
+                  "files": [
+                    "idling_1.mtn",
+                    "idling_2.mtn",
+                    "idling_3.mtn",
+                    "idling_4.mtn",
+                    "idling_l1.mtn",
+                    "idling_l2.mtn",
+                    "idling_r1.mtn",
+                    "idling_r2.mtn"
+                  ]
+                },
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "chiaki_kitty_hello_01.mp3",
+                    "chiaki_kitty_hello_01.mtn",
+                    "chiaki_kitty_joyful_01.mp3",
+                    "chiaki_kitty_joyful_01.mtn",
+                    "chiaki_kitty_surprise_01.mp3",
+                    "chiaki_kitty_surprise_01.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": ["chiaki_kitty.moc", "chiaki_kitty.model.json"]
+        },
+        {
+          "name": "chitose",
+          "children": [
+            {
+              "name": "chitose.1024",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "chitose.2048",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "F01.exp.json",
+                "F02.exp.json",
+                "F03.exp.json",
+                "F04.exp.json",
+                "F05.exp.json",
+                "F06.exp.json",
+                "F07.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "chitose_handwave.mtn",
+                "chitose_idle.mtn",
+                "chitose_kime01.mtn",
+                "chitose_kime02.mtn"
+              ]
+            }
+          ],
+          "files": [
+            "chitose.moc",
+            "chitose.model.json",
+            "chitose.physics.json",
+            "chitose.pose.json"
+          ]
+        },
+        {
+          "name": "date_16",
+          "children": [
+            {
+              "name": "date_16.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            },
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "F00.exp.json",
+                "F01.exp.json",
+                "F02.exp.json",
+                "F03.exp.json",
+                "F04.exp.json",
+                "F05.exp.json",
+                "F06.exp.json",
+                "F07.exp.json",
+                "F08.exp.json",
+                "F09.exp.json",
+                "F10.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "voice_3368.mp3",
+                    "voice_3368.mtn",
+                    "voice_3369.mp3",
+                    "voice_3369.mtn",
+                    "voice_3370.mp3",
+                    "voice_3370.mtn",
+                    "voice_3371.mp3",
+                    "voice_3371.mtn",
+                    "voice_3372.mp3",
+                    "voice_3372.mtn",
+                    "voice_3373.mp3",
+                    "voice_3373.mtn"
+                  ]
+                },
+                {
+                  "name": "tap_body",
+                  "children": [],
+                  "files": [
+                    "m01.mtn",
+                    "m02.mtn",
+                    "m03.mtn",
+                    "m04.mtn",
+                    "m05.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": ["date_16.moc", "date_16.model.json", "physics_date.json"]
+        },
+        {
+          "name": "gf",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "Gantzert_Felixander.2048",
+                  "children": [],
+                  "files": [
+                    "texture_00.png",
+                    "texture_01.png",
+                    "texture_02.png",
+                    "texture_03.png",
+                    "texture_04.png",
+                    "texture_05.png",
+                    "texture_06.png"
+                  ]
+                }
+              ],
+              "files": ["Gantzert_Felixander.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "A_00_idle.mtn",
+                "A_01.mtn",
+                "A_02.mtn",
+                "A_03.mtn",
+                "A_04.mtn",
+                "A_05.mtn"
+              ]
+            }
+          ],
+          "files": ["Gantzert_Felixander.model.json"]
+        },
+        {
+          "name": "girls-frontline",
+          "children": [
+            {
+              "name": "AN94-1",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "texture",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "texture",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "AN94-2",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "G11",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "HK416-1",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_02.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc", "physics.json"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc", "physics.json"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "HK416-2",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc", "physics.json"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc", "physics.json"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "Kar98k",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png", "texture_01.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "touch_6.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "M4-SOPMOD-II-1",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc", "physics.json"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "M4-SOPMOD-II-2",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "M4A1-1",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc", "physics.json"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc", "physics.json"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "M4A1-2",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.2048",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "UMP45-1",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "UMP45-2",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "UMP45-3",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": ["daiji_idle_01.mtn"]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": ["daiji_idle_01.mtn"]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "UMP9",
+              "children": [
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "WA2000-1",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "touch_Christmas.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "WA2000-2",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "broken_1.mtn",
+                        "broken_2.mtn",
+                        "broken_3.mtn",
+                        "broken_4.mtn",
+                        "broken_5.mtn",
+                        "daiji_idle_02.mtn",
+                        "shake.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    },
+                    {
+                      "name": "motions",
+                      "children": [],
+                      "files": [
+                        "daiji_idle_01.mtn",
+                        "login.mtn",
+                        "shake.mtn",
+                        "touch_1.mtn",
+                        "touch_2.mtn",
+                        "touch_3.mtn",
+                        "touch_4.mtn",
+                        "touch_5.mtn",
+                        "wait_1.mtn",
+                        "wait_2.mtn",
+                        "wedding.mtn",
+                        "wedding_touch.mtn"
+                      ]
+                    }
+                  ],
+                  "files": ["model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "WA2000-3",
+              "children": [
+                {
+                  "name": "destroy",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                },
+                {
+                  "name": "normal",
+                  "children": [
+                    {
+                      "name": "model.1024",
+                      "children": [],
+                      "files": ["texture_00.png"]
+                    }
+                  ],
+                  "files": ["daiji_idle_01.mtn", "model.json", "model.moc"]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": []
+        },
+        {
+          "name": "hallo_16",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "F00.exp.json",
+                "F01.exp.json",
+                "F02.exp.json",
+                "F03.exp.json",
+                "F04.exp.json",
+                "F05.exp.json",
+                "F06.exp.json",
+                "F07.exp.json",
+                "F08.exp.json",
+                "F09.exp.json",
+                "F10.exp.json"
+              ]
+            },
+            {
+              "name": "hallo_16.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "voice_3368.mp3",
+                    "voice_3368.mtn",
+                    "voice_3369.mp3",
+                    "voice_3369.mtn",
+                    "voice_3370.mp3",
+                    "voice_3370.mtn",
+                    "voice_3371.mp3",
+                    "voice_3371.mtn",
+                    "voice_3372.mp3",
+                    "voice_3372.mtn",
+                    "voice_3373.mp3",
+                    "voice_3373.mtn"
+                  ]
+                },
+                {
+                  "name": "tap_body",
+                  "children": [],
+                  "files": [
+                    "m01.mtn",
+                    "m02.mtn",
+                    "m03.mtn",
+                    "m04.mtn",
+                    "m05.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": ["hallo_16.moc", "hallo_16.model.json", "physics_hallo.json"]
+        },
+        {
+          "name": "haru01",
+          "children": [
+            {
+              "name": "exp",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "haru01.1024",
+                  "children": [],
+                  "files": [
+                    "texture_00.png",
+                    "texture_01.png",
+                    "texture_02.png"
+                  ]
+                }
+              ],
+              "files": ["haru01.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "flickHead_00.mtn",
+                "idle_00.mtn",
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "pinchIn_00.mtn",
+                "pinchOut_00.mtn",
+                "shake_00.mtn",
+                "tapBody_00.mtn",
+                "tapBody_01.mtn",
+                "tapBody_02.mtn",
+                "tapBody_03.mtn",
+                "tapBody_04.mtn",
+                "tapBody_05.mtn",
+                "tapBody_06.mtn",
+                "tapBody_07.mtn",
+                "tapBody_08.mtn",
+                "tapBody_09.mtn"
+              ]
+            },
+            {
+              "name": "snd",
+              "children": [],
+              "files": [
+                "flickHead_00.mp3",
+                "pinchIn_00.mp3",
+                "pinchOut_00.mp3",
+                "shake_00.mp3",
+                "tapBody_00.mp3",
+                "tapBody_01.mp3",
+                "tapBody_02.mp3"
+              ]
+            }
+          ],
+          "files": [
+            "haru01.model.json",
+            "haru01.physics.json",
+            "haru01.pose.json"
+          ]
+        },
+        {
+          "name": "haru02",
+          "children": [
+            {
+              "name": "exp",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "haru02.1024",
+                  "children": [],
+                  "files": [
+                    "texture_00.png",
+                    "texture_01.png",
+                    "texture_02.png"
+                  ]
+                }
+              ],
+              "files": ["haru02.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "flickHead_00.mtn",
+                "idle_00.mtn",
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "pinchIn_00.mtn",
+                "pinchOut_00.mtn",
+                "shake_00.mtn",
+                "tapBody_00.mtn",
+                "tapBody_01.mtn",
+                "tapBody_02.mtn",
+                "tapBody_03.mtn",
+                "tapBody_04.mtn",
+                "tapBody_05.mtn",
+                "tapBody_06.mtn",
+                "tapBody_07.mtn",
+                "tapBody_08.mtn",
+                "tapBody_09.mtn"
+              ]
+            },
+            {
+              "name": "snd",
+              "children": [],
+              "files": [
+                "flickHead_00.mp3",
+                "pinchIn_00.mp3",
+                "pinchOut_00.mp3",
+                "shake_00.mp3",
+                "tapBody_00.mp3",
+                "tapBody_01.mp3",
+                "tapBody_02.mp3"
+              ]
+            }
+          ],
+          "files": [
+            "haru02.model.json",
+            "haru02.physics.json",
+            "haru02.pose.json"
+          ]
+        },
+        {
+          "name": "haruto",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "haruto.2048",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["haruto.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "01.mtn",
+                "02.mtn",
+                "03.mtn",
+                "04.mtn",
+                "05.mtn",
+                "06.mtn",
+                "07.mtn",
+                "08.mtn",
+                "09.mtn",
+                "idle_02.mtn"
+              ]
+            }
+          ],
+          "files": ["haruto.model.json", "haruto.physics.json"]
+        },
+        {
+          "name": "hibiki",
+          "children": [
+            {
+              "name": "exp",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json"
+              ]
+            },
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "hibiki.2048",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["hibiki.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "hibiki_01.mtn",
+                "hibiki_02.mtn",
+                "hibiki_03.mtn",
+                "hibiki_04.mtn",
+                "hibiki_05.mtn",
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "idle_03.mtn",
+                "idle_04.mtn"
+              ]
+            },
+            {
+              "name": "snd",
+              "children": [],
+              "files": [
+                "hibiki_01.mp3",
+                "hibiki_02.mp3",
+                "hibiki_03.mp3",
+                "hibiki_04.mp3",
+                "hibiki_05.mp3"
+              ]
+            }
+          ],
+          "files": ["hibiki.model.json", "hibiki.physics.json"]
+        },
+        {
+          "name": "hijiki",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "hijiki.2048",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["hijiki.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "00_idle.mtn",
+                "01.mtn",
+                "02.mtn",
+                "03.mtn",
+                "04.mtn",
+                "05.mtn",
+                "06.mtn",
+                "07.mtn",
+                "08.mtn"
+              ]
+            }
+          ],
+          "files": ["hijiki.model.json", "hijiki.pose.json"]
+        },
+        {
+          "name": "index",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "index.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn",
+                    "motion7.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": ["index.moc", "index.model.json", "physics.json"]
+        },
+        {
+          "name": "izumi",
+          "children": [
+            {
+              "name": "exp",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json"
+              ]
+            },
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "izumi_illust.1024",
+                  "children": [],
+                  "files": [
+                    "texture_00.png",
+                    "texture_01.png",
+                    "texture_02.png",
+                    "texture_03.png"
+                  ]
+                }
+              ],
+              "files": ["izumi_illust.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "idle_03.mtn",
+                "idle_04.mtn",
+                "izumi_01.mtn",
+                "izumi_02.mtn",
+                "izumi_03.mtn",
+                "izumi_04.mtn",
+                "izumi_05.mtn",
+                "izumi_06.mtn",
+                "izumi_07.mtn",
+                "izumi_08.mtn",
+                "izumi_09.mtn",
+                "izumi_10.mtn"
+              ]
+            },
+            {
+              "name": "snd",
+              "children": [],
+              "files": [
+                "izumi_01.mp3",
+                "izumi_02.mp3",
+                "izumi_03.mp3",
+                "izumi_04.mp3",
+                "izumi_05.mp3",
+                "izumi_06.mp3",
+                "izumi_07.mp3",
+                "izumi_08.mp3",
+                "izumi_09.mp3",
+                "izumi_10.mp3"
+              ]
+            }
+          ],
+          "files": ["izumi.model.json", "izumi.physics.json"]
+        },
+        {
+          "name": "jin",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "motion01.mtn",
+                "motion02.mtn",
+                "motion03.mtn",
+                "motion04.mtn",
+                "motion05.mtn"
+              ]
+            },
+            {
+              "name": "shifuku.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            }
+          ],
+          "files": ["jin.model.json", "physics.json", "shifuku.moc"]
+        },
+        {
+          "name": "kanzaki",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "kanzaki.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png", "texture_02.png"]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn",
+                    "motion7.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": ["kanzaki.moc", "kanzaki.model.json", "physics.json"]
+        },
+        {
+          "name": "kesshouban",
+          "children": [
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "Anone_Synced.mtn",
+                "Dance.mtn",
+                "Idle.mtn",
+                "Nemui.mtn"
+              ]
+            },
+            {
+              "name": "textures",
+              "children": [],
+              "files": ["texture_00.png"]
+            }
+          ],
+          "files": ["model.json", "model.moc"]
+        },
+        {
+          "name": "koharu",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "koharu.2048",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["koharu.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "01.mtn",
+                "02.mtn",
+                "03.mtn",
+                "04.mtn",
+                "05.mtn",
+                "06.mtn",
+                "07.mtn",
+                "08.mtn",
+                "09.mtn",
+                "idle.mtn"
+              ]
+            }
+          ],
+          "files": ["koharu.model.json", "koharu.physics.json"]
+        },
+        {
+          "name": "kuroko",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "kuroko.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion10.mtn",
+                    "motion11.mtn",
+                    "motion12.mtn",
+                    "motion13.mtn",
+                    "motion14.mtn",
+                    "motion15.mtn",
+                    "motion16.mtn",
+                    "motion17.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn",
+                    "motion7.mtn",
+                    "motion8.mtn",
+                    "motion9.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": ["kuroko.moc", "kuroko.model.json", "physics.json"]
+        },
+        {
+          "name": "len",
+          "children": [
+            {
+              "name": "model.2048",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "len_idle_01.mtn",
+                "len_idle_02.mtn",
+                "len_idle_03.mtn",
+                "len_impact_idle_01.mtn",
+                "len_impact_idle_02.mtn",
+                "len_impact_start_first_01.mtn",
+                "len_impact_start_first_02.mtn",
+                "len_impact_tap_belly_01.mtn",
+                "len_impact_tap_belly_02.mtn",
+                "len_impact_tap_chest_01.mtn",
+                "len_impact_tap_chest_02.mtn",
+                "len_impact_tap_face_01.mtn",
+                "len_impact_tap_face_02.mtn",
+                "len_impact_tap_head_01.mtn",
+                "len_impact_tap_head_02.mtn",
+                "len_impact_tap_leg_01.mtn",
+                "len_impact_tap_leg_02.mtn",
+                "len_start_first_01.mtn",
+                "len_start_first_02.mtn",
+                "len_start_first_03.mtn",
+                "len_start_first_04.mtn",
+                "len_start_first_05.mtn",
+                "len_start_first_06.mtn",
+                "len_tap_belly_01.mtn",
+                "len_tap_belly_02.mtn",
+                "len_tap_chest_01.mtn",
+                "len_tap_chest_02.mtn",
+                "len_tap_face_01.mtn",
+                "len_tap_face_02.mtn",
+                "len_tap_face_03.mtn",
+                "len_tap_face_04.mtn",
+                "len_tap_face_05.mtn",
+                "len_tap_face_06.mtn",
+                "len_tap_face_07.mtn",
+                "len_tap_face_08.mtn",
+                "len_tap_face_09.mtn",
+                "len_tap_face_10.mtn",
+                "len_tap_face_11.mtn",
+                "len_tap_face_12.mtn",
+                "len_tap_face_13.mtn",
+                "len_tap_face_14.mtn",
+                "len_tap_face_15.mtn",
+                "len_tap_face_16.mtn",
+                "len_tap_face_17.mtn",
+                "len_tap_face_18.mtn",
+                "len_tap_face_19.mtn",
+                "len_tap_face_20.mtn",
+                "len_tap_face_21.mtn",
+                "len_tap_face_22.mtn",
+                "len_tap_face_23.mtn",
+                "len_tap_face_24.mtn",
+                "len_tap_face_25.mtn",
+                "len_tap_hand_01.mtn",
+                "len_tap_hand_02.mtn",
+                "len_tap_head_01.mtn",
+                "len_tap_head_02.mtn",
+                "len_tap_skirt_01.mtn",
+                "len_tap_skirt_02.mtn"
+              ]
+            },
+            {
+              "name": "sounds",
+              "children": [],
+              "files": [
+                "len_impact_start_first_01.mp3",
+                "len_impact_start_first_02.mp3",
+                "len_impact_tap_belly_01.mp3",
+                "len_impact_tap_belly_02.mp3",
+                "len_impact_tap_chest_01.mp3",
+                "len_impact_tap_chest_02.mp3",
+                "len_impact_tap_face_01.mp3",
+                "len_impact_tap_face_02.mp3",
+                "len_impact_tap_head_01.mp3",
+                "len_impact_tap_head_02.mp3",
+                "len_impact_tap_leg_01.mp3",
+                "len_impact_tap_leg_02.mp3",
+                "len_start_first_01.mp3",
+                "len_start_first_02.mp3",
+                "len_start_first_03.mp3",
+                "len_start_first_04.mp3",
+                "len_start_first_05.mp3",
+                "len_start_first_06.mp3",
+                "len_tap_belly_01.mp3",
+                "len_tap_belly_02.mp3",
+                "len_tap_chest_01.mp3",
+                "len_tap_chest_02.mp3",
+                "len_tap_face_01.mp3",
+                "len_tap_face_02.mp3",
+                "len_tap_face_03.mp3",
+                "len_tap_face_04.mp3",
+                "len_tap_face_05.mp3",
+                "len_tap_face_06.mp3",
+                "len_tap_face_07.mp3",
+                "len_tap_face_08.mp3",
+                "len_tap_face_09.mp3",
+                "len_tap_face_10.mp3",
+                "len_tap_face_11.mp3",
+                "len_tap_face_12.mp3",
+                "len_tap_face_13.mp3",
+                "len_tap_face_14.mp3",
+                "len_tap_face_15.mp3",
+                "len_tap_face_16.mp3",
+                "len_tap_face_17.mp3",
+                "len_tap_face_18.mp3",
+                "len_tap_face_19.mp3",
+                "len_tap_face_20.mp3",
+                "len_tap_face_21.mp3",
+                "len_tap_face_22.mp3",
+                "len_tap_face_23.mp3",
+                "len_tap_face_24.mp3",
+                "len_tap_face_25.mp3",
+                "len_tap_hand_01.mp3",
+                "len_tap_hand_02.mp3",
+                "len_tap_head_01.mp3",
+                "len_tap_head_02.mp3",
+                "len_tap_skirt_01.mp3",
+                "len_tap_skirt_02.mp3"
+              ]
+            }
+          ],
+          "files": ["len.moc", "len.model.json", "physics.json", "pose.json"]
+        },
+        {
+          "name": "len_impact",
+          "children": [
+            {
+              "name": "model_impact.2048",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "len_idle_01.mtn",
+                "len_idle_02.mtn",
+                "len_idle_03.mtn",
+                "len_impact_idle_01.mtn",
+                "len_impact_idle_02.mtn",
+                "len_impact_start_first_01.mtn",
+                "len_impact_start_first_02.mtn",
+                "len_impact_tap_belly_01.mtn",
+                "len_impact_tap_belly_02.mtn",
+                "len_impact_tap_chest_01.mtn",
+                "len_impact_tap_chest_02.mtn",
+                "len_impact_tap_face_01.mtn",
+                "len_impact_tap_face_02.mtn",
+                "len_impact_tap_head_01.mtn",
+                "len_impact_tap_head_02.mtn",
+                "len_impact_tap_leg_01.mtn",
+                "len_impact_tap_leg_02.mtn",
+                "len_start_first_01.mtn",
+                "len_start_first_02.mtn",
+                "len_start_first_03.mtn",
+                "len_start_first_04.mtn",
+                "len_start_first_05.mtn",
+                "len_start_first_06.mtn",
+                "len_tap_belly_01.mtn",
+                "len_tap_belly_02.mtn",
+                "len_tap_chest_01.mtn",
+                "len_tap_chest_02.mtn",
+                "len_tap_face_01.mtn",
+                "len_tap_face_02.mtn",
+                "len_tap_face_03.mtn",
+                "len_tap_face_04.mtn",
+                "len_tap_face_05.mtn",
+                "len_tap_face_06.mtn",
+                "len_tap_face_07.mtn",
+                "len_tap_face_08.mtn",
+                "len_tap_face_09.mtn",
+                "len_tap_face_10.mtn",
+                "len_tap_face_11.mtn",
+                "len_tap_face_12.mtn",
+                "len_tap_face_13.mtn",
+                "len_tap_face_14.mtn",
+                "len_tap_face_15.mtn",
+                "len_tap_face_16.mtn",
+                "len_tap_face_17.mtn",
+                "len_tap_face_18.mtn",
+                "len_tap_face_19.mtn",
+                "len_tap_face_20.mtn",
+                "len_tap_face_21.mtn",
+                "len_tap_face_22.mtn",
+                "len_tap_face_23.mtn",
+                "len_tap_face_24.mtn",
+                "len_tap_face_25.mtn",
+                "len_tap_hand_01.mtn",
+                "len_tap_hand_02.mtn",
+                "len_tap_head_01.mtn",
+                "len_tap_head_02.mtn",
+                "len_tap_skirt_01.mtn",
+                "len_tap_skirt_02.mtn"
+              ]
+            },
+            {
+              "name": "sounds",
+              "children": [],
+              "files": [
+                "len_impact_start_first_01.mp3",
+                "len_impact_start_first_02.mp3",
+                "len_impact_tap_belly_01.mp3",
+                "len_impact_tap_belly_02.mp3",
+                "len_impact_tap_chest_01.mp3",
+                "len_impact_tap_chest_02.mp3",
+                "len_impact_tap_face_01.mp3",
+                "len_impact_tap_face_02.mp3",
+                "len_impact_tap_head_01.mp3",
+                "len_impact_tap_head_02.mp3",
+                "len_impact_tap_leg_01.mp3",
+                "len_impact_tap_leg_02.mp3",
+                "len_start_first_01.mp3",
+                "len_start_first_02.mp3",
+                "len_start_first_03.mp3",
+                "len_start_first_04.mp3",
+                "len_start_first_05.mp3",
+                "len_start_first_06.mp3",
+                "len_tap_belly_01.mp3",
+                "len_tap_belly_02.mp3",
+                "len_tap_chest_01.mp3",
+                "len_tap_chest_02.mp3",
+                "len_tap_face_01.mp3",
+                "len_tap_face_02.mp3",
+                "len_tap_face_03.mp3",
+                "len_tap_face_04.mp3",
+                "len_tap_face_05.mp3",
+                "len_tap_face_06.mp3",
+                "len_tap_face_07.mp3",
+                "len_tap_face_08.mp3",
+                "len_tap_face_09.mp3",
+                "len_tap_face_10.mp3",
+                "len_tap_face_11.mp3",
+                "len_tap_face_12.mp3",
+                "len_tap_face_13.mp3",
+                "len_tap_face_14.mp3",
+                "len_tap_face_15.mp3",
+                "len_tap_face_16.mp3",
+                "len_tap_face_17.mp3",
+                "len_tap_face_18.mp3",
+                "len_tap_face_19.mp3",
+                "len_tap_face_20.mp3",
+                "len_tap_face_21.mp3",
+                "len_tap_face_22.mp3",
+                "len_tap_face_23.mp3",
+                "len_tap_face_24.mp3",
+                "len_tap_face_25.mp3",
+                "len_tap_hand_01.mp3",
+                "len_tap_hand_02.mp3",
+                "len_tap_head_01.mp3",
+                "len_tap_head_02.mp3",
+                "len_tap_skirt_01.mp3",
+                "len_tap_skirt_02.mp3"
+              ]
+            }
+          ],
+          "files": [
+            "len_impact.moc",
+            "len_impact.model.json",
+            "physics_space.json",
+            "pose_impact.json"
+          ]
+        },
+        {
+          "name": "len_space",
+          "children": [
+            {
+              "name": "model_space.2048",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "len_idle_01.mtn",
+                "len_idle_02.mtn",
+                "len_idle_03.mtn",
+                "len_impact_idle_01.mtn",
+                "len_impact_idle_02.mtn",
+                "len_impact_start_first_01.mtn",
+                "len_impact_start_first_02.mtn",
+                "len_impact_tap_belly_01.mtn",
+                "len_impact_tap_belly_02.mtn",
+                "len_impact_tap_chest_01.mtn",
+                "len_impact_tap_chest_02.mtn",
+                "len_impact_tap_face_01.mtn",
+                "len_impact_tap_face_02.mtn",
+                "len_impact_tap_head_01.mtn",
+                "len_impact_tap_head_02.mtn",
+                "len_impact_tap_leg_01.mtn",
+                "len_impact_tap_leg_02.mtn",
+                "len_start_first_01.mtn",
+                "len_start_first_02.mtn",
+                "len_start_first_03.mtn",
+                "len_start_first_04.mtn",
+                "len_start_first_05.mtn",
+                "len_start_first_06.mtn",
+                "len_tap_belly_01.mtn",
+                "len_tap_belly_02.mtn",
+                "len_tap_chest_01.mtn",
+                "len_tap_chest_02.mtn",
+                "len_tap_face_01.mtn",
+                "len_tap_face_02.mtn",
+                "len_tap_face_03.mtn",
+                "len_tap_face_04.mtn",
+                "len_tap_face_05.mtn",
+                "len_tap_face_06.mtn",
+                "len_tap_face_07.mtn",
+                "len_tap_face_08.mtn",
+                "len_tap_face_09.mtn",
+                "len_tap_face_10.mtn",
+                "len_tap_face_11.mtn",
+                "len_tap_face_12.mtn",
+                "len_tap_face_13.mtn",
+                "len_tap_face_14.mtn",
+                "len_tap_face_15.mtn",
+                "len_tap_face_16.mtn",
+                "len_tap_face_17.mtn",
+                "len_tap_face_18.mtn",
+                "len_tap_face_19.mtn",
+                "len_tap_face_20.mtn",
+                "len_tap_face_21.mtn",
+                "len_tap_face_22.mtn",
+                "len_tap_face_23.mtn",
+                "len_tap_face_24.mtn",
+                "len_tap_face_25.mtn",
+                "len_tap_hand_01.mtn",
+                "len_tap_hand_02.mtn",
+                "len_tap_head_01.mtn",
+                "len_tap_head_02.mtn",
+                "len_tap_skirt_01.mtn",
+                "len_tap_skirt_02.mtn"
+              ]
+            },
+            {
+              "name": "sounds",
+              "children": [],
+              "files": [
+                "len_impact_start_first_01.mp3",
+                "len_impact_start_first_02.mp3",
+                "len_impact_tap_belly_01.mp3",
+                "len_impact_tap_belly_02.mp3",
+                "len_impact_tap_chest_01.mp3",
+                "len_impact_tap_chest_02.mp3",
+                "len_impact_tap_face_01.mp3",
+                "len_impact_tap_face_02.mp3",
+                "len_impact_tap_head_01.mp3",
+                "len_impact_tap_head_02.mp3",
+                "len_impact_tap_leg_01.mp3",
+                "len_impact_tap_leg_02.mp3",
+                "len_start_first_01.mp3",
+                "len_start_first_02.mp3",
+                "len_start_first_03.mp3",
+                "len_start_first_04.mp3",
+                "len_start_first_05.mp3",
+                "len_start_first_06.mp3",
+                "len_tap_belly_01.mp3",
+                "len_tap_belly_02.mp3",
+                "len_tap_chest_01.mp3",
+                "len_tap_chest_02.mp3",
+                "len_tap_face_01.mp3",
+                "len_tap_face_02.mp3",
+                "len_tap_face_03.mp3",
+                "len_tap_face_04.mp3",
+                "len_tap_face_05.mp3",
+                "len_tap_face_06.mp3",
+                "len_tap_face_07.mp3",
+                "len_tap_face_08.mp3",
+                "len_tap_face_09.mp3",
+                "len_tap_face_10.mp3",
+                "len_tap_face_11.mp3",
+                "len_tap_face_12.mp3",
+                "len_tap_face_13.mp3",
+                "len_tap_face_14.mp3",
+                "len_tap_face_15.mp3",
+                "len_tap_face_16.mp3",
+                "len_tap_face_17.mp3",
+                "len_tap_face_18.mp3",
+                "len_tap_face_19.mp3",
+                "len_tap_face_20.mp3",
+                "len_tap_face_21.mp3",
+                "len_tap_face_22.mp3",
+                "len_tap_face_23.mp3",
+                "len_tap_face_24.mp3",
+                "len_tap_face_25.mp3",
+                "len_tap_hand_01.mp3",
+                "len_tap_hand_02.mp3",
+                "len_tap_head_01.mp3",
+                "len_tap_head_02.mp3",
+                "len_tap_skirt_01.mp3",
+                "len_tap_skirt_02.mp3"
+              ]
+            }
+          ],
+          "files": [
+            "len_space.moc",
+            "len_space.model.json",
+            "physics_space.json",
+            "pose_space.json"
+          ]
+        },
+        {
+          "name": "len_swim",
+          "children": [
+            {
+              "name": "model_swim.2048",
+              "children": [],
+              "files": ["texture_00.png"]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "len_idle_01.mtn",
+                "len_idle_02.mtn",
+                "len_idle_03.mtn",
+                "len_impact_idle_01.mtn",
+                "len_impact_idle_02.mtn",
+                "len_impact_start_first_01.mtn",
+                "len_impact_start_first_02.mtn",
+                "len_impact_tap_belly_01.mtn",
+                "len_impact_tap_belly_02.mtn",
+                "len_impact_tap_chest_01.mtn",
+                "len_impact_tap_chest_02.mtn",
+                "len_impact_tap_face_01.mtn",
+                "len_impact_tap_face_02.mtn",
+                "len_impact_tap_head_01.mtn",
+                "len_impact_tap_head_02.mtn",
+                "len_impact_tap_leg_01.mtn",
+                "len_impact_tap_leg_02.mtn",
+                "len_start_first_01.mtn",
+                "len_start_first_02.mtn",
+                "len_start_first_03.mtn",
+                "len_start_first_04.mtn",
+                "len_start_first_05.mtn",
+                "len_start_first_06.mtn",
+                "len_tap_belly_01.mtn",
+                "len_tap_belly_02.mtn",
+                "len_tap_chest_01.mtn",
+                "len_tap_chest_02.mtn",
+                "len_tap_face_01.mtn",
+                "len_tap_face_02.mtn",
+                "len_tap_face_03.mtn",
+                "len_tap_face_04.mtn",
+                "len_tap_face_05.mtn",
+                "len_tap_face_06.mtn",
+                "len_tap_face_07.mtn",
+                "len_tap_face_08.mtn",
+                "len_tap_face_09.mtn",
+                "len_tap_face_10.mtn",
+                "len_tap_face_11.mtn",
+                "len_tap_face_12.mtn",
+                "len_tap_face_13.mtn",
+                "len_tap_face_14.mtn",
+                "len_tap_face_15.mtn",
+                "len_tap_face_16.mtn",
+                "len_tap_face_17.mtn",
+                "len_tap_face_18.mtn",
+                "len_tap_face_19.mtn",
+                "len_tap_face_20.mtn",
+                "len_tap_face_21.mtn",
+                "len_tap_face_22.mtn",
+                "len_tap_face_23.mtn",
+                "len_tap_face_24.mtn",
+                "len_tap_face_25.mtn",
+                "len_tap_hand_01.mtn",
+                "len_tap_hand_02.mtn",
+                "len_tap_head_01.mtn",
+                "len_tap_head_02.mtn",
+                "len_tap_skirt_01.mtn",
+                "len_tap_skirt_02.mtn"
+              ]
+            },
+            {
+              "name": "sounds",
+              "children": [],
+              "files": [
+                "len_impact_start_first_01.mp3",
+                "len_impact_start_first_02.mp3",
+                "len_impact_tap_belly_01.mp3",
+                "len_impact_tap_belly_02.mp3",
+                "len_impact_tap_chest_01.mp3",
+                "len_impact_tap_chest_02.mp3",
+                "len_impact_tap_face_01.mp3",
+                "len_impact_tap_face_02.mp3",
+                "len_impact_tap_head_01.mp3",
+                "len_impact_tap_head_02.mp3",
+                "len_impact_tap_leg_01.mp3",
+                "len_impact_tap_leg_02.mp3",
+                "len_start_first_01.mp3",
+                "len_start_first_02.mp3",
+                "len_start_first_03.mp3",
+                "len_start_first_04.mp3",
+                "len_start_first_05.mp3",
+                "len_start_first_06.mp3",
+                "len_tap_belly_01.mp3",
+                "len_tap_belly_02.mp3",
+                "len_tap_chest_01.mp3",
+                "len_tap_chest_02.mp3",
+                "len_tap_face_01.mp3",
+                "len_tap_face_02.mp3",
+                "len_tap_face_03.mp3",
+                "len_tap_face_04.mp3",
+                "len_tap_face_05.mp3",
+                "len_tap_face_06.mp3",
+                "len_tap_face_07.mp3",
+                "len_tap_face_08.mp3",
+                "len_tap_face_09.mp3",
+                "len_tap_face_10.mp3",
+                "len_tap_face_11.mp3",
+                "len_tap_face_12.mp3",
+                "len_tap_face_13.mp3",
+                "len_tap_face_14.mp3",
+                "len_tap_face_15.mp3",
+                "len_tap_face_16.mp3",
+                "len_tap_face_17.mp3",
+                "len_tap_face_18.mp3",
+                "len_tap_face_19.mp3",
+                "len_tap_face_20.mp3",
+                "len_tap_face_21.mp3",
+                "len_tap_face_22.mp3",
+                "len_tap_face_23.mp3",
+                "len_tap_face_24.mp3",
+                "len_tap_face_25.mp3",
+                "len_tap_hand_01.mp3",
+                "len_tap_hand_02.mp3",
+                "len_tap_head_01.mp3",
+                "len_tap_head_02.mp3",
+                "len_tap_skirt_01.mp3",
+                "len_tap_skirt_02.mp3"
+              ]
+            }
+          ],
+          "files": ["len_swim.moc", "len_swim.model.json", "physics_swim.json"]
+        },
+        {
+          "name": "mikoto",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "mikoto.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion10.mtn",
+                    "motion11.mtn",
+                    "motion12.mtn",
+                    "motion13.mtn",
+                    "motion14.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn",
+                    "motion7.mtn",
+                    "motion8.mtn",
+                    "motion9.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            }
+          ],
+          "files": ["mikoto.moc", "mikoto.model.json", "physics.json"]
+        },
+        {
+          "name": "miku",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "miku.2048",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["miku.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "miku_idle_01.mtn",
+                "miku_m_01.mtn",
+                "miku_m_02.mtn",
+                "miku_m_03.mtn",
+                "miku_m_04.mtn",
+                "miku_m_05.mtn",
+                "miku_m_06.mtn",
+                "miku_shake_01.mtn"
+              ]
+            }
+          ],
+          "files": ["miku.model.json", "miku.physics.json"]
+        },
+        {
+          "name": "murakumo",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "murakumo_idle_01.mtn",
+                "murakumo_idle_02.mtn",
+                "murakumo_idle_03.mtn",
+                "murakumo_m_01.mtn",
+                "murakumo_m_02.mtn",
+                "murakumo_tap_bust_01.mtn",
+                "murakumo_tap_bust_02.mtn",
+                "murakumo_tap_ear_01.mtn"
+              ]
+            },
+            {
+              "name": "textures.1024",
+              "children": [],
+              "files": ["00.png"]
+            }
+          ],
+          "files": ["index.json", "model.moc", "physics.json", "textures.cache"]
+        },
+        {
+          "name": "ni-j",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "ni-j.2048",
+                  "children": [],
+                  "files": ["texture_00.png", "texture_01.png"]
+                }
+              ],
+              "files": ["ni-j.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "00_idle.mtn",
+                "01_happy.mtn",
+                "02_angry.mtn",
+                "03_fear.mtn",
+                "04_surprise.mtn",
+                "05_fun.mtn",
+                "06_love.mtn",
+                "07_bye.mtn",
+                "08_sad.mtn",
+                "09_yawn.mtn",
+                "10_yeah.mtn",
+                "11_muscle.mtn",
+                "12_stagger.mtn",
+                "13_cry.mtn",
+                "14_ sigh.mtn",
+                "15_joy.mtn",
+                "16_menace.mtn",
+                "17_yes.mtn",
+                "18_no.mtn",
+                "19_walk.mtn",
+                "20_sleep.mtn"
+              ]
+            }
+          ],
+          "files": ["ni-j.model.json", "ni-j.physics.json", "ni-j.pose.json"]
+        },
+        {
+          "name": "nico",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "nico.2048",
+                  "children": [],
+                  "files": [
+                    "texture_00.png",
+                    "texture_01.png",
+                    "texture_02.png"
+                  ]
+                }
+              ],
+              "files": ["nico.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "00_idle.mtn",
+                "01_happy.mtn",
+                "02_angry.mtn",
+                "03_fear.mtn",
+                "04_surprise.mtn",
+                "05_fun.mtn",
+                "06_love.mtn",
+                "07_bye.mtn",
+                "08_sad.mtn",
+                "09_yawn.mtn",
+                "10_yeah.mtn",
+                "11_muscle.mtn",
+                "12_stagger.mtn",
+                "13_cry.mtn",
+                "14_ sigh.mtn",
+                "15_joy.mtn",
+                "16_menace.mtn",
+                "17_yes.mtn",
+                "18_no.mtn",
+                "19_walk.mtn",
+                "20_sleep.mtn"
+              ]
+            }
+          ],
+          "files": ["nico.model.json", "nico.physics.json", "nico.pose.json"]
+        },
+        {
+          "name": "nietzsche",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "nietzsche.2048",
+                  "children": [],
+                  "files": [
+                    "texture_00.png",
+                    "texture_01.png",
+                    "texture_02.png"
+                  ]
+                }
+              ],
+              "files": ["nietzsche.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "00_idle.mtn",
+                "01_happy.mtn",
+                "02_angry.mtn",
+                "03_fear.mtn",
+                "04_surprise.mtn",
+                "05_fun.mtn",
+                "06_love.mtn",
+                "07_bye.mtn",
+                "08_sad.mtn",
+                "09_yawn.mtn",
+                "10_yeah.mtn",
+                "11_muscle.mtn",
+                "12_stagger.mtn",
+                "13_cry.mtn",
+                "14_ sigh.mtn",
+                "15_joy.mtn",
+                "16_menace.mtn",
+                "17_yes.mtn",
+                "18_no.mtn",
+                "19_walk.mtn",
+                "20_sleep.mtn"
+              ]
+            }
+          ],
+          "files": [
+            "nietzsche.model.json",
+            "nietzsche.physics.json",
+            "nietzsche.pose.json"
+          ]
+        },
+        {
+          "name": "nipsilon",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "nipsilon.2048",
+                  "children": [],
+                  "files": [
+                    "texture_00.png",
+                    "texture_01.png",
+                    "texture_02.png"
+                  ]
+                }
+              ],
+              "files": ["nipsilon.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "00_idle.mtn",
+                "01_happy.mtn",
+                "02_angry.mtn",
+                "03_fear.mtn",
+                "04_surprise.mtn",
+                "05_fun.mtn",
+                "06_love.mtn",
+                "07_bye.mtn",
+                "08_sad.mtn",
+                "09_yawn.mtn",
+                "10_yeah.mtn",
+                "11_muscle.mtn",
+                "12_stagger.mtn",
+                "13_cry.mtn",
+                "14_ sigh.mtn",
+                "15_joy.mtn",
+                "16_menace.mtn",
+                "17_yes.mtn",
+                "18_no.mtn",
+                "19_walk.mtn",
+                "20_sleep.mtn"
+              ]
+            }
+          ],
+          "files": [
+            "nipsilon.model.json",
+            "nipsilon.physics.json",
+            "nipsilon.pose.json"
+          ]
+        },
+        {
+          "name": "nito",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "nito.2048",
+                  "children": [],
+                  "files": ["texture_00.png", "texture_01.png"]
+                }
+              ],
+              "files": ["nito.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "00_idle.mtn",
+                "01_happy.mtn",
+                "02_angry.mtn",
+                "03_fear.mtn",
+                "04_surprise.mtn",
+                "05_fun.mtn",
+                "06_love.mtn",
+                "07_bye.mtn",
+                "08_sad.mtn",
+                "09_yawn.mtn",
+                "10_yeah.mtn",
+                "11_muscle.mtn",
+                "12_stagger.mtn",
+                "13_cry.mtn",
+                "14_ sigh.mtn",
+                "15_joy.mtn",
+                "16_menace.mtn",
+                "17_yes.mtn",
+                "18_no.mtn",
+                "19_walk.mtn",
+                "20_sleep.mtn"
+              ]
+            }
+          ],
+          "files": ["nito.model.json", "nito.physics.json", "nito.pose.json"]
+        },
+        {
+          "name": "potion-Maker-Pio",
+          "children": [
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "Breath Dere1.mtn",
+                "Breath Dere2.mtn",
+                "Breath Dere3.mtn",
+                "Breath1.mtn",
+                "Breath2.mtn",
+                "Breath3.mtn",
+                "Breath4.mtn",
+                "Breath5.mtn",
+                "Breath6.mtn",
+                "Breath7.mtn",
+                "Breath8.mtn",
+                "Fail.mtn",
+                "Sleeping.mtn",
+                "Success.mtn",
+                "Sukebei1.mtn",
+                "Sukebei2.mtn",
+                "Sukebei3.mtn",
+                "Touch Dere1.mtn",
+                "Touch Dere2.mtn",
+                "Touch Dere3.mtn",
+                "Touch Dere4.mtn",
+                "Touch Dere5.mtn",
+                "Touch Dere6.mtn",
+                "Touch1.mtn",
+                "Touch2.mtn",
+                "Touch3.mtn",
+                "Touch4.mtn",
+                "Touch5.mtn",
+                "Touch6.mtn",
+                "WakeUp.mtn"
+              ]
+            },
+            {
+              "name": "textures",
+              "children": [],
+              "files": [
+                "animal-costume-racoon.png",
+                "animal-costume.png",
+                "bunny-girl-costume-red.png",
+                "bunny-girl-costume.png",
+                "cake-costume-choco.png",
+                "cake-costume-cream.png",
+                "default-costume.png",
+                "dress-costume-brown.png",
+                "dress-costume.png",
+                "elementary-school-costume-navy.png",
+                "elementary-school-costume.png",
+                "fall-dress-costume-beige.png",
+                "fall-dress-costume-brown.png",
+                "frill-bikini-costume-green.png",
+                "frill-bikini-costume-purple.png",
+                "frill-blouse-costume-green.png",
+                "frill-blouse-costume-red.png",
+                "furisode-costume.png",
+                "halloween-costume.png",
+                "hanbok-costume-pink.png",
+                "hanbok-costume-red.png",
+                "hanbok-costume-skyblue.png",
+                "hanbok-costume-yellow.png",
+                "hanbok-costume.png",
+                "healer-costume.png",
+                "kids-costume-navy.png",
+                "kids-costume.png",
+                "maid-costume-red.png",
+                "maid-costume.png",
+                "new2015-costume-pajamas.png",
+                "new2015-costume.png",
+                "night-witch-costume-black.png",
+                "night-witch-costume-gray.png",
+                "nightsky-costume.png",
+                "overalls-costume-white.png",
+                "overalls-costume.png",
+                "pajamas-costume-pink.png",
+                "pajamas-costume.png",
+                "party-dress-costume-brown.png",
+                "party-dress-costume-purple.png",
+                "qipao-costume-pink.png",
+                "qipao-costume-red.png",
+                "ribbon-dress-costume-red.png",
+                "ribbon-dress-costume-yellow.png",
+                "sailor-costume-black.png",
+                "sailor-costume.png",
+                "sakura-costume-navy.png",
+                "sakura-costume.png",
+                "santa-costume-green.png",
+                "santa-costume.png",
+                "sarori-costume.png",
+                "school-2017-costume-gray.png",
+                "school-2017-costume-yellow.png",
+                "school-costume-red.png",
+                "school-costume.png",
+                "sfc-uniform-costume-red.png",
+                "sfc-uniform-costume-yellow.png",
+                "shaman-costume-black.png",
+                "shaman-costume-blue.png",
+                "sinsiroad-shop-costume-junior.png",
+                "sinsiroad-shop-costume-senior.png",
+                "sorceress-costume.png",
+                "sporty-hood-costume-black.png",
+                "sporty-hood-costume-blue.png",
+                "star-witch-costume-brown.png",
+                "star-witch-costume.png",
+                "succubus-costume-black.png",
+                "succubus-costume-red.png",
+                "sukumizu-costume-white.png",
+                "sukumizu-costume.png",
+                "summer-dress-costume-blue.png",
+                "summer-dress-costume-white.png",
+                "swimsuit-2017-costume-navy.png",
+                "swimsuit-2017-costume-red.png",
+                "tirami1-costume.png",
+                "turtleneck-costume-red.png",
+                "turtleneck-costume.png",
+                "valentine-costume-brown.png",
+                "valentine-costume-pink.png",
+                "winter-coat-2017-costume-brown.png",
+                "winter-coat-2017-costume-white.png",
+                "winter-coat-costume-pink.png",
+                "winter-coat-costume-white.png",
+                "winter-costume-white.png",
+                "winter-costume.png",
+                "witch-costume-white.png",
+                "witch-costume.png"
+              ]
+            }
+          ],
+          "files": ["index.json", "model.moc", "textures.cache"]
+        },
+        {
+          "name": "potion-Maker-Tia",
+          "children": [
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "Breath Dere1.mtn",
+                "Breath Dere2.mtn",
+                "Breath Dere3.mtn",
+                "Breath1.mtn",
+                "Breath2.mtn",
+                "Breath3.mtn",
+                "Breath4.mtn",
+                "Breath5.mtn",
+                "Breath6.mtn",
+                "Breath7.mtn",
+                "Breath8.mtn",
+                "Breath9.mtn",
+                "Fail.mtn",
+                "Sleeping.mtn",
+                "Success.mtn",
+                "Sukebei1.mtn",
+                "Sukebei2.mtn",
+                "Sukebei3.mtn",
+                "Touch Dere1.mtn",
+                "Touch Dere2.mtn",
+                "Touch Dere3.mtn",
+                "Touch Dere4.mtn",
+                "Touch Dere5.mtn",
+                "Touch Dere6.mtn",
+                "Touch1.mtn",
+                "Touch2.mtn",
+                "Touch3.mtn",
+                "Touch4.mtn",
+                "Touch5.mtn",
+                "Touch6.mtn",
+                "WakeUp.mtn"
+              ]
+            },
+            {
+              "name": "textures",
+              "children": [],
+              "files": [
+                "bikini-costume-blue.png",
+                "bikini-costume-pink.png",
+                "blackcat-costume.png",
+                "blazer-costume-black.png",
+                "blazer-costume-brown.png",
+                "blueround-costume.png",
+                "bunny-girl-costume-red.png",
+                "bunny-girl-costume.png",
+                "cami-dress-costume-pink.png",
+                "cute-pajamas-costume-purple.png",
+                "cute-pajamas-costume-skyblue.png",
+                "default-costume.png",
+                "frill-blouse-costume-green.png",
+                "frill-blouse-costume-red.png",
+                "halloween-costume.png",
+                "hanbok-costume-gorgeous.png",
+                "hanbok-costume.png",
+                "hood-costume-gray.png",
+                "hood-costume-red.png",
+                "jersey-costume-blue.png",
+                "jersey-costume-red.png",
+                "knight-costume.png",
+                "macaron-dress-costume-green.png",
+                "macaron-dress-costume-pink.png",
+                "magical-girl-costume.png",
+                "maid-costume-black.png",
+                "maid-costume-blue.png",
+                "marine-costume-navy.png",
+                "marine-costume.png",
+                "nordic-costume-beige.png",
+                "nordic-costume-navy.png",
+                "nurse-costume-red.png",
+                "nurse-costume.png",
+                "pajamas-costume-blue.png",
+                "pajamas-costume-green.png",
+                "pushcat-costume.png",
+                "sabori-costume.png",
+                "sailor-bikini-costume-black.png",
+                "sailor-bikini-costume-white.png",
+                "sailor-costume-black.png",
+                "sailor-costume.png",
+                "sakura-costume-navy.png",
+                "sakura-costume.png",
+                "santa-costume.png",
+                "santa2016-costume.png",
+                "sports-bikini-costume-green.png",
+                "sports-bikini-costume-navy.png",
+                "spring-dress-costume-brown.png",
+                "spring-dress-costume-navy.png",
+                "sukumizu-costume-white.png",
+                "sukumizu-costume.png",
+                "sulbim-costume-rainbow.png",
+                "sulbim-costume-snowflake.png",
+                "summer-uniform-costume-blue.png",
+                "summer-uniform-costume-green.png",
+                "thief-costume.png",
+                "traveler-costume-brown.png",
+                "traveler-costume-white.png",
+                "vampire-costume-real.png",
+                "vampire-costume.png",
+                "warrior-costume.png",
+                "whiteday-costume-purple.png",
+                "whiteday-costume-red.png"
+              ]
+            }
+          ],
+          "files": ["index.json", "model.moc", "textures.cache"]
+        },
+        {
+          "name": "ryoufuku",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "ryoufuku.1024",
+              "children": [],
+              "files": ["L2DOTH_R_00.png", "L2DOTH_R_01.png", "L2DOTH_R_02.png"]
+            },
+            {
+              "name": "ryoufuku.motions",
+              "children": [],
+              "files": [
+                "motion1.mtn",
+                "motion10.mtn",
+                "motion11.mtn",
+                "motion12.mtn",
+                "motion13.mtn",
+                "motion14.mtn",
+                "motion15.mtn",
+                "motion2.mtn",
+                "motion3.mtn",
+                "motion4.mtn",
+                "motion5.mtn",
+                "motion6.mtn",
+                "motion7.mtn",
+                "motion8.mtn",
+                "motion9.mtn"
+              ]
+            }
+          ],
+          "files": [
+            "physics.json",
+            "ryoufuku.moc",
+            "ryoufuku.model.json",
+            "ryoufuku.pose.json"
+          ]
+        },
+        {
+          "name": "saten",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn",
+                    "motion7.mtn",
+                    "motion8.mtn",
+                    "motion9.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "saten.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            }
+          ],
+          "files": ["physics.json", "saten.moc", "saten.model.json"]
+        },
+        {
+          "name": "seifuku",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "seifuku.1024",
+              "children": [],
+              "files": ["L2DOTH_U_00.png", "L2DOTH_U_01.png", "L2DOTH_U_02.png"]
+            },
+            {
+              "name": "seifuku.motions",
+              "children": [],
+              "files": [
+                "motion1.mtn",
+                "motion10.mtn",
+                "motion11.mtn",
+                "motion12.mtn",
+                "motion13.mtn",
+                "motion14.mtn",
+                "motion15.mtn",
+                "motion2.mtn",
+                "motion3.mtn",
+                "motion4.mtn",
+                "motion5.mtn",
+                "motion6.mtn",
+                "motion7.mtn",
+                "motion8.mtn",
+                "motion9.mtn"
+              ]
+            }
+          ],
+          "files": [
+            "physics.json",
+            "seifuku.moc",
+            "seifuku.model.json",
+            "seifuku.pose.json"
+          ]
+        },
+        {
+          "name": "shifuku",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "motion01.mtn",
+                "motion02.mtn",
+                "motion03.mtn",
+                "motion04.mtn",
+                "motion05.mtn",
+                "motion06.mtn",
+                "motion07.mtn",
+                "motion08.mtn",
+                "motion09.mtn",
+                "motion10.mtn",
+                "motion11.mtn",
+                "motion12.mtn"
+              ]
+            },
+            {
+              "name": "shifuku.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png", "texture_02.png"]
+            }
+          ],
+          "files": [
+            "physics.json",
+            "pose.json",
+            "shifuku.moc",
+            "shifuku.model.json"
+          ]
+        },
+        {
+          "name": "shifuku2",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "shifuku.1024",
+              "children": [],
+              "files": ["L2DOTH_S_00.png", "L2DOTH_S_01.png", "L2DOTH_S_02.png"]
+            },
+            {
+              "name": "shifuku.motions",
+              "children": [],
+              "files": [
+                "motion1.mtn",
+                "motion10.mtn",
+                "motion11.mtn",
+                "motion12.mtn",
+                "motion13.mtn",
+                "motion14.mtn",
+                "motion15.mtn",
+                "motion2.mtn",
+                "motion3.mtn",
+                "motion4.mtn",
+                "motion5.mtn",
+                "motion6.mtn",
+                "motion7.mtn",
+                "motion8.mtn",
+                "motion9.mtn"
+              ]
+            }
+          ],
+          "files": [
+            "physics.json",
+            "shifuku.moc",
+            "shifuku.pose.json",
+            "shifuku2.model.json"
+          ]
+        },
+        {
+          "name": "shizuku-48",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "double_tap1.mtn",
+                "double_tap2.mtn",
+                "double_tap3.mtn",
+                "double_tap4.mtn",
+                "idl_00.mtn",
+                "idl_01.mtn",
+                "idl_02.mtn",
+                "idl_03.mtn",
+                "idl_04.mtn",
+                "idl_05.mtn",
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "idle_03.mtn",
+                "idle_04.mtn",
+                "idle_05.mtn",
+                "idle_06.mtn",
+                "idle_07.mtn",
+                "idle_08.mtn",
+                "idle_09.mtn",
+                "idle_A.mtn",
+                "idle_A2.mtn",
+                "idle_B.mtn",
+                "idle_B2.mtn",
+                "idle_C.mtn",
+                "idle_C2.mtn",
+                "idle_C2_copy.mtn",
+                "kurakura1.mtn",
+                "kurakura2.mtn",
+                "kurakura3.mtn",
+                "touch1.mtn",
+                "touch2.mtn",
+                "touch3.mtn",
+                "touch4.mtn",
+                "wait_01.mtn",
+                "wait_02.mtn",
+                "wait_03.mtn",
+                "wait_04.mtn",
+                "wait_05.mtn"
+              ]
+            },
+            {
+              "name": "textures.512",
+              "children": [],
+              "files": [
+                "00.png",
+                "01.png",
+                "02.png",
+                "03.png",
+                "04.png",
+                "05.png",
+                "06.png",
+                "07.png"
+              ]
+            }
+          ],
+          "files": [
+            "index.json",
+            "model.moc",
+            "physics.json",
+            "pose.json",
+            "textures.cache"
+          ]
+        },
+        {
+          "name": "shizuku-pajama",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [],
+              "files": [
+                "double_tap1.mtn",
+                "double_tap2.mtn",
+                "double_tap3.mtn",
+                "double_tap4.mtn",
+                "idl_00.mtn",
+                "idl_01.mtn",
+                "idl_02.mtn",
+                "idl_03.mtn",
+                "idl_04.mtn",
+                "idl_05.mtn",
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "idle_03.mtn",
+                "idle_04.mtn",
+                "idle_05.mtn",
+                "idle_06.mtn",
+                "idle_07.mtn",
+                "idle_08.mtn",
+                "idle_09.mtn",
+                "idle_A.mtn",
+                "idle_A2.mtn",
+                "idle_B.mtn",
+                "idle_B2.mtn",
+                "idle_C.mtn",
+                "idle_C2.mtn",
+                "idle_C2_copy.mtn",
+                "kurakura1.mtn",
+                "kurakura2.mtn",
+                "kurakura3.mtn",
+                "touch1.mtn",
+                "touch2.mtn",
+                "touch3.mtn",
+                "touch4.mtn",
+                "wait_01.mtn",
+                "wait_02.mtn",
+                "wait_03.mtn",
+                "wait_04.mtn",
+                "wait_05.mtn"
+              ]
+            },
+            {
+              "name": "textures.512",
+              "children": [],
+              "files": [
+                "00.png",
+                "01.png",
+                "02.png",
+                "03.png",
+                "04.png",
+                "05.png",
+                "06.png",
+                "07.png",
+                "08.png"
+              ]
+            }
+          ],
+          "files": [
+            "index.json",
+            "model.moc",
+            "physics.json",
+            "pose.json",
+            "textures.cache"
+          ]
+        },
+        {
+          "name": "stl",
+          "children": [
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "stl.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            }
+          ],
+          "files": ["stl.moc", "stl.model.json"]
+        },
+        {
+          "name": "tororo",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "tororo.2048",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["tororo.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "00_idle.mtn",
+                "01.mtn",
+                "02.mtn",
+                "03.mtn",
+                "04.mtn",
+                "05.mtn",
+                "06.mtn",
+                "07.mtn",
+                "08.mtn"
+              ]
+            }
+          ],
+          "files": ["tororo.model.json", "tororo.pose.json"]
+        },
+        {
+          "name": "touma",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion10.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn",
+                    "motion7.mtn",
+                    "motion8.mtn",
+                    "motion9.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "touma.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            }
+          ],
+          "files": ["physics.json", "touma.moc", "touma.model.json"]
+        },
+        {
+          "name": "tsumiki",
+          "children": [
+            {
+              "name": "exp",
+              "children": [],
+              "files": [
+                "F01.exp.json",
+                "F02.exp.json",
+                "F03.exp.json",
+                "F04.exp.json",
+                "F05.exp.json",
+                "F06.exp.json",
+                "F07.exp.json",
+                "F08.exp.json",
+                "F09.exp.json",
+                "F10.exp.json"
+              ]
+            },
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "tsumiki.2048",
+                  "children": [],
+                  "files": ["texture_00.png", "texture_01.png"]
+                }
+              ],
+              "files": ["tsumiki.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "P01.mtn",
+                "tsumiki_idle_01.mtn",
+                "tsumiki_m_01.mtn",
+                "tsumiki_m_01_df.mtn",
+                "tsumiki_m_02.mtn",
+                "tsumiki_m_03.mtn",
+                "tsumiki_m_04.mtn",
+                "tsumiki_m_05.mtn",
+                "tsumiki_m_06.mtn",
+                "tsumiki_m_07.mtn",
+                "tsumiki_m_08.mtn",
+                "tsumiki_m_09.mtn",
+                "tsumiki_m_10.mtn",
+                "tsumiki_m_11.mtn",
+                "tsumiki_m_12.mtn",
+                "tsumiki_m_13.mtn",
+                "tsumiki_m_14.mtn",
+                "tsumiki_m_15.mtn",
+                "tsumiki_m_16.mtn",
+                "tsumiki_m_17.mtn",
+                "tsumiki_m_18.mtn",
+                "tsumiki_m_19.mtn",
+                "tsumiki_m_20.mtn",
+                "tsumiki_m_21.mtn",
+                "tsumiki_m_22.mtn",
+                "tsumiki_m_23.mtn",
+                "tsumiki_m_24.mtn"
+              ]
+            }
+          ],
+          "files": ["tsumiki.model.json", "tsumiki.physics.json"]
+        },
+        {
+          "name": "uiharu",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "f01.exp.json",
+                "f02.exp.json",
+                "f03.exp.json",
+                "f04.exp.json",
+                "f05.exp.json",
+                "f06.exp.json",
+                "f07.exp.json",
+                "f08.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "motion1.mtn",
+                    "motion2.mtn",
+                    "motion3.mtn",
+                    "motion4.mtn",
+                    "motion5.mtn",
+                    "motion6.mtn",
+                    "motion7.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "uiharu.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            }
+          ],
+          "files": ["physics.json", "uiharu.moc", "uiharu.model.json"]
+        },
+        {
+          "name": "unitychan",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "unitychan.2048",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["unitychan.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "m_01.mtn",
+                "m_02.mtn",
+                "m_03.mtn",
+                "m_04.mtn",
+                "m_05.mtn",
+                "m_06.mtn",
+                "m_07.mtn",
+                "m_08.mtn",
+                "m_09.mtn",
+                "m_10.mtn",
+                "m_11.mtn",
+                "m_12.mtn",
+                "m_13.mtn",
+                "m_14.mtn"
+              ]
+            }
+          ],
+          "files": ["unitychan.model.json", "unitychan.physics.json"]
+        },
+        {
+          "name": "wanko",
+          "children": [
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "wanko.1024",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["wanko.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": [
+                "idle_01.mtn",
+                "idle_02.mtn",
+                "idle_03.mtn",
+                "idle_04.mtn",
+                "shake_01.mtn",
+                "shake_02.mtn",
+                "touch_01.mtn",
+                "touch_02.mtn",
+                "touch_03.mtn",
+                "touch_04.mtn",
+                "touch_05.mtn",
+                "touch_06.mtn"
+              ]
+            }
+          ],
+          "files": ["wanko.model.json"]
+        },
+        {
+          "name": "wed_16",
+          "children": [
+            {
+              "name": "expressions",
+              "children": [],
+              "files": [
+                "F00.exp.json",
+                "F01.exp.json",
+                "F02.exp.json",
+                "F03.exp.json",
+                "F04.exp.json",
+                "F05.exp.json",
+                "F06.exp.json",
+                "F07.exp.json",
+                "F08.exp.json",
+                "F09.exp.json",
+                "F10.exp.json"
+              ]
+            },
+            {
+              "name": "motions",
+              "children": [
+                {
+                  "name": "tap",
+                  "children": [],
+                  "files": [
+                    "voice_3368.mp3",
+                    "voice_3368.mtn",
+                    "voice_3369.mp3",
+                    "voice_3369.mtn",
+                    "voice_3370.mp3",
+                    "voice_3370.mtn",
+                    "voice_3371.mp3",
+                    "voice_3371.mtn",
+                    "voice_3372.mp3",
+                    "voice_3372.mtn",
+                    "voice_3373.mp3",
+                    "voice_3373.mtn"
+                  ]
+                },
+                {
+                  "name": "tap_body",
+                  "children": [],
+                  "files": [
+                    "m01.mtn",
+                    "m02.mtn",
+                    "m03.mtn",
+                    "m04.mtn",
+                    "m05.mtn"
+                  ]
+                }
+              ],
+              "files": []
+            },
+            {
+              "name": "wed_16.1024",
+              "children": [],
+              "files": ["texture_00.png", "texture_01.png"]
+            }
+          ],
+          "files": ["physics_wed.json", "wed_16.moc", "wed_16.model.json"]
+        },
+        {
+          "name": "z16",
+          "children": [
+            {
+              "name": "exp",
+              "children": [],
+              "files": ["f00.exp.json"]
+            },
+            {
+              "name": "moc",
+              "children": [
+                {
+                  "name": "z16.1024",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                },
+                {
+                  "name": "z16.256",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                },
+                {
+                  "name": "z16.512",
+                  "children": [],
+                  "files": ["texture_00.png"]
+                }
+              ],
+              "files": ["z16.moc"]
+            },
+            {
+              "name": "mtn",
+              "children": [],
+              "files": ["idle.mtn"]
+            }
+          ],
+          "files": ["z16.model.json", "z16.physics.json"]
+        }
+      ],
+      "files": []
+    }
+  ],
+  "files": [".gitattributes", ".gitignore", "README.md"]
+}
