@@ -9,6 +9,10 @@ contextBridge.exposeInMainWorld("overlayAPI", {
   openDevTools: () => ipcRenderer.send("overlay-open-devtools"),
   enterFullscreen: () => ipcRenderer.send("overlay-enter-fullscreen"),
   exitFullscreen: () => ipcRenderer.send("overlay-exit-fullscreen"),
+  saveLastModel: (url: string) =>
+    ipcRenderer.send("overlay-save-last-model", url),
+  getLastModel: (): Promise<string | null> =>
+    ipcRenderer.invoke("overlay-get-last-model"),
   onEvent: (cb: (data: any) => void) => {
     ipcRenderer.on("overlay-event", (_ev, data) => {
       try {
@@ -29,6 +33,8 @@ declare global {
       openDevTools: () => void;
       enterFullscreen: () => void;
       exitFullscreen: () => void;
+      saveLastModel: (url: string) => void;
+      getLastModel: () => Promise<string | null>;
       onEvent: (cb: (data: any) => void) => void;
     };
   }

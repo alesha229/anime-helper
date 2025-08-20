@@ -5,6 +5,9 @@ import * as os from "os";
 
 let mainWindow: BrowserWindow | null = null;
 let initialBounds: Electron.Rectangle | null = null;
+// Persist last model path in userData to survive abrupt exits
+const lastModelFile = () =>
+  path.join(app.getPath("userData"), "last_model.json");
 
 function createWindow() {
   const primary = screen.getPrimaryDisplay();
@@ -107,6 +110,27 @@ function createWindow() {
   ipcMain.on("overlay-exit-fullscreen", () => {
     if (!mainWindow) return;
     if (initialBounds) mainWindow.setBounds(initialBounds, false);
+  });
+
+  // Persist last model via filesystem (sync writes are fine for small JSON)
+  ipcMain.on("overlay-save-last-model", (_ev, url: string) => {
+    try {
+      const file = lastModelFile();
+      const dir = path.dirname(file);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(file, JSON.stringify({ url }), { encoding: "utf8" });
+    } catch {}
+  });
+  ipcMain.handle("overlay-get-last-model", () => {
+    try {
+      const file = lastModelFile();
+      if (!fs.existsSync(file)) return null;
+      const t = fs.readFileSync(file, "utf8");
+      const j = JSON.parse(t);
+      return (j && j.url) || null;
+    } catch {
+      return null;
+    }
   });
 }
 

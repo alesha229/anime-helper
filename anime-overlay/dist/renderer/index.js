@@ -1,7 +1,33 @@
 "use strict";
 (() => {
+  // src/config.ts
+  var config = {
+    MODELS: [
+      "./models/adaerbote_2/adaerbote_2.model3.json",
+      "./models/dafeng_6/dafeng_6.model3.json",
+      "https://raw.githubusercontent.com/Eikanya/Live2d-model/master/%E7%A2%A7%E8%93%9D%E8%88%AA%E7%BA%BF%20Azue%20Lane/Azue%20Lane(JP)/abeikelongbi_3/abeikelongbi_3.model3.json",
+      "https://cdn.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/haru/haru_greeter_t03.model3.json"
+    ],
+    LAST_MODEL_KEY: "anime_overlay_last_model_url",
+    GITHUBRAW: "https://raw.githubusercontent.com"
+  };
+
   // src/renderer/index.ts
   (async function() {
+    const MODELS = config.MODELS;
+    const LAST_MODEL_KEY = config.LAST_MODEL_KEY;
+    const ping = async (url) => {
+      try {
+        const r = await fetch(url, { method: "HEAD" });
+        return r.ok;
+      } catch {
+        return false;
+      }
+    };
+    let ghAvalible = false;
+    await ping("https://raw.githubusercontent.com").then((e) => {
+      ghAvalible = e;
+    });
     function loadScript(src) {
       return new Promise((res, rej) => {
         const s = document.createElement("script");
@@ -513,46 +539,31 @@
         }
       }, speakCategory2 = function(cat) {
         if (!voiceEnabled || !cat) return;
-        if (voiceMode === "audio") {
-          playAudioCategory2(cat).then((ok) => {
-            if (ok && currentAudio) {
-              if (lipSyncEnabled) startLipSyncForAudio2(currentAudio);
-              interruptAndPlayRandomNonIdle2();
-              try {
-                currentAudio.addEventListener(
-                  "play",
-                  () => interruptAndPlayRandomNonIdle2(),
-                  { once: true }
-                );
-                currentAudio.addEventListener(
-                  "playing",
-                  () => interruptAndPlayRandomNonIdle2(),
-                  { once: true }
-                );
-              } catch (e) {
-              }
-              if (!currentAudio.paused) {
-                setTimeout(() => interruptAndPlayRandomNonIdle2(), 0);
-              }
-            } else if (!ok) {
-              interruptAndPlayRandomNonIdle2();
-            }
-          });
-          return;
-        }
-        if (voiceMode === "tts") {
-          const text = sayRandom2(TTS_PHRASES[cat] || []);
-          if (text) {
-            const u = tts.say(text);
+        playAudioCategory2(cat).then((ok) => {
+          if (ok && currentAudio) {
+            if (lipSyncEnabled) startLipSyncForAudio2(currentAudio);
+            interruptAndPlayRandomNonIdle2();
             try {
-              if (u) u.onstart = () => interruptAndPlayRandomNonIdle2();
+              currentAudio.addEventListener(
+                "play",
+                () => interruptAndPlayRandomNonIdle2(),
+                { once: true }
+              );
+              currentAudio.addEventListener(
+                "playing",
+                () => interruptAndPlayRandomNonIdle2(),
+                { once: true }
+              );
             } catch (e) {
             }
+            if (!currentAudio.paused) {
+              setTimeout(() => interruptAndPlayRandomNonIdle2(), 0);
+            }
+          } else if (!ok) {
             interruptAndPlayRandomNonIdle2();
-            if (lipSyncEnabled) startLipSyncForSpeech2(u);
           }
-          return;
-        }
+        });
+        return;
       }, stopLipSync2 = function() {
         try {
           if (lipSyncState && lipSyncState.raf != null) {
@@ -980,14 +991,6 @@
           }
           return url;
         };
-        const ping = async (url) => {
-          try {
-            const r = await fetch(url, { method: "HEAD" });
-            return r.ok;
-          } catch {
-            return false;
-          }
-        };
         const snakeCaseUpper = (s) => {
           if (!s) return s;
           return String(s).replace(/([a-z0-9])([A-Z])/g, "$1_$2").replace(/[-\s]+/g, "_").toUpperCase();
@@ -1389,13 +1392,6 @@
       } catch {
       }
       resizeStageToContainer2();
-      const MODELS = [
-        // По умолчанию загружаем Cubism2 (.model.json), чтобы не инициализировать Cubism4 на старте
-        "https://raw.githubusercontent.com/Eikanya/Live2d-model/master/%E5%B4%A9%E5%9D%8F%E5%AD%A6%E5%9B%AD2/houraiji/model.json",
-        "https://raw.githubusercontent.com/Eikanya/Live2d-model/master/%E7%A2%A7%E8%93%9D%E8%88%AA%E7%BA%BF%20Azue%20Lane/Azue%20Lane(JP)/abeikelongbi_3/abeikelongbi_3.model3.json",
-        "https://cdn.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/haru/haru_greeter_t03.model3.json"
-      ];
-      const LAST_MODEL_KEY = "anime_overlay_last_model_url";
       async function preloadMotionsFromModelJson(modelJsonUrl) {
         try {
           const resp = await fetch(modelJsonUrl);
@@ -1508,7 +1504,7 @@
         try {
           const desired = useV4 === true ? "c4" : useV4 === false ? "c2" : null;
           if (desired && window.__loadedRuntime && window.__loadedRuntime !== desired) {
-            window.location.href = `index.html?model=${encodeURIComponent(originalUrl)}`;
+            window.location.href = `index.html`;
             throw new Error("Switching runtime requires reload");
           }
         } catch {
@@ -1619,9 +1615,21 @@
       openInspectorBtn.style.webkitAppRegion = "no-drag";
       openInspectorBtn.className = "btn";
       openInspectorBtn.addEventListener("click", () => {
-        const current = select.value || "";
-        const qp = current ? `?model=${encodeURIComponent(current)}` : "";
-        window.location.href = `viewer.html${qp}`;
+        let current = "";
+        try {
+          current = localStorage.getItem(LAST_MODEL_KEY) || "";
+        } catch {
+        }
+        if (!current) current = select.value || "";
+        try {
+          localStorage.setItem(LAST_MODEL_KEY, current);
+        } catch {
+        }
+        try {
+          window.overlayAPI?.saveLastModel?.(current);
+        } catch {
+        }
+        window.location.href = `viewer.html`;
       });
       controls.insertBefore(openInspectorBtn, select);
       const animSelect = document.createElement("select");
@@ -1823,14 +1831,11 @@
       async function ensureCubism4() {
         if (currentRuntime === "c4" && PIXI.live2d) return;
         if (!window.Live2DCubismCore) {
-          await loadScript(
-            "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
-          );
+          await loadScript("./vendor/live2dcubismcore.min.js");
         }
         if (!PIXI.live2d || !PIXI.live2d.Live2DModel) {
-          await loadScript(
-            "https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"
-          );
+          await loadScript("./vendor/live2d.min.js");
+          await loadScript("./vendor/pixi-live2d-display.min.js");
         }
         cubism4Ready = true;
         currentRuntime = "c4";
@@ -1845,14 +1850,10 @@
       async function ensureCubism2() {
         if (currentRuntime === "c2" && PIXI.live2d) return;
         if (!window.Live2D) {
-          await loadScript(
-            "https://cdn.jsdelivr.net/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js"
-          );
+          await loadScript("./vendor/live2d.min.js");
         }
         if (!PIXI.live2d || !PIXI.live2d.Live2DModel) {
-          await loadScript(
-            "https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism2.min.js"
-          );
+          await loadScript("./vendor/pixi-live2d-display.min.js");
         }
         cubism2Ready = true;
         currentRuntime = "c2";
@@ -1878,6 +1879,10 @@
         const byExt = detectRuntimeByUrl2(url);
         const res = await loadModel(app, url, byExt);
         model = res && res.model ? res.model : null;
+        try {
+          window.__current_model_url = String(url);
+        } catch {
+        }
         availableGroups = Array.isArray(res?.groups) ? res.groups : [];
         scheduleGroupRefresh2();
         await new Promise(
@@ -1907,48 +1912,26 @@
         } catch {
         }
       }
-      const urlParams = new URLSearchParams(window.location.search);
-      const qpModel = urlParams.get("model");
-      if (qpModel) {
-        await loadSelectedModel(qpModel);
-        if (!Array.from(select.options).some((o) => o.value === qpModel)) {
-          const opt = document.createElement("option");
-          opt.style.display = "none";
-          opt.value = qpModel;
-          opt.textContent = "Selected";
-          select.appendChild(opt);
+      let saved = null;
+      try {
+        if (window.overlayAPI && typeof window.overlayAPI.getLastModel === "function") {
+          try {
+            saved = await window.overlayAPI.getLastModel();
+          } catch {
+          }
         }
-        select.value = qpModel;
-        try {
-          localStorage.setItem(LAST_MODEL_KEY, qpModel);
-        } catch (e) {
-        }
-      } else {
-        let saved = null;
-        try {
+        if (!saved) {
           saved = localStorage.getItem(LAST_MODEL_KEY) || null;
-        } catch (e) {
-          saved = null;
         }
-        const initial = saved && /\.json($|\?)/i.test(saved) ? saved : MODELS[0];
-        await loadSelectedModel(initial);
-        if (saved && !Array.from(select.options).some((o) => o.value === saved)) {
-          const opt = document.createElement("option");
-          opt.value = saved;
-          opt.textContent = "Saved";
-          select.appendChild(opt);
-        }
-        select.value = initial;
-        select.style.display = "none";
+      } catch (e) {
+        saved = null;
       }
-      select.addEventListener("change", () => {
-        const url = select.value;
-        try {
-          localStorage.setItem(LAST_MODEL_KEY, url);
-        } catch (e) {
-        }
-        loadSelectedModel(url);
-      });
+      const initial = saved && (/\.json($|\?)/i.test(saved) || /\.moc3($|\?)/i.test(saved) || /\.moc($|\?)/i.test(saved)) ? saved : MODELS[0];
+      if (ghAvalible != false) {
+        await loadSelectedModel(initial);
+      } else {
+        await loadSelectedModel(MODELS[1]);
+      }
       const modal = document.getElementById("modelInspector");
       const listEl = document.getElementById("inspectorList");
       const breadcrumbEl = document.getElementById("inspectorBreadcrumb");
@@ -2033,8 +2016,8 @@
         const stateKey = "anime_overlay_rpg_v1";
         let state = { level: 1, xp: 0, tomatoes: 0 };
         try {
-          const saved = localStorage.getItem(stateKey);
-          if (saved) state = JSON.parse(saved);
+          const saved2 = localStorage.getItem(stateKey);
+          if (saved2) state = JSON.parse(saved2);
         } catch (e) {
         }
         const $ = (id) => document.getElementById(id);
@@ -2058,8 +2041,8 @@
           }
         }
         try {
-          const saved = localStorage.getItem(UI_HIDDEN_KEY) || "0";
-          setUIHidden(saved === "1");
+          const saved2 = localStorage.getItem(UI_HIDDEN_KEY) || "0";
+          setUIHidden(saved2 === "1");
         } catch {
         }
         try {
@@ -2445,7 +2428,7 @@
       const img = document.createElement("img");
       img.style.width = "100%";
       img.style.height = "100%";
-      img.src = "../cowsay.gif";
+      img.src = "./img/demo.gif";
       el.appendChild(img);
     }
   })();

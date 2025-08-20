@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+import { config } from "../config";
+
 declare const PIXI: any;
 
 declare global {
@@ -420,14 +422,19 @@ async function loadModel(app: any, url: string, forceV4?: boolean | null) {
     url,
     forceV4
   );
+  // Persist early via both localStorage and main-process file
+  try {
+    localStorage.setItem(config.LAST_MODEL_KEY, originalUrl);
+  } catch {}
+  try {
+    window.overlayAPI?.saveLastModel?.(originalUrl);
+  } catch {}
   // If switching between runtimes within the same page, reload so only the needed runtime is attached
   try {
     const desired: "c2" | "c4" | null =
       useV4 === true ? "c4" : useV4 === false ? "c2" : null;
     if (desired && __loadedRuntime && __loadedRuntime !== desired) {
-      (window.location as any).href = `viewer.html?model=${encodeURIComponent(
-        originalUrl
-      )}`;
+      (window.location as any).href = `viewer.html`;
       throw new Error("Switching runtime requires reload");
     }
   } catch {}
@@ -508,8 +515,9 @@ function initBackButton() {
       window.overlayAPI?.exitFullscreen?.();
     } catch {}
     const currentModel = (stageDiv as any)?.dataset?.modelUrl || "";
-    const qp = currentModel ? `?model=${encodeURIComponent(currentModel)}` : "";
-    (window.location as any).href = `index.html${qp}`;
+    // Save before navigating to avoid losing the write during unload
+    localStorage.setItem(config.LAST_MODEL_KEY, currentModel);
+    (window.location as any).href = `index.html`;
   });
 }
 
@@ -893,6 +901,11 @@ function initBackButton() {
     ];
   }
   async function selectFile(repoPath: string) {
+    // Persist a best-effort URL immediately so abrupt exits (Ctrl+C) keep state
+    try {
+      const fallbackUrl = pathToRaw(repoPath, activeRepo().ref);
+      localStorage.setItem(config.LAST_MODEL_KEY, fallbackUrl);
+    } catch {}
     if (/\.(moc3|moc)$/i.test(repoPath)) {
       const dir = repoPath.replace(/\/?[^/]*$/, "");
       const node = pathMap[dir] || { files: [] };
@@ -924,6 +937,13 @@ function initBackButton() {
 
   async function loadFile(repoPath: string) {
     const initialUrl = await resolveModelUrl(repoPath);
+    // Save immediately after resolving the concrete URL so quick exits keep state
+    try {
+      localStorage.setItem(config.LAST_MODEL_KEY, initialUrl);
+    } catch {}
+    try {
+      window.overlayAPI?.saveLastModel?.(initialUrl);
+    } catch {}
     const extFlag = detectRuntimeByUrl(initialUrl);
     let selectedUrl = initialUrl;
     let isCubism4 = /\.model3\.json($|\?)/i.test(initialUrl);
@@ -1097,12 +1117,26 @@ function initBackButton() {
   await loadRepoRoot();
   openPath("");
 
-  // If ?model= provided, load it directly
+  // Prefer localStorage value, then main-process file, then URL query
   const qp = new URLSearchParams(location.search);
-  const modelParam = qp.get("model");
-  if (modelParam) {
-    const byExt = detectRuntimeByUrl(modelParam);
-    await loadModel(app, modelParam, byExt);
+  let modelUrl: string | null = null;
+  try {
+    modelUrl = localStorage.getItem(config.LAST_MODEL_KEY) || null;
+  } catch {}
+  if (!modelUrl) {
+    try {
+      if (
+        window.overlayAPI &&
+        typeof window.overlayAPI.getLastModel === "function"
+      ) {
+        modelUrl = (await window.overlayAPI.getLastModel()) || null;
+      }
+    } catch {}
+  }
+  if (!modelUrl) modelUrl = qp.get("model");
+  if (modelUrl) {
+    const byExt = detectRuntimeByUrl(modelUrl);
+    await loadModel(app, modelUrl, byExt);
   }
 })();
 

@@ -28,6 +28,7 @@ var path = __toESM(require("path"));
 var fs = __toESM(require("fs"));
 var mainWindow = null;
 var initialBounds = null;
+var lastModelFile = () => path.join(import_electron.app.getPath("userData"), "last_model.json");
 function createWindow() {
   const primary = import_electron.screen.getPrimaryDisplay();
   const area = primary && primary.workArea || primary.bounds || { width: 1920, height: 1080, x: 0, y: 0 };
@@ -119,6 +120,26 @@ function createWindow() {
   import_electron.ipcMain.on("overlay-exit-fullscreen", () => {
     if (!mainWindow) return;
     if (initialBounds) mainWindow.setBounds(initialBounds, false);
+  });
+  import_electron.ipcMain.on("overlay-save-last-model", (_ev, url) => {
+    try {
+      const file = lastModelFile();
+      const dir = path.dirname(file);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(file, JSON.stringify({ url }), { encoding: "utf8" });
+    } catch {
+    }
+  });
+  import_electron.ipcMain.handle("overlay-get-last-model", () => {
+    try {
+      const file = lastModelFile();
+      if (!fs.existsSync(file)) return null;
+      const t = fs.readFileSync(file, "utf8");
+      const j = JSON.parse(t);
+      return j && j.url || null;
+    } catch {
+      return null;
+    }
   });
 }
 import_electron.app.whenReady().then(() => {

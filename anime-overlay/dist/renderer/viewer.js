@@ -1,5 +1,17 @@
 "use strict";
 (() => {
+  // src/config.ts
+  var config = {
+    MODELS: [
+      "./models/adaerbote_2/adaerbote_2.model3.json",
+      "./models/dafeng_6/dafeng_6.model3.json",
+      "https://raw.githubusercontent.com/Eikanya/Live2d-model/master/%E7%A2%A7%E8%93%9D%E8%88%AA%E7%BA%BF%20Azue%20Lane/Azue%20Lane(JP)/abeikelongbi_3/abeikelongbi_3.model3.json",
+      "https://cdn.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/haru/haru_greeter_t03.model3.json"
+    ],
+    LAST_MODEL_KEY: "anime_overlay_last_model_url",
+    GITHUBRAW: "https://raw.githubusercontent.com"
+  };
+
   // src/renderer/viewer.ts
   var __loadedRuntime = null;
   var __live2d_patches_installed = false;
@@ -373,11 +385,17 @@
       forceV4
     );
     try {
+      localStorage.setItem(config.LAST_MODEL_KEY, originalUrl);
+    } catch {
+    }
+    try {
+      window.overlayAPI?.saveLastModel?.(originalUrl);
+    } catch {
+    }
+    try {
       const desired = useV4 === true ? "c4" : useV4 === false ? "c2" : null;
       if (desired && __loadedRuntime && __loadedRuntime !== desired) {
-        window.location.href = `viewer.html?model=${encodeURIComponent(
-          originalUrl
-        )}`;
+        window.location.href = `viewer.html`;
         throw new Error("Switching runtime requires reload");
       }
     } catch {
@@ -457,8 +475,8 @@
       } catch {
       }
       const currentModel = stageDiv?.dataset?.modelUrl || "";
-      const qp = currentModel ? `?model=${encodeURIComponent(currentModel)}` : "";
-      window.location.href = `index.html${qp}`;
+      localStorage.setItem(config.LAST_MODEL_KEY, currentModel);
+      window.location.href = `index.html`;
     });
   }
   (async () => {
@@ -721,7 +739,7 @@
       const key = (pathMap[""]?.name || "Eikanya/Live2d-model") + "/" + repoMocPath;
       const meta = infoMap[key] || {};
       const dir = repoMocPath.replace(/\/?[^/]*$/, "");
-      const modelUrl = await resolveModelUrl(repoMocPath);
+      const modelUrl2 = await resolveModelUrl(repoMocPath);
       let textures = [];
       if (Array.isArray(meta.textures) && meta.textures.length) {
         textures = meta.textures.slice();
@@ -756,7 +774,7 @@
       for (const t of textures)
         absTextures.push(await resolveModelUrl((dir ? dir + "/" : "") + t));
       const absPhysics = physicsRel ? await resolveModelUrl((dir ? dir + "/" : "") + physicsRel) : void 0;
-      const json = { model: modelUrl, textures: absTextures };
+      const json = { model: modelUrl2, textures: absTextures };
       if (absPhysics) json.physics = absPhysics;
       if (Object.keys(motionsObj).length) json.motions = motionsObj;
       return "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
@@ -793,6 +811,11 @@
       ];
     }
     async function selectFile(repoPath) {
+      try {
+        const fallbackUrl = pathToRaw(repoPath, activeRepo().ref);
+        localStorage.setItem(config.LAST_MODEL_KEY, fallbackUrl);
+      } catch {
+      }
       if (/\.(moc3|moc)$/i.test(repoPath)) {
         const dir = repoPath.replace(/\/?[^/]*$/, "");
         const node = pathMap[dir] || { files: [] };
@@ -818,6 +841,14 @@
     }
     async function loadFile(repoPath) {
       const initialUrl = await resolveModelUrl(repoPath);
+      try {
+        localStorage.setItem(config.LAST_MODEL_KEY, initialUrl);
+      } catch {
+      }
+      try {
+        window.overlayAPI?.saveLastModel?.(initialUrl);
+      } catch {
+      }
       const extFlag = detectRuntimeByUrl(initialUrl);
       let selectedUrl = initialUrl;
       let isCubism4 = /\.model3\.json($|\?)/i.test(initialUrl);
@@ -963,10 +994,23 @@
     await loadRepoRoot();
     openPath("");
     const qp = new URLSearchParams(location.search);
-    const modelParam = qp.get("model");
-    if (modelParam) {
-      const byExt = detectRuntimeByUrl(modelParam);
-      await loadModel(app, modelParam, byExt);
+    let modelUrl = null;
+    try {
+      modelUrl = localStorage.getItem(config.LAST_MODEL_KEY) || null;
+    } catch {
+    }
+    if (!modelUrl) {
+      try {
+        if (window.overlayAPI && typeof window.overlayAPI.getLastModel === "function") {
+          modelUrl = await window.overlayAPI.getLastModel() || null;
+        }
+      } catch {
+      }
+    }
+    if (!modelUrl) modelUrl = qp.get("model");
+    if (modelUrl) {
+      const byExt = detectRuntimeByUrl(modelUrl);
+      await loadModel(app, modelUrl, byExt);
     }
   })();
 })();

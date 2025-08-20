@@ -57,12 +57,6 @@ async function buildAll({ watch } = { watch: false }) {
   await copyPublic();
   // Also copy top-level images used by HTML with relative paths
   try {
-    await cp(join(ROOT, "../cowsay.gif"), join(DIST, "cowsay.gif"));
-  } catch {}
-  try {
-    await cp(join(ROOT, "../cowsay-bwd.png"), join(DIST, "cowsay-bwd.png"));
-  } catch {}
-  try {
     await cp(join(ROOT, "../icon.png"), join(DIST, "icon.png"));
   } catch {}
 
