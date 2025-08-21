@@ -1,6 +1,10 @@
 /* eslint-disable */
 
 import { config } from "../config";
+import {
+  loadModel as sharedLoadModel,
+  detectRuntimeByUrl as sharedDetectRuntimeByUrl,
+} from "./live2dLoader";
 
 declare const PIXI: any;
 
@@ -14,6 +18,17 @@ declare global {
       openDevTools: () => void;
       enterFullscreen: () => void;
       exitFullscreen: () => void;
+      saveModelState: (
+        url: string,
+        x: number,
+        y: number,
+        scale: number
+      ) => void;
+      getModelState: (
+        url: string
+      ) => Promise<{ x: number; y: number; scale: number } | null>;
+      saveLastModel: (url: string) => void;
+      getLastModel: () => Promise<string | null>;
       onEvent: (cb: (data: any) => void) => void;
     };
   }
@@ -171,15 +186,11 @@ function installLive2dPatches(ns: any) {
 async function ensureCubism4(): Promise<void> {
   // Live2D Cubism Core
   if (!(window as any).Live2DCubismCore) {
-    await loadScript(
-      "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
-    );
+    await loadScript("./vendor/live2dcubismcore.min.js");
   }
   // Always load the C4 plugin at least once and snapshot namespace
   if (!(window as any).__live2d_api_c4) {
-    await loadScript(
-      "https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"
-    );
+    await loadScript("./vendor/cubism4.min.js");
     try {
       (window as any).__live2d_api_c4 = (PIXI as any).live2d;
       __loadedRuntime = "c4";
@@ -195,15 +206,11 @@ async function ensureCubism4(): Promise<void> {
 async function ensureCubism2(): Promise<void> {
   // Live2D Cubism 2 runtime
   if (!(window as any).Live2D) {
-    await loadScript(
-      "https://cdn.jsdelivr.net/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js"
-    );
+    await loadScript("./vendor/live2d.min.js");
   }
   // Always load the C2 plugin at least once and snapshot namespace
   if (!(window as any).__live2d_api_c2) {
-    await loadScript(
-      "https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism2.min.js"
-    );
+    await loadScript("./vendor/cubism2.min.js");
     try {
       (window as any).__live2d_api_c2 = (PIXI as any).live2d;
       __loadedRuntime = "c2";
@@ -929,7 +936,7 @@ function initBackButton() {
       // synthesize
       // infoMap is only available after index fetch; pass empty here if not
       const dataUrl = await buildCubism2Json(repoPath, {} as any);
-      await loadModel(app, dataUrl);
+      await sharedLoadModel(app, dataUrl);
       return;
     }
     await loadFile(repoPath);
@@ -1014,7 +1021,7 @@ function initBackButton() {
       ) as string[];
       for (const u of queue) {
         try {
-          await loadModel(app, u, extFlag);
+          await sharedLoadModel(app, u, extFlag);
           return { ok: true };
         } catch (e) {
           last = e;
@@ -1033,7 +1040,7 @@ function initBackButton() {
             if (!moc) continue;
             const mocPath = dir ? dir + "/" + moc : moc;
             const dataUrl = await buildCubism2Json(mocPath, {} as any);
-            await loadModel(app, dataUrl, false);
+            await sharedLoadModel(app, dataUrl, false);
             return { ok: true };
           } catch (e) {
             last = e;
@@ -1135,8 +1142,8 @@ function initBackButton() {
   }
   if (!modelUrl) modelUrl = qp.get("model");
   if (modelUrl) {
-    const byExt = detectRuntimeByUrl(modelUrl);
-    await loadModel(app, modelUrl, byExt);
+    const byExt = sharedDetectRuntimeByUrl(modelUrl);
+    await sharedLoadModel(app, modelUrl, byExt);
   }
 })();
 

@@ -1,9 +1,14 @@
 // Глобальные объявления для TS (минимально, без global augmentation)
 declare const PIXI: any;
 import { config } from "../config";
+import {
+  loadModel as sharedLoadModel,
+  detectRuntimeByUrl as sharedDetectRuntimeByUrl,
+} from "./live2dLoader";
 
 // Загрузка через CDN, можно заменить на локальные ассеты
 (async function () {
+  window.overlayAPI.setZoomFactor(1);
   const MODELS = config.MODELS;
   const LAST_MODEL_KEY = config.LAST_MODEL_KEY;
   const ping = async (url: string) => {
@@ -60,6 +65,66 @@ import { config } from "../config";
       target: null,
     };
 
+    function getCurrentModelUrl(): string {
+      try {
+        return (
+          ((window as any).__current_model_url as string) ||
+          localStorage.getItem(LAST_MODEL_KEY) ||
+          ""
+        );
+      } catch {
+        return "";
+      }
+    }
+    function stateKeyFor(url: string): string {
+      return "live2d_model_state::" + encodeURIComponent(String(url || ""));
+    }
+    function saveModelState() {
+      try {
+        const url = getCurrentModelUrl();
+        if (!url || !model) return;
+        const x = Number((model as any).x) || 0;
+        const y = Number((model as any).y) || 0;
+        const scale = Number((model as any).scale?.x) || 1;
+        try {
+          (window as any).overlayAPI?.saveModelState?.(url, x, y, scale);
+        } catch {}
+        const state = { x, y, scale };
+        localStorage.setItem(stateKeyFor(url), JSON.stringify(state));
+      } catch {}
+    }
+    async function restoreModelState() {
+      try {
+        const url = getCurrentModelUrl();
+        if (!url || !model) return false;
+        let s: any = null;
+        try {
+          s = await (window as any).overlayAPI?.getModelState?.(url);
+        } catch {}
+        if (!s) {
+          const raw = localStorage.getItem(stateKeyFor(url));
+          if (raw) s = JSON.parse(raw || "null");
+        }
+        if (!s || typeof s !== "object") return false;
+        if (isFinite(Number(s.x)) && isFinite(Number(s.y))) {
+          (model as any).x = Number(s.x);
+          (model as any).y = Number(s.y);
+          try {
+            (model as any).__userMoved = true;
+          } catch {}
+        }
+        if (isFinite(Number(s.scale)) && Number(s.scale) > 0) {
+          (model as any).scale?.set(Number(s.scale));
+          try {
+            (model as any).__userScaled = true;
+          } catch {}
+        }
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     function installStageDragHandlers() {
       try {
         if ((app.stage as any).__dragHandlersInstalled) return;
@@ -83,6 +148,9 @@ import { config } from "../config";
               } catch {}
               try {
                 (dragState.target as any).cursor = "grab";
+              } catch {}
+              try {
+                saveModelState();
               } catch {}
             }
             dragState.active = false;
@@ -142,13 +210,13 @@ import { config } from "../config";
         const b = model.getBounds();
         const bw = Math.max(1, b.width);
         const bh = Math.max(1, b.height);
-        // Enlarge a bit to compensate invisible margins in many models
-        const fudge = 1.2; // 20% larger than strict fit
+        // Slightly smaller than strict fit to avoid oversizing in index view
+        const fudge = 0.5;
         const base = Math.min(
-          (app.renderer.width * 0.98) / bw,
-          (app.renderer.height * 0.98) / bh
+          (app.renderer.width * 0.4) / bw,
+          (app.renderer.height * 0.4) / bh
         );
-        const baseScale = Math.max(0.1, Math.min(base * fudge, base * 1.4));
+        const baseScale = Math.max(0.1, base * fudge);
         (window as any).__live2d_base_scale = baseScale;
         let factor = 1;
         try {
@@ -158,8 +226,13 @@ import { config } from "../config";
           if (input)
             factor = Math.max(0.5, Math.min(1.5, Number(input.value) || 1));
         } catch {}
-        if (isFinite(baseScale) && baseScale > 0)
-          model.scale.set(baseScale * factor);
+        const userScaled = !!(model as any).__userScaled;
+        if (!userScaled) {
+          if (isFinite(baseScale) && baseScale > 0) {
+            const conservative = 0.85;
+            model.scale.set(baseScale * factor * conservative);
+          }
+        }
       } catch {}
     }
 
@@ -626,6 +699,20 @@ import { config } from "../config";
       window.location.href = `viewer.html`;
     });
     controls.insertBefore(openInspectorBtn, select);
+    // Add inspector open button
+    const spineviewerbtn = document.createElement("button");
+    spineviewerbtn.textContent = "spine viewer";
+    spineviewerbtn.style.webkitAppRegion = "no-drag";
+    spineviewerbtn.className = "btn";
+    spineviewerbtn.addEventListener("click", () => {
+      // Устанавливаем масштаб 100% и переходим по ссылке
+      window.location.href = `spine.html`;
+    });
+    controls.insertBefore(spineviewerbtn, openInspectorBtn);
+
+    // Функция для создания кнопок с настраиваемым масштабом
+
+    // Автоматически устанавливаем масштаб при загрузке страницы
 
     // Animations UI: list available groups and allow playing one (styled)
     const animSelect = document.createElement("select");
@@ -2004,8 +2091,8 @@ import { config } from "../config";
       // reset motions UI and load via viewer-style helper
       motionEntries = [];
       refreshAnimationsUI();
-      const byExt = detectRuntimeByUrl(url);
-      const res = await loadModel(app, url, byExt);
+      const byExt = sharedDetectRuntimeByUrl(url);
+      const res = await sharedLoadModel(app, url, byExt);
       model = res && (res as any).model ? (res as any).model : null;
       try {
         (window as any).__current_model_url = String(url);
@@ -2013,7 +2100,15 @@ import { config } from "../config";
       availableGroups = Array.isArray((res as any)?.groups)
         ? (res as any).groups
         : [];
+      // Re-enable interactions now that the model is loaded
+      try {
+        enableDraggingForModel(model);
+      } catch {}
       scheduleGroupRefresh();
+      // Try restore previously saved position/scale
+      try {
+        await restoreModelState();
+      } catch {}
       // wait two frames for layout before measuring
       await new Promise((r) =>
         requestAnimationFrame(() => requestAnimationFrame(r))
@@ -2025,6 +2120,10 @@ import { config } from "../config";
           (model as any).alpha = 1;
           (model as any).visible = true;
         }
+      } catch {}
+      // Save restored/fitted state for consistency
+      try {
+        saveModelState();
       } catch {}
       // start Idle loop depending on runtime
       try {
@@ -2040,6 +2139,10 @@ import { config } from "../config";
             ).filter(Boolean)
           );
         }
+      } catch {}
+      // Start microphone-driven lipsync automatically
+      try {
+        await startLipSync();
       } catch {}
     }
 
@@ -2757,6 +2860,12 @@ opacityInput.addEventListener("input", () => {
       m.scale.set(base * factor);
       m.x = origX;
       m.y = origY;
+      try {
+        m.__userScaled = true;
+      } catch {}
+      try {
+        saveModelState();
+      } catch {}
     }
   } catch {}
 });

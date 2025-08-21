@@ -12,7 +12,7 @@
     GITHUBRAW: "https://raw.githubusercontent.com"
   };
 
-  // src/renderer/viewer.ts
+  // src/renderer/live2dLoader.ts
   var __loadedRuntime = null;
   var __live2d_patches_installed = false;
   async function loadScript(src) {
@@ -20,7 +20,7 @@
       const s = document.createElement("script");
       s.src = src;
       s.onload = () => res();
-      s.onerror = (ev) => rej(new Error("Failed to load " + src));
+      s.onerror = () => rej(new Error("Failed to load " + src));
       document.head.appendChild(s);
     });
   }
@@ -73,12 +73,8 @@
               await orig(context, next);
               return;
             } catch (e) {
-              if (!(e && e.status === 403 && typeof url === "string" && url.includes("jsdelivr"))) {
+              if (!(e && e.status === 403 && typeof url === "string" && url.includes("jsdelivr")))
                 throw e;
-              }
-              console.warn(
-                "[viewer] 403 from jsDelivr, switching to alternative URL"
-              );
             }
             try {
               context.url = getAlternativeURL(url);
@@ -151,17 +147,17 @@
   }
   async function ensureCubism4() {
     if (!window.Live2DCubismCore) {
-      await loadScript(
-        "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
-      );
+      await loadScript("./vendor/live2dcubismcore.min.js");
     }
     if (!window.__live2d_api_c4) {
-      await loadScript(
-        "https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"
-      );
+      await loadScript("./vendor/cubism4.min.js");
       try {
         window.__live2d_api_c4 = PIXI.live2d;
         __loadedRuntime = "c4";
+        try {
+          window.__loadedRuntime = "c4";
+        } catch {
+        }
       } catch {
       }
     }
@@ -174,17 +170,17 @@
   }
   async function ensureCubism2() {
     if (!window.Live2D) {
-      await loadScript(
-        "https://cdn.jsdelivr.net/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js"
-      );
+      await loadScript("./vendor/live2d.min.js");
     }
     if (!window.__live2d_api_c2) {
-      await loadScript(
-        "https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism2.min.js"
-      );
+      await loadScript("./vendor/cubism2.min.js");
       try {
         window.__live2d_api_c2 = PIXI.live2d;
         __loadedRuntime = "c2";
+        try {
+          window.__loadedRuntime = "c2";
+        } catch {
+        }
       } catch {
       }
     }
@@ -291,10 +287,6 @@
   async function loadSettingsJson(url, forceV4) {
     let useV4 = forceV4 ?? detectUseV4FromUrl(url);
     const byExt = detectRuntimeByUrl(url);
-    try {
-      console.debug("[viewer] loadSettingsJson", { url, forceV4, byExt });
-    } catch {
-    }
     let groups = [];
     try {
       const r = await fetch(url, { headers: { Accept: "application/json" } });
@@ -326,17 +318,9 @@
           cloned.url = url;
         } catch {
         }
-        try {
-          console.debug("[viewer] decided Cubism4 for", url);
-        } catch {
-        }
         return { urlOrSettings: cloned, useV4, originalUrl: url, groups };
       }
       useV4 = false;
-      try {
-        console.debug("[viewer] decided Cubism2 for", url);
-      } catch {
-      }
       return { urlOrSettings: url, useV4, originalUrl: url, groups };
     } catch {
       return { urlOrSettings: url, useV4, originalUrl: url, groups };
@@ -465,6 +449,265 @@
     };
     fitModel();
     return { model, groups, fitModel };
+  }
+
+  // src/renderer/viewer.ts
+  var __loadedRuntime2 = null;
+  var __live2d_patches_installed2 = false;
+  async function loadScript2(src) {
+    await new Promise((res, rej) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = () => res();
+      s.onerror = (ev) => rej(new Error("Failed to load " + src));
+      document.head.appendChild(s);
+    });
+  }
+  function getAlternativeURL2(u) {
+    try {
+      if (u.includes("cdn.jsdelivr.net/gh/")) {
+        const m = u.match(
+          /cdn\.jsdelivr\.net\/gh\/([^@/]+)\/([^@/]+)@[^/]+\/(.+)$/
+        );
+        if (m)
+          return `https://raw.githubusercontent.com/${m[1]}/${m[2]}/master/${m[3]}`;
+      }
+      if (u.includes("raw.githubusercontent.com/")) {
+        const m = u.match(
+          /raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/[^/]+\/(.+)$/
+        );
+        if (m)
+          return `https://cdn.jsdelivr.net/gh/${m[1]}/${m[2]}@master/${m[3]}`;
+      }
+    } catch {
+    }
+    return u;
+  }
+  async function loadJson5IfNeeded2() {
+    try {
+      if (window.JSON5) return window.JSON5;
+    } catch {
+    }
+    try {
+      await loadScript2(
+        "https://cdn.jsdelivr.net/npm/json5@2.2.3/dist/index.min.js"
+      );
+      return window.JSON5 || null;
+    } catch {
+      return null;
+    }
+  }
+  function installLive2dPatches2(ns) {
+    if (!ns || __live2d_patches_installed2) return;
+    try {
+      const Loader = ns.Live2DLoader;
+      const XHR = ns.XHRLoader;
+      if (Loader && XHR && Array.isArray(Loader.middlewares)) {
+        const idx = Loader.middlewares.indexOf(XHR.loader);
+        if (idx >= 0) {
+          const orig = XHR.loader;
+          Loader.middlewares[idx] = async (context, next) => {
+            const url = context.settings ? context.settings.resolveURL(context.url) : context.url;
+            try {
+              await orig(context, next);
+              return;
+            } catch (e) {
+              if (!(e && e.status === 403 && typeof url === "string" && url.includes("jsdelivr"))) {
+                throw e;
+              }
+              console.warn(
+                "[viewer] 403 from jsDelivr, switching to alternative URL"
+              );
+            }
+            try {
+              context.url = getAlternativeURL2(url);
+            } catch {
+            }
+            await orig(context, next);
+            return next();
+          };
+        }
+      }
+    } catch {
+    }
+    try {
+      const Factory = ns.Live2DFactory;
+      if (Factory && Array.isArray(Factory.live2DModelMiddlewares)) {
+        const idx = Factory.live2DModelMiddlewares.indexOf(Factory.urlToJSON);
+        if (idx >= 0) {
+          Factory.live2DModelMiddlewares[idx] = async (context, next) => {
+            if (typeof context.source === "string") {
+              let url = context.source;
+              let text = null;
+              try {
+                const r1 = await fetch(url);
+                text = await r1.text();
+              } catch {
+              }
+              try {
+                if (!text || /^\s*<!DOCTYPE|<html/i.test(text)) {
+                  const alt = getAlternativeURL2(url);
+                  if (alt && alt !== url) {
+                    const r2 = await fetch(alt);
+                    const t2 = await r2.text();
+                    if (t2) {
+                      text = t2;
+                      url = alt;
+                    }
+                  }
+                }
+              } catch {
+              }
+              if (!text) throw new Error("Failed to fetch settings JSON");
+              let json = null;
+              try {
+                json = JSON.parse(text);
+              } catch {
+                try {
+                  const JSON5 = await loadJson5IfNeeded2();
+                  if (JSON5) json = JSON5.parse(text);
+                } catch {
+                }
+              }
+              if (!json) throw new Error("Failed to parse settings JSON");
+              try {
+                json.url = url;
+              } catch {
+              }
+              context.source = json;
+              try {
+                context.live2dModel?.emit?.("settingsJSONLoaded", json);
+              } catch {
+              }
+            }
+            return next();
+          };
+        }
+      }
+    } catch {
+    }
+    __live2d_patches_installed2 = true;
+  }
+  async function ensureCubism42() {
+    if (!window.Live2DCubismCore) {
+      await loadScript2("./vendor/live2dcubismcore.min.js");
+    }
+    if (!window.__live2d_api_c4) {
+      await loadScript2("./vendor/cubism4.min.js");
+      try {
+        window.__live2d_api_c4 = PIXI.live2d;
+        __loadedRuntime2 = "c4";
+      } catch {
+      }
+    }
+    try {
+      installLive2dPatches2(
+        window.__live2d_api_c4 || PIXI.live2d
+      );
+    } catch {
+    }
+  }
+  async function ensureCubism22() {
+    if (!window.Live2D) {
+      await loadScript2("./vendor/live2d.min.js");
+    }
+    if (!window.__live2d_api_c2) {
+      await loadScript2("./vendor/cubism2.min.js");
+      try {
+        window.__live2d_api_c2 = PIXI.live2d;
+        __loadedRuntime2 = "c2";
+      } catch {
+      }
+    }
+    try {
+      installLive2dPatches2(
+        window.__live2d_api_c2 || PIXI.live2d
+      );
+    } catch {
+    }
+  }
+  function detectRuntimeByUrl2(u) {
+    try {
+      if (!u) return null;
+      const low = u.toLowerCase();
+      if (/\.model3\.json(\?|$)/.test(low) || /\.moc3(\?|$)/.test(low))
+        return true;
+      if (/\.model\.json(\?|$)/.test(low) || /\.moc(\?|$)/.test(low))
+        return false;
+      if (/\.json(\?|$)/.test(low)) return false;
+    } catch {
+    }
+    return null;
+  }
+  function toAbsoluteAssetUrl2(modelJsonUrl, assetPath) {
+    if (!assetPath) return assetPath;
+    if (/^https?:/i.test(assetPath) || assetPath.startsWith("data:"))
+      return assetPath;
+    try {
+      const base = modelJsonUrl.replace(/\/[^/]*$/, "/");
+      return new URL(assetPath, base).href;
+    } catch {
+      return assetPath;
+    }
+  }
+  function rewriteModelJsonUrls2(modelJsonUrl, j) {
+    try {
+      if (j && j.FileReferences) {
+        if (j.FileReferences.Moc)
+          j.FileReferences.Moc = toAbsoluteAssetUrl2(
+            modelJsonUrl,
+            j.FileReferences.Moc
+          );
+        if (Array.isArray(j.FileReferences.Textures))
+          j.FileReferences.Textures = j.FileReferences.Textures.map(
+            (t) => toAbsoluteAssetUrl2(modelJsonUrl, t)
+          );
+        if (j.FileReferences.Physics)
+          j.FileReferences.Physics = toAbsoluteAssetUrl2(
+            modelJsonUrl,
+            j.FileReferences.Physics
+          );
+        if (j.FileReferences.Motions) {
+          for (const g of Object.keys(j.FileReferences.Motions)) {
+            const arr = j.FileReferences.Motions[g] || [];
+            for (const m of arr)
+              if (m.File) m.File = toAbsoluteAssetUrl2(modelJsonUrl, m.File);
+          }
+        }
+      }
+      if (j) {
+        if (j.model) j.model = toAbsoluteAssetUrl2(modelJsonUrl, j.model);
+        if (Array.isArray(j.textures))
+          j.textures = j.textures.map(
+            (t) => toAbsoluteAssetUrl2(modelJsonUrl, t)
+          );
+        if (j.physics) j.physics = toAbsoluteAssetUrl2(modelJsonUrl, j.physics);
+        if (j.motions) {
+          for (const g of Object.keys(j.motions)) {
+            const arr = j.motions[g] || [];
+            for (let i = 0; i < arr.length; i++) {
+              const m = arr[i];
+              if (typeof m === "string")
+                arr[i] = { file: toAbsoluteAssetUrl2(modelJsonUrl, m) };
+              else {
+                if (m.file)
+                  m.file = toAbsoluteAssetUrl2(
+                    modelJsonUrl,
+                    m.file
+                  );
+                if (m.File)
+                  m.File = toAbsoluteAssetUrl2(
+                    modelJsonUrl,
+                    m.File
+                  );
+              }
+            }
+          }
+        }
+      }
+    } catch {
+    }
+    return j;
   }
   function initBackButton() {
     const stageDiv = document.getElementById("stage");
@@ -849,7 +1092,7 @@
         window.overlayAPI?.saveLastModel?.(initialUrl);
       } catch {
       }
-      const extFlag = detectRuntimeByUrl(initialUrl);
+      const extFlag = detectRuntimeByUrl2(initialUrl);
       let selectedUrl = initialUrl;
       let isCubism4 = /\.model3\.json($|\?)/i.test(initialUrl);
       let motionGroups = [];
@@ -865,7 +1108,7 @@
           selectedUrl = tryUrl;
           try {
             const cloned = JSON.parse(JSON.stringify(j));
-            rewriteModelJsonUrls(selectedUrl, cloned);
+            rewriteModelJsonUrls2(selectedUrl, cloned);
             if (cloned && (cloned.model || cloned.textures || cloned.motions) && !cloned.FileReferences) {
             }
             rewrittenSettings = cloned;
@@ -892,8 +1135,8 @@
       const isC4Settings = (obj) => !!(obj && obj.FileReferences && (obj.FileReferences.Moc || obj.FileReferences.Textures));
       const isC2Settings = (obj) => !!(obj && (obj.model || obj.textures || obj.motions) && !obj.FileReferences);
       async function tryWithRuntime(useV4) {
-        if (useV4) await ensureCubism4();
-        else await ensureCubism2();
+        if (useV4) await ensureCubism42();
+        else await ensureCubism22();
         let last = null;
         const queue = tries.filter(
           (u) => typeof u === "string"

@@ -11,6 +11,11 @@ import_electron.contextBridge.exposeInMainWorld("overlayAPI", {
   exitFullscreen: () => import_electron.ipcRenderer.send("overlay-exit-fullscreen"),
   saveLastModel: (url) => import_electron.ipcRenderer.send("overlay-save-last-model", url),
   getLastModel: () => import_electron.ipcRenderer.invoke("overlay-get-last-model"),
+  saveModelState: (url, x, y, scale) => import_electron.ipcRenderer.send("overlay-save-model-state", { url, x, y, scale }),
+  getModelState: (url) => import_electron.ipcRenderer.invoke("overlay-get-model-state", url),
+  setZoomFactor: (zoomFactor = 1) => import_electron.ipcRenderer.invoke("overlay-set-zoom-factor", zoomFactor),
+  saveZoomSetting: (url, zoomFactor) => import_electron.ipcRenderer.send("overlay-save-zoom-setting", { url, zoomFactor }),
+  getZoomSetting: (url) => import_electron.ipcRenderer.invoke("overlay-get-zoom-setting", url),
   onEvent: (cb) => {
     import_electron.ipcRenderer.on("overlay-event", (_ev, data) => {
       try {

@@ -29,6 +29,8 @@ var fs = __toESM(require("fs"));
 var mainWindow = null;
 var initialBounds = null;
 var lastModelFile = () => path.join(import_electron.app.getPath("userData"), "last_model.json");
+var modelStateFile = () => path.join(import_electron.app.getPath("userData"), "model_state.json");
+var zoomSettingsFile = () => path.join(import_electron.app.getPath("userData"), "zoom_settings.json");
 function createWindow() {
   const primary = import_electron.screen.getPrimaryDisplay();
   const area = primary && primary.workArea || primary.bounds || { width: 1920, height: 1080, x: 0, y: 0 };
@@ -139,6 +141,105 @@ function createWindow() {
       return j && j.url || null;
     } catch {
       return null;
+    }
+  });
+  import_electron.ipcMain.on(
+    "overlay-save-model-state",
+    (_ev, payload) => {
+      try {
+        if (!payload || !payload.url) return;
+        const file = modelStateFile();
+        const dir = path.dirname(file);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        let map = {};
+        try {
+          if (fs.existsSync(file)) {
+            const txt = fs.readFileSync(file, "utf8");
+            map = JSON.parse(txt) || {};
+          }
+        } catch {
+        }
+        map[payload.url] = {
+          x: Number(payload.x) || 0,
+          y: Number(payload.y) || 0,
+          scale: Number(payload.scale) || 1,
+          savedAt: Date.now()
+        };
+        fs.writeFileSync(file, JSON.stringify(map), { encoding: "utf8" });
+      } catch {
+      }
+    }
+  );
+  import_electron.ipcMain.handle("overlay-get-model-state", (_ev, url) => {
+    try {
+      if (!url) return null;
+      const file = modelStateFile();
+      if (!fs.existsSync(file)) return null;
+      const txt = fs.readFileSync(file, "utf8");
+      const map = JSON.parse(txt) || {};
+      const s = map[url];
+      if (!s) return null;
+      return {
+        x: Number(s.x) || 0,
+        y: Number(s.y) || 0,
+        scale: Number(s.scale) || 1
+      };
+    } catch {
+      return null;
+    }
+  });
+  import_electron.ipcMain.handle(
+    "overlay-set-zoom-factor",
+    async (_ev, zoomFactor = 1) => {
+      try {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.setZoomFactor(zoomFactor);
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error("Failed to set zoom factor:", error);
+        return false;
+      }
+    }
+  );
+  import_electron.ipcMain.on(
+    "overlay-save-zoom-setting",
+    (_ev, payload) => {
+      try {
+        if (!payload || !payload.url) return;
+        const file = zoomSettingsFile();
+        const dir = path.dirname(file);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        let map = {};
+        try {
+          if (fs.existsSync(file)) {
+            const txt = fs.readFileSync(file, "utf8");
+            map = JSON.parse(txt) || {};
+          }
+        } catch {
+        }
+        map[payload.url] = {
+          zoomFactor: Number(payload.zoomFactor) || 1,
+          savedAt: Date.now()
+        };
+        fs.writeFileSync(file, JSON.stringify(map), { encoding: "utf8" });
+      } catch {
+      }
+    }
+  );
+  import_electron.ipcMain.handle("overlay-get-zoom-setting", (_ev, url) => {
+    try {
+      if (!url) return 1;
+      const file = zoomSettingsFile();
+      if (!fs.existsSync(file)) return 1;
+      const txt = fs.readFileSync(file, "utf8");
+      const map = JSON.parse(txt) || {};
+      const setting = map[url];
+      if (!setting) return 1;
+      return Number(setting.zoomFactor) || 1;
+    } catch {
+      return 1;
     }
   });
 }

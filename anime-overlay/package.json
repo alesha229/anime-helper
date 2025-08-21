@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "electron": "^26.0.0",
-    "pixi.js": "^6.5.8"
+    "pixi.js": "^6.5.8",
+    "@esotericsoftware/spine-phaser": "~4.1.31",
+    "phaser": "3.60.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
