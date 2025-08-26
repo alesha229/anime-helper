@@ -13,6 +13,8 @@ import_electron.contextBridge.exposeInMainWorld("overlayAPI", {
   getLastModel: () => import_electron.ipcRenderer.invoke("overlay-get-last-model"),
   saveModelState: (url, x, y, scale) => import_electron.ipcRenderer.send("overlay-save-model-state", { url, x, y, scale }),
   getModelState: (url) => import_electron.ipcRenderer.invoke("overlay-get-model-state", url),
+  // Return caret/screen typing position from host (optional)
+  getCaretPosition: () => import_electron.ipcRenderer.invoke("overlay-get-caret-position"),
   setZoomFactor: (zoomFactor = 1) => import_electron.ipcRenderer.invoke("overlay-set-zoom-factor", zoomFactor),
   saveZoomSetting: (url, zoomFactor) => import_electron.ipcRenderer.send("overlay-save-zoom-setting", { url, zoomFactor }),
   getZoomSetting: (url) => import_electron.ipcRenderer.invoke("overlay-get-zoom-setting", url),

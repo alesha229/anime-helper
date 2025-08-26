@@ -367,6 +367,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     // edits: accumulate character deltas and emit light 'edit' events (debounced)
     let lastEditAt = 0;
+    // caret updates (debounced) — emit caret position as line/character
+    let lastCaretAt = 0;
     subscriptions.push(
       vscode.workspace.onDidChangeTextDocument((e) => {
         try {
@@ -387,6 +389,43 @@ export function activate(context: vscode.ExtensionContext) {
           writeEvent({ type: "edit", path: p, timestamp: now, delta });
         } catch (err) {
           console.error("onDidChangeTextDocument error", err);
+        }
+      })
+    );
+
+    subscriptions.push(
+      vscode.window.onDidChangeTextEditorSelection((e) => {
+        try {
+          const now = Date.now();
+          // debounce frequent cursor moves
+          if (now - lastCaretAt < 100) return;
+          lastCaretAt = now;
+          const editor = e.textEditor;
+          if (!editor || !editor.document) return;
+          const pos =
+            (e.selections && e.selections[0] && e.selections[0].active) || null;
+          if (!pos) return;
+          // include visible range and font size to help overlay map caret -> screen
+          const vr = (editor.visibleRanges && editor.visibleRanges[0]) || null;
+          const visibleStart = vr ? vr.start.line : pos.line;
+          const visibleEnd = vr ? vr.end.line : pos.line;
+          const cfg = vscode.workspace.getConfiguration(
+            "editor",
+            editor.document.uri
+          );
+          const fontSize = Number(cfg.get("fontSize") || 14);
+          writeEvent({
+            type: "caret",
+            path: editor.document.uri.fsPath,
+            line: pos.line,
+            character: pos.character,
+            visibleStart,
+            visibleEnd,
+            fontSize,
+            timestamp: now,
+          });
+        } catch (err) {
+          console.error("onDidChangeTextEditorSelection error", err);
         }
       })
     );

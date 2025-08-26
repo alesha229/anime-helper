@@ -4,7 +4,7 @@ import { config } from "../config";
 import {
   loadModel as sharedLoadModel,
   detectRuntimeByUrl as sharedDetectRuntimeByUrl,
-} from "./live2dLoader";
+} from "./live2d/live2dLoader";
 
 declare const PIXI: any;
 

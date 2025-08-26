@@ -46,7 +46,7 @@ function createWindow() {
     alwaysOnTop: true,
     resizable: true,
     hasShadow: false,
-    skipTaskbar: true,
+    skipTaskbar: false,
     x,
     y,
     webPreferences: {
@@ -69,15 +69,31 @@ function createWindow() {
         try {
           const txt = fs.readFileSync(eventsFile, "utf8");
           const obj = JSON.parse(txt);
-          if (obj && obj.type === "shutdown") {
-            try {
-              if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.close();
-              }
-              import_electron.app.quit();
-            } catch {
+          try {
+            if (obj && obj.type === "caret") {
+              const primary2 = import_electron.screen.getPrimaryDisplay();
+              const area2 = primary2 && primary2.workArea || primary2.bounds || { x: 0, y: 0 };
+              const fontSize = Number(obj.fontSize) || 14;
+              const lineHeight = fontSize * 1.25;
+              const charWidth = fontSize * 0.6;
+              const editorLeft = area2.x + 40;
+              const editorTop = area2.y + 60;
+              const gutter = 56;
+              const visibleStart = typeof obj.visibleStart === "number" ? obj.visibleStart : obj.line;
+              const rowOffset = (typeof obj.line === "number" ? obj.line : 0) - visibleStart;
+              const caretX = editorLeft + gutter + (typeof obj.character === "number" ? obj.character : 0) * charWidth;
+              const caretY = editorTop + rowOffset * lineHeight + lineHeight / 2;
+              obj.screenX = Math.round(caretX);
+              obj.screenY = Math.round(caretY);
+              obj._caretMapping = {
+                editorLeft,
+                editorTop,
+                gutter,
+                lineHeight,
+                charWidth
+              };
             }
-            return;
+          } catch (e) {
           }
           if (mainWindow && !mainWindow.isDestroyed())
             mainWindow.webContents.send("overlay-event", obj);

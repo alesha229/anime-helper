@@ -16,6 +16,7 @@ class SpineDemo extends Phaser.Scene {
   private nikkeModelKey: string | null = null;
   private nikkePathParts: string[] | null = null;
   private static readonly NIKKE_BASE = "https://nikke-db-legacy.pages.dev/l2d/";
+  private static readonly DOTGG_BASE = "https://dotgg.gg/nikke/l2d/";
   private loadToken = 0;
   private isOffsetCalibrated = false;
   private candidateOffsets = [-135, -90, -45, 0, 45, 90, 135, 180, -180];
@@ -56,6 +57,22 @@ class SpineDemo extends Phaser.Scene {
   private isDraggingSpine = false;
   private dragSpineOffsetX = 0;
   private dragSpineOffsetY = 0;
+  private currentIdleAnimation: string = "idle";
+  private isAimModel: boolean = false;
+  private aimXEntry: any = null;
+  private aimYEntry: any = null;
+  private latestCaret: { x: number; y: number; isScreen?: boolean } | null =
+    null;
+  private testAimToCursor: boolean = false;
+  private isUiHidden: boolean = false;
+  private clickThroughEnabled: boolean = false;
+  private uiToggleButton: HTMLElement | null = null;
+  private debugDot: HTMLElement | null = null;
+  private debugLogging: boolean = true;
+  private currentRepo: "nikke" | "nikkie4" = "nikke";
+  private n4ExpandedCharacter: string | null = null;
+  private actionTimeout: any = null;
+  private actionPlaying: boolean = false;
 
   preload() {
     const params = new URLSearchParams(window.location.search);
@@ -71,6 +88,8 @@ class SpineDemo extends Phaser.Scene {
       : null;
 
     this.load.json("nikke-index", "Nikke.json");
+    // Additional index from external source (dotgg)
+    this.load.json("nikkie4-index", "nikkie4.1.json");
     // Local demo (used as fallback)
     this.load.spineBinary("spineboy-data", "./assets/favorite_c550_00.skel");
     this.load.spineAtlas("spineboy-atlas", "./assets/favorite_c550_00.atlas");
@@ -105,9 +124,24 @@ class SpineDemo extends Phaser.Scene {
       this.tryLoadModelForPath(this.nikkePathParts);
     } else if (indexData && this.nikkeModelKey) {
       const resolved = this.resolveNikkeModel(indexData, this.nikkeModelKey);
-      if (resolved)
-        this.loadModelFromUrls(resolved.skelUrl, resolved.atlasUrl, 1, "idle");
-      else this.spawnLocal(holder);
+      if (resolved) {
+        const nameHint = (
+          resolved.skelUrl ||
+          resolved.atlasUrl ||
+          ""
+        ).toLowerCase();
+        const idleAnim = nameHint.includes("aim")
+          ? "aim_idle"
+          : nameHint.includes("cover")
+          ? "cover_idle"
+          : "idle";
+        this.loadModelFromUrls(
+          resolved.skelUrl,
+          resolved.atlasUrl,
+          1,
+          idleAnim
+        );
+      } else this.spawnLocal(holder);
     } else {
       this.spawnLocal(holder);
     }
@@ -126,6 +160,94 @@ class SpineDemo extends Phaser.Scene {
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
       this.pointerPos.set(p.x, p.y);
     });
+
+    // Test binding: aim target follows OS/client cursor while testing
+    try {
+      this.testAimToCursor = true;
+      window.addEventListener("mousemove", (ev: MouseEvent) => {
+        try {
+          if (!this.isAimModel) return;
+          // use screen coordinates as requested
+          const x = ev.screenX;
+          const y = ev.screenY;
+          this.latestCaret = { x, y, isScreen: true };
+          // drive aim immediately in test mode
+          this.updateAimTracksFromCaret();
+        } catch (e) {}
+      });
+    } catch (e) {}
+
+    // If current model is an aim model, listen for keyboard typing to trigger aim_fire
+    window.addEventListener("keydown", (e) => {
+      if (!this.spineboy) return;
+      const isAimModel = (this.currentIdleAnimation || "")
+        .toLowerCase()
+        .includes("aim");
+      if (!isAimModel) return;
+      // On any character key / Enter / Space etc. play aim_fire once
+      try {
+        // Ensure animation exists by attempting to set it; fallback to current idle if not
+        this.spineboy.animationState.setAnimation(1, "aim_fire", false);
+        // After aim_fire completes, return to idle loop
+        this.spineboy.animationState.addAnimation(
+          1,
+          this.currentIdleAnimation,
+          true,
+          0
+        );
+      } catch (err) {
+        // ignore if animation missing
+      }
+      // Try to get caret position from overlay API (host app) and set pointer
+      try {
+        if (
+          (window as any).overlayAPI &&
+          typeof (window as any).overlayAPI.getCaretPosition === "function"
+        ) {
+          // expected to return { x: number, y: number } in screen coords
+          (window as any).overlayAPI.getCaretPosition().then((pos: any) => {
+            try {
+              if (
+                pos &&
+                typeof pos.x === "number" &&
+                typeof pos.y === "number"
+              ) {
+                this.pointerPos.set(pos.x, pos.y);
+                this.latestCaret = { x: pos.x, y: pos.y };
+                // drive aim tracks immediately
+                this.updateAimTracksFromCaret();
+              }
+            } catch {}
+          });
+        }
+      } catch {}
+    });
+
+    // Listen for overlay events (from VSCode extension) — caret mapping includes screenX/screenY
+    try {
+      if (
+        (window as any).overlayAPI &&
+        typeof (window as any).overlayAPI.onEvent === "function"
+      ) {
+        (window as any).overlayAPI.onEvent((data: any) => {
+          try {
+            if (!data) return;
+            if (data.type === "caret") {
+              if (
+                typeof data.screenX === "number" &&
+                typeof data.screenY === "number"
+              ) {
+                this.latestCaret = { x: data.screenX, y: data.screenY };
+                // also update pointerPos used by head/eye logic
+                this.pointerPos.set(data.screenX, data.screenY);
+                // drive aim tracks immediately
+                this.updateAimTracksFromCaret();
+              }
+            }
+          } catch (e) {}
+        });
+      }
+    } catch (e) {}
 
     // Drag & Drop для модели
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
@@ -187,9 +309,82 @@ class SpineDemo extends Phaser.Scene {
     }
 
     // Render a minimal Nikke index browser to navigate directories
-    if (indexData) this.renderNikkeBrowser(indexData);
+    this.renderNikkeBrowser();
     // Render head control sliders
     this.renderHeadControls();
+    // Add UI toggle button for hiding/showing overlay chrome
+    this.addUiToggleButton();
+  }
+
+  private addUiToggleButton() {
+    try {
+      const existing = document.getElementById("overlay-ui-toggle");
+      if (existing) {
+        this.uiToggleButton = existing;
+        return;
+      }
+      const btn = document.createElement("button");
+      btn.id = "overlay-ui-toggle";
+      btn.textContent = "Hide UI";
+      btn.style.position = "absolute";
+      btn.style.left = "12px";
+      btn.style.bottom = "12px";
+      btn.style.zIndex = "100000";
+      btn.style.padding = "12px 18px";
+      btn.style.fontSize = "16px";
+      btn.style.minWidth = "140px";
+      btn.style.height = "48px";
+      btn.style.background = "rgba(0,0,0,0.7)";
+      btn.style.color = "#fff";
+      btn.style.border = "none";
+      btn.style.borderRadius = "10px";
+      btn.style.cursor = "pointer";
+      btn.style.boxShadow = "0 4px 14px rgba(0,0,0,0.4)";
+      btn.onclick = () => {
+        this.isUiHidden = !this.isUiHidden;
+        if (this.isUiHidden) {
+          btn.textContent = "Show UI";
+          // hide known chrome elements but keep model and this button visible
+          const el = document.getElementById("head-controls");
+          if (el) el.style.display = "none";
+          const nik = document.getElementById("nikke-browser");
+          if (nik) nik.style.display = "none";
+          // enable click-through via overlayAPI
+          try {
+            (window as any).overlayAPI?.toggleClickThrough?.(true);
+            this.clickThroughEnabled = true;
+          } catch {}
+        } else {
+          btn.textContent = "Hide UI";
+          const el = document.getElementById("head-controls");
+          if (el) el.style.display = "block";
+          const nik = document.getElementById("nikke-browser");
+          if (nik) nik.style.display = "block";
+          try {
+            (window as any).overlayAPI?.toggleClickThrough?.(false);
+            this.clickThroughEnabled = false;
+          } catch {}
+        }
+      };
+      document.body.appendChild(btn);
+      this.uiToggleButton = btn;
+      // create debug dot for visualizing cursor->canvas mapping
+      try {
+        const dd = document.createElement("div");
+        dd.id = "overlay-debug-dot";
+        dd.style.position = "absolute";
+        dd.style.width = "12px";
+        dd.style.height = "12px";
+        dd.style.borderRadius = "50%";
+        dd.style.background = "rgba(255,0,0,0.9)";
+        dd.style.pointerEvents = "none";
+        dd.style.zIndex = "100001";
+        dd.style.transform = "translate(-50%, -50%)";
+        dd.style.display = "none";
+        document.body.appendChild(dd);
+        this.debugDot = dd;
+      } catch {}
+    } catch {}
   }
 
   private setupSpineboyDrag() {
@@ -356,8 +551,221 @@ class SpineDemo extends Phaser.Scene {
 
   update() {}
 
+  private updateAimTracksFromCaret() {
+    if (!this.spineboy || !this.isAimModel || !this.latestCaret) return;
+    try {
+      // translate input into camera/world point
+      const cam = this.cameras.main;
+      let worldPoint: any = null;
+      try {
+        // If test mode, use Phaser pointer coordinates already tracked by input (pointermove)
+        if (
+          this.testAimToCursor &&
+          this.input &&
+          (this.input as any).activePointer
+        ) {
+          const p = (this.input as any).activePointer;
+          // p.x/p.y are canvas-local DOM pixels; pass directly to camera
+          worldPoint = cam.getWorldPoint(p.x, p.y);
+          // place debug dot at pointer position
+          if (this.debugDot) {
+            try {
+              const canvas = this.game.canvas as HTMLCanvasElement;
+              const rect = canvas.getBoundingClientRect();
+              this.debugDot.style.left = `${rect.left + p.x}px`;
+              this.debugDot.style.top = `${rect.top + p.y}px`;
+              this.debugDot.style.display = this.debugLogging
+                ? "block"
+                : "none";
+            } catch {}
+          }
+        } else {
+          // fallback to latestCaret conversion (screen/client -> canvas)
+          const canvas = this.game.canvas as HTMLCanvasElement;
+          const rect = canvas.getBoundingClientRect();
+          let clientX = this.latestCaret.x;
+          let clientY = this.latestCaret.y;
+          if (this.latestCaret.isScreen) {
+            try {
+              clientX = this.latestCaret.x - (window as any).screenX;
+              clientY = this.latestCaret.y - (window as any).screenY;
+            } catch {
+              clientX = this.latestCaret.x;
+              clientY = this.latestCaret.y;
+            }
+          }
+          const canvasClientX = clientX - rect.left;
+          const canvasClientY = clientY - rect.top;
+          const sx = (canvas.width || rect.width) / (rect.width || 1);
+          const sy = (canvas.height || rect.height) / (rect.height || 1);
+          const canvasPxX = canvasClientX * sx;
+          const canvasPxY = canvasClientY * sy;
+          worldPoint = cam.getWorldPoint(canvasPxX, canvasPxY);
+          if (this.debugDot) {
+            try {
+              this.debugDot.style.left = `${rect.left + canvasClientX}px`;
+              this.debugDot.style.top = `${rect.top + canvasClientY}px`;
+              this.debugDot.style.display = this.debugLogging
+                ? "block"
+                : "none";
+            } catch {}
+          }
+        }
+      } catch (err) {
+        worldPoint = cam.getWorldPoint(this.latestCaret.x, this.latestCaret.y);
+      }
+      const originX = this.holder.x + this.spineboy.x;
+      const originY = this.holder.y + this.spineboy.y;
+      const scaleX = this.spineboy.scaleX ?? this.spineboy.scale ?? 1;
+      const scaleY = this.spineboy.scaleY ?? this.spineboy.scale ?? 1;
+      // compute model center in world coords to normalize deflection
+      let centerWorldX = originX;
+      let centerWorldY = originY;
+      let halfW = 100;
+      let halfH = 100;
+      try {
+        const b = (this.spineboy as any).getBounds?.();
+        if (b && typeof b.width === "number" && typeof b.height === "number") {
+          centerWorldX = originX + (b.x + b.width / 2);
+          centerWorldY = originY + (b.y + b.height / 2);
+          halfW = Math.max(10, b.width / 2);
+          halfH = Math.max(10, b.height / 2);
+        } else {
+          const dw = (this.spineboy as any).displayWidth || 200;
+          const dh = (this.spineboy as any).displayHeight || 200;
+          centerWorldX = originX + dw / 2;
+          centerWorldY = originY + dh / 2;
+          halfW = Math.max(10, dw / 2);
+          halfH = Math.max(10, dh / 2);
+        }
+      } catch {}
+
+      // Map relative to viewport center: center of screen -> 50% on both axes
+      let tx = 0.5;
+      let ty = 0.5;
+      try {
+        const vw =
+          window.innerWidth ||
+          document.documentElement.clientWidth ||
+          screen.width;
+        const vh =
+          window.innerHeight ||
+          document.documentElement.clientHeight ||
+          screen.height;
+        const centerX = vw / 2;
+        const centerY = vh / 2;
+        let clientPageX: number | null = null;
+        let clientPageY: number | null = null;
+        try {
+          const canvas = this.game.canvas as HTMLCanvasElement;
+          const rect = canvas.getBoundingClientRect();
+          if (
+            this.testAimToCursor &&
+            this.input &&
+            (this.input as any).activePointer
+          ) {
+            const p = (this.input as any).activePointer;
+            clientPageX = rect.left + p.x;
+            clientPageY = rect.top + p.y;
+          } else if (this.latestCaret) {
+            if (this.latestCaret.isScreen) {
+              try {
+                clientPageX = this.latestCaret.x - (window as any).screenX;
+                clientPageY = this.latestCaret.y - (window as any).screenY;
+              } catch {
+                clientPageX = this.latestCaret.x;
+                clientPageY = this.latestCaret.y;
+              }
+            } else {
+              clientPageX = this.latestCaret.x;
+              clientPageY = this.latestCaret.y;
+            }
+          }
+        } catch {}
+
+        if (clientPageX != null && clientPageY != null) {
+          const nx = Phaser.Math.Clamp(
+            (clientPageX - centerX) / (centerX || 1),
+            -1,
+            1
+          );
+          const ny = Phaser.Math.Clamp(
+            -(clientPageY - centerY) / (centerY || 1),
+            -1,
+            1
+          );
+          tx = Phaser.Math.Clamp(0.5 + nx * 0.5, 0, 1);
+          ty = Phaser.Math.Clamp(0.5 + ny * 0.5, 0, 1);
+          if (this.debugLogging) {
+            try {
+              console.debug("[aim][mapping] clientPage", {
+                clientPageX,
+                clientPageY,
+                centerX,
+                centerY,
+                nx,
+                ny,
+              });
+            } catch {}
+          }
+        } else {
+          // fallback: use world->model mapping
+          const px = (worldPoint.x - centerWorldX) / scaleX;
+          const py = (worldPoint.y - centerWorldY) / scaleY;
+          const nx = Phaser.Math.Clamp(px / halfW, -1, 1);
+          const ny = Phaser.Math.Clamp(-py / halfH, -1, 1);
+          tx = Phaser.Math.Clamp(0.5 + nx * 0.5, 0, 1);
+          ty = Phaser.Math.Clamp(0.5 + ny * 0.5, 0, 1);
+        }
+      } catch (e) {}
+      if (this.debugLogging) {
+        try {
+          console.info(
+            `[aim] percent X=${Math.round(tx * 100)}% Y=${Math.round(
+              ty * 100
+            )}%`
+          );
+          if (Math.round(ty * 100) === 0 || Math.round(ty * 100) === 100) {
+            try {
+              // compute diagnostic py from worldPoint if available
+              const diagPy = worldPoint
+                ? (worldPoint.y - centerWorldY) / scaleY
+                : null;
+              console.debug("[aim][diag] canvasClientY/py/centerWorldY/halfH", {
+                latestCaret: this.latestCaret,
+                py: diagPy,
+                centerWorldY,
+                halfH,
+              });
+            } catch {}
+          }
+        } catch {}
+      }
+      // set track time proportionally to animation duration
+      try {
+        if (this.aimXEntry && typeof this.aimXEntry.animation === "object") {
+          const dur = (this.aimXEntry.animation.duration || 1) as number;
+          this.aimXEntry.trackTime = tx * dur;
+        }
+      } catch {}
+      try {
+        if (this.aimYEntry && typeof this.aimYEntry.animation === "object") {
+          const dur = (this.aimYEntry.animation.duration || 1) as number;
+          this.aimYEntry.trackTime = ty * dur;
+        }
+      } catch {}
+      if (this.debugLogging) {
+        try {
+          console.debug("[aim] anim 0..1", { tx, ty });
+        } catch {}
+      }
+    } catch {}
+  }
+
   // Run after animations are applied so our manual rotation persists this frame
   private postUpdate = () => {
+    // If current model is an aim model we must not run head control logic
+    if (this.isAimModel) return;
     if (!this.spineboy || !this.spineboy.skeleton) return;
 
     const skeleton = this.spineboy.skeleton as any;
@@ -679,10 +1087,10 @@ class SpineDemo extends Phaser.Scene {
   ): { atlasUrl: string; skelUrl: string } | null {
     if (!indexRoot || !key) return null;
     const lcKey = key.toLowerCase();
-    let foundPath: string[] | null = null;
+    let foundPath: string[] = [];
     let foundFiles: string[] = [];
     const dfs = (node: any, path: string[]) => {
-      if (foundPath) return;
+      if (foundPath.length) return;
       const nodeName = (node.name || "").toLowerCase();
       const files: string[] = node.files || [];
       if (
@@ -697,10 +1105,12 @@ class SpineDemo extends Phaser.Scene {
         dfs(child, path.concat(child.name));
     };
     dfs(indexRoot, []);
-    if (!foundPath) return null;
-    const base =
-      SpineDemo.NIKKE_BASE +
-      (foundPath.length ? foundPath.join("/") + "/" : "");
+    if (!foundPath || foundPath.length === 0) return null;
+    let base = SpineDemo.NIKKE_BASE + foundPath.join("/") + "/";
+    // If path starts with dotgg marker, use the nikke-db-legacy host (dotgg index points to that)
+    if (foundPath[0] && (foundPath[0] as string).toLowerCase() === "dotgg") {
+      base = SpineDemo.NIKKE_BASE + foundPath.slice(1).join("/") + "/";
+    }
     const pick = (ext: string) => {
       const candidates = foundFiles.filter((f) =>
         f.toLowerCase().endsWith(ext)
@@ -716,7 +1126,12 @@ class SpineDemo extends Phaser.Scene {
   }
 
   private resolveNodeByPath(indexRoot: any, parts: string[]) {
-    const lower = parts.map((p) => p.toLowerCase());
+    // allow paths prefixed with 'dotgg' marker and strip it for lookup
+    const cleanedParts =
+      parts && parts.length && parts[0] === "dotgg"
+        ? parts.slice(1)
+        : parts || [];
+    const lower = cleanedParts.map((p) => p.toLowerCase());
     let node = indexRoot;
     for (const part of lower) {
       const next = (node.children || []).find(
@@ -733,9 +1148,17 @@ class SpineDemo extends Phaser.Scene {
   ): { atlasUrl: string; skelUrl: string } | null {
     const files: string[] = node.files || [];
     if (!files.length) return null;
-    const base =
+    let base =
       SpineDemo.NIKKE_BASE +
       (this.nikkePathParts ? this.nikkePathParts.join("/") + "/" : "");
+    // support virtual dotgg nodes which use a special marker as first part
+    if (this.nikkePathParts && this.nikkePathParts[0] === "dotgg") {
+      // If user navigated into virtual dotgg path, build base to dotgg root (we'll append filenames directly)
+      base = SpineDemo.DOTGG_BASE;
+      // if further parts exist, append them so atlas/skel live under nested folder
+      const real = this.nikkePathParts.slice(1);
+      if (real.length) base += real.join("/") + "/";
+    }
     const pick = (ext: string) => {
       const candidates = files.filter((f) => f.toLowerCase().endsWith(ext));
       if (candidates.length === 0) return null;
@@ -749,114 +1172,237 @@ class SpineDemo extends Phaser.Scene {
     return { atlasUrl, skelUrl };
   }
 
-  private renderNikkeBrowser(indexRoot: any) {
+  // Merge a nikkie4.1-style index into the existing nikke index tree.
+  // For each entry in n4.skins array we create a folder node under root with
+  // a special `_dotgg` property containing skins info so renderer can show them.
+  private mergeNikkie4IntoIndex(indexRoot: any, n4: any) {
+    try {
+      const top = indexRoot;
+      if (!n4) return;
+      // support wrapper arrays where actual object with `skins` is nested
+      let src: any = n4;
+      if (!n4.skins && Array.isArray(n4)) {
+        const found = n4.find(
+          (x: any) => x && x.skins && Array.isArray(x.skins)
+        );
+        if (found) src = found;
+      }
+      if (!src.skins || !Array.isArray(src.skins)) return;
+      top.children = top.children || [];
+      for (const entry of src.skins) {
+        const name = entry.name || entry._id || "unknown";
+        // create or find folder under root (case-insensitive)
+        let folder = top.children.find(
+          (c: any) =>
+            String(c.name || "").toLowerCase() === String(name).toLowerCase()
+        );
+        if (!folder) {
+          folder = { name, children: [], files: [] };
+          top.children.push(folder);
+        }
+        // build _dotgg array with skins
+        folder._dotgg = folder._dotgg || [];
+        if (entry.skins && Array.isArray(entry.skins)) {
+          folder.children = folder.children || [];
+          for (const s of entry.skins) {
+            folder._dotgg.push({ name: s.name, skin: s.skin });
+            const skinFolderName = String(s.skin || s.name);
+            const exists = folder.children.some(
+              (c: any) =>
+                String(c.name || "").toLowerCase() ===
+                skinFolderName.toLowerCase()
+            );
+            if (!exists) {
+              folder.children.push({
+                name: skinFolderName,
+                files: [skinFolderName + ".skel", skinFolderName + ".atlas"],
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // swallow merge errors
+    }
+  }
+
+  private renderNikkeBrowser() {
     const existing = document.getElementById("nikke-browser");
     if (existing) existing.remove();
     const container = document.createElement("div");
     container.id = "nikke-browser";
 
-    // --- BREADCRUMBS ---
-    const breadcrumbs = document.createElement("div");
-    breadcrumbs.className = "nikke-breadcrumbs";
-    const pathParts = this.nikkePathParts || [];
-    const fullPath: string[] = [];
-    // Корень
-    const rootCrumb = document.createElement("a");
-    rootCrumb.textContent = "/";
-    rootCrumb.onclick = (e) => {
-      e.preventDefault();
-      console.log("Breadcrumb click:", []);
-      this.navigateToPath([]);
+    // Repo selector
+    const repoWrap = document.createElement("div");
+    repoWrap.style.marginBottom = "8px";
+    const sel = document.createElement("select");
+    const opt1 = document.createElement("option");
+    opt1.value = "nikke";
+    opt1.textContent = "Nikke.json";
+    const opt2 = document.createElement("option");
+    opt2.value = "nikkie4";
+    opt2.textContent = "nikkie4.1.json";
+    sel.appendChild(opt1);
+    sel.appendChild(opt2);
+    sel.value = this.currentRepo;
+    sel.onchange = () => {
+      this.currentRepo = sel.value as any;
+      // reset state
+      this.nikkePathParts = null;
+      this.n4ExpandedCharacter = null;
+      this.renderNikkeBrowser();
     };
-    breadcrumbs.appendChild(rootCrumb);
-    // Остальные части пути
-    pathParts.forEach((part, idx) => {
-      breadcrumbs.appendChild(document.createTextNode(" / "));
-      const crumb = document.createElement("a");
-      fullPath.push(part);
-      crumb.textContent = part;
-      crumb.onclick = (e) => {
-        e.preventDefault();
-        const to = pathParts.slice(0, idx + 1);
-        console.log("Breadcrumb click:", to);
-        this.navigateToPath(to);
-      };
-      breadcrumbs.appendChild(crumb);
-    });
-    container.appendChild(breadcrumbs);
+    repoWrap.appendChild(sel);
+    container.appendChild(repoWrap);
 
     // --- FILE LIST ---
-    const node =
-      this.nikkePathParts && this.nikkePathParts.length
-        ? this.resolveNodeByPath(indexRoot, this.nikkePathParts)
-        : indexRoot;
     const list = document.createElement("div");
     list.className = "nikke-file-list";
 
-    // Up one level
-    if (this.nikkePathParts && this.nikkePathParts.length) {
-      const upRow = document.createElement("div");
-      upRow.className = "nikke-file-row folder";
-      upRow.innerHTML = '<span class="icon">⬆️</span> ..';
-      upRow.onclick = () => {
-        const upParts = this.nikkePathParts!.slice(0, -1);
-        console.log("Navigate to:", upParts);
-        this.navigateToPath(upParts);
-      };
-      list.appendChild(upRow);
-    }
+    if (this.currentRepo === "nikke") {
+      const indexData = this.cache.json.get("nikke-index");
+      if (!indexData) {
+        const msg = document.createElement("div");
+        msg.textContent = "Nikke index not loaded";
+        list.appendChild(msg);
+      } else {
+        // Determine current node (root or navigated path)
+        const node =
+          this.nikkePathParts && this.nikkePathParts.length
+            ? this.resolveNodeByPath(indexData, this.nikkePathParts) || null
+            : indexData;
 
-    // Children dirs
-    for (const child of node?.children || []) {
-      const row = document.createElement("div");
-      row.className = "nikke-file-row folder";
-      row.innerHTML = '<span class="icon">📁</span>' + child.name;
-      row.onclick = () => {
-        const parts = [...(this.nikkePathParts || []), child.name];
-        console.log("Navigate to:", parts);
-        this.navigateToPath(parts);
-      };
-      list.appendChild(row);
-    }
+        // Breadcrumbs
+        const crumbs = document.createElement("div");
+        crumbs.className = "nikke-breadcrumbs";
+        const rootCrumb = document.createElement("a");
+        rootCrumb.textContent = "/";
+        rootCrumb.onclick = (e) => {
+          e.preventDefault();
+          this.nikkePathParts = null;
+          this.renderNikkeBrowser();
+        };
+        crumbs.appendChild(rootCrumb);
+        const parts = this.nikkePathParts || [];
+        parts.forEach((part, idx) => {
+          crumbs.appendChild(document.createTextNode(" / "));
+          const c = document.createElement("a");
+          c.textContent = part;
+          c.onclick = (e) => {
+            e.preventDefault();
+            this.nikkePathParts = parts.slice(0, idx + 1);
+            this.renderNikkeBrowser();
+          };
+          crumbs.appendChild(c);
+        });
+        list.appendChild(crumbs);
 
-    // Files (модели и прочее)
-    const files: string[] = node?.files || [];
-    const modelFiles = files.filter(
-      (f) => f.endsWith(".skel") || f.endsWith(".atlas")
-    );
-    const otherFiles = files.filter(
-      (f) => !f.endsWith(".skel") && !f.endsWith(".atlas")
-    );
-    // Модели
-    for (const f of modelFiles) {
-      const row = document.createElement("div");
-      row.className = "nikke-file-row file";
-      let icon = f.endsWith(".skel") ? "🦴" : "🗎";
-      row.innerHTML = `<span class="icon">${icon}</span>${f}`;
-      row.onclick = () => {
-        // ничего не делаем, загрузка только кнопкой ниже
-      };
-      list.appendChild(row);
-    }
-    // Прочие файлы
-    for (const f of otherFiles) {
-      const row = document.createElement("div");
-      row.className = "nikke-file-row file";
-      row.innerHTML = `<span class="icon">📄</span>${f}`;
-      row.onclick = () => {};
-      list.appendChild(row);
-    }
+        // Up one level
+        if (this.nikkePathParts && this.nikkePathParts.length) {
+          const upRow = document.createElement("div");
+          upRow.className = "nikke-file-row folder";
+          upRow.innerHTML = '<span class="icon">⬆️</span> ..';
+          upRow.onclick = () => {
+            this.nikkePathParts = this.nikkePathParts!.slice(0, -1);
+            this.renderNikkeBrowser();
+          };
+          list.appendChild(upRow);
+        }
 
-    // Кнопка загрузки модели, если есть .skel/.atlas
-    if (modelFiles.length) {
-      const loadBtn = document.createElement("button");
-      loadBtn.className = "nikke-load-btn";
-      loadBtn.textContent = "Загрузить модель из этой папки";
-      loadBtn.onclick = () => {
-        console.log("Load model:", this.nikkePathParts || []);
-        this.tryLoadModelForPath(this.nikkePathParts || []);
-      };
-      list.appendChild(loadBtn);
+        // Children dirs
+        for (const child of node?.children || []) {
+          const row = document.createElement("div");
+          row.className = "nikke-file-row folder";
+          row.innerHTML = '<span class="icon">📁</span>' + child.name;
+          row.onclick = () => {
+            this.nikkePathParts = [...(this.nikkePathParts || []), child.name];
+            this.renderNikkeBrowser();
+          };
+          list.appendChild(row);
+        }
+
+        // Files (models etc.) if any
+        const files: string[] = node?.files || [];
+        const modelFiles = files.filter(
+          (f) => f.endsWith(".skel") || f.endsWith(".atlas")
+        );
+        const otherFiles = files.filter(
+          (f) => !f.endsWith(".skel") && !f.endsWith(".atlas")
+        );
+        for (const f of modelFiles) {
+          const row = document.createElement("div");
+          row.className = "nikke-file-row file";
+          const icon = f.endsWith(".skel") ? "🦴" : "🗎";
+          row.innerHTML = `<span class="icon">${icon}</span>${f}`;
+          list.appendChild(row);
+        }
+        for (const f of otherFiles) {
+          const row = document.createElement("div");
+          row.className = "nikke-file-row file";
+          row.innerHTML = `<span class="icon">📄</span>${f}`;
+          list.appendChild(row);
+        }
+
+        if (modelFiles.length) {
+          const loadBtn = document.createElement("button");
+          loadBtn.className = "nikke-load-btn";
+          loadBtn.textContent = "Загрузить модель из этой папки";
+          loadBtn.onclick = () => {
+            this.tryLoadModelForPath(this.nikkePathParts || []);
+          };
+          list.appendChild(loadBtn);
+        }
+      }
+    } else {
+      // nikkie4 index: show characters and their skins as clickable folders
+      const n4 = this.cache.json.get("nikkie4-index");
+      if (!n4) {
+        const msg = document.createElement("div");
+        msg.textContent = "nikkie4 index not loaded";
+        list.appendChild(msg);
+      } else {
+        // find wrapper object if file is an array
+        let src: any = n4;
+        if (!n4.skins && Array.isArray(n4)) {
+          const found = n4.find(
+            (x: any) => x && x.skins && Array.isArray(x.skins)
+          );
+          if (found) src = found;
+        }
+        for (const ch of src.skins || []) {
+          const row = document.createElement("div");
+          row.className = "nikke-file-row folder";
+          row.innerHTML = `<span class=\"icon\">👤</span>${ch.name}`;
+
+          // container for skins (will be toggled open/closed without re-render)
+          const skinContainer = document.createElement("div");
+          skinContainer.style.display =
+            this.n4ExpandedCharacter === ch.name ? "block" : "none";
+
+          // populate skin rows
+          for (const s of ch.skins || []) {
+            const skinRow = document.createElement("div");
+            skinRow.className = "nikke-file-row file";
+            skinRow.style.paddingLeft = "18px";
+            skinRow.innerHTML = `<span class=\"icon\">📁</span>${s.name} (${s.skin})`;
+            skinRow.onclick = () => {
+              // navigate virtual path ["dotgg", ch.name, s.skin] and load immediately
+              this.nikkePathParts = ["dotgg", ch.name, s.skin];
+              this.tryLoadModelForPath(this.nikkePathParts);
+            };
+            skinContainer.appendChild(skinRow);
+          }
+
+          row.onclick = () => {
+            const open = skinContainer.style.display === "block";
+            skinContainer.style.display = open ? "none" : "block";
+            this.n4ExpandedCharacter = open ? null : ch.name;
+          };
+
+          list.appendChild(row);
+          list.appendChild(skinContainer);
+        }
+      }
     }
 
     container.appendChild(list);
@@ -1147,18 +1693,44 @@ class SpineDemo extends Phaser.Scene {
     window.history.replaceState(null, "", newUrl);
 
     // Re-render browser and attempt load
-    const indexData = this.cache.json.get("nikke-index");
-    this.renderNikkeBrowser(indexData);
+    this.renderNikkeBrowser();
     this.tryLoadModelForPath(parts);
   }
 
   private tryLoadModelForPath(parts: string[]) {
+    // If this is a nikkie4/dotgg virtual path or current repo is nikkie4, build URLs from DOTGG_BASE
+    try {
+      if (this.currentRepo === "nikkie4" || (parts && parts[0] === "dotgg")) {
+        const skin = parts[parts.length - 1];
+        if (!skin) return;
+        const atlasUrl =
+          SpineDemo.DOTGG_BASE + encodeURIComponent(skin) + ".atlas";
+        const skelUrl =
+          SpineDemo.DOTGG_BASE + encodeURIComponent(skin) + ".skel";
+        const nameHint = (skelUrl || atlasUrl || "").toLowerCase();
+        const idleAnim = nameHint.includes("aim")
+          ? "aim_idle"
+          : nameHint.includes("cover")
+          ? "cover_idle"
+          : "idle";
+        this.loadModelFromUrls(skelUrl, atlasUrl, 1, idleAnim);
+        return;
+      }
+    } catch (e) {}
+
+    // Default: resolve from nikke-index tree
     const indexData = this.cache.json.get("nikke-index");
     if (!indexData) return;
     const node = this.resolveNodeByPath(indexData, parts);
     const picked = node ? this.pickModelFromNode(node) : null;
     if (!picked) return;
-    this.loadModelFromUrls(picked.skelUrl, picked.atlasUrl, 1, "idle");
+    const nameHint = (picked.skelUrl || picked.atlasUrl || "").toLowerCase();
+    const idleAnim = nameHint.includes("aim")
+      ? "aim_idle"
+      : nameHint.includes("cover")
+      ? "cover_idle"
+      : "idle";
+    this.loadModelFromUrls(picked.skelUrl, picked.atlasUrl, 1, idleAnim);
   }
 
   private loadModelFromUrls(
@@ -1172,6 +1744,14 @@ class SpineDemo extends Phaser.Scene {
       this.spineboy.destroy();
       this.spineboy = null as any;
     }
+    // clear scheduled action from previous model
+    try {
+      if (this.actionTimeout) {
+        clearTimeout(this.actionTimeout);
+        this.actionTimeout = null;
+      }
+      this.actionPlaying = false;
+    } catch (e) {}
     // Reset bone refs so they re-init for the new skeleton
     this.headBone = null;
     this.lookTargetBone = null;
@@ -1194,11 +1774,95 @@ class SpineDemo extends Phaser.Scene {
       this.holder.add(spineboy);
       spineboy.animationState.setAnimation(1, idle, true);
       this.spineboy = spineboy;
+      // remember what idle animation was set for this model
+      this.currentIdleAnimation = idle;
+      // detect aim model and prepare aim tracks
+      this.isAimModel = (idle || "").toLowerCase().includes("aim");
+      if (this.isAimModel) {
+        try {
+          // ensure aim_x / aim_y are present and paused (we'll control time)
+          const ax = this.spineboy.animationState.setAnimation(
+            2,
+            "aim_x",
+            true
+          );
+          if (ax) ax.timeScale = 0;
+          this.aimXEntry = ax;
+        } catch (e) {}
+        try {
+          const ay = this.spineboy.animationState.setAnimation(
+            3,
+            "aim_y",
+            true
+          );
+          if (ay) ay.timeScale = 0;
+          this.aimYEntry = ay;
+        } catch (e) {}
+        // disable head automatic logic so aim_x/aim_y drive direction
+        this.headBone = null;
+        this.lookTargetBone = null;
+      }
       this.setupHeadAndPointer();
       this.setupSpineboyDrag();
       this.fitContentToViewport();
+      // If this is a standing model (idle), schedule random action plays
+      try {
+        const isAim = (idle || "").toLowerCase().includes("aim");
+        const isCover = (idle || "").toLowerCase().includes("cover");
+        if (!isAim && !isCover) {
+          // start scheduling random action animations
+          this.scheduleNextAction();
+        }
+      } catch (e) {}
     });
     this.load.start();
+  }
+
+  private scheduleNextAction() {
+    try {
+      if (this.actionTimeout) clearTimeout(this.actionTimeout);
+      // random delay between 6 and 25 seconds
+      const delay = 6000 + Math.floor(Math.random() * 19000);
+      this.actionTimeout = setTimeout(() => {
+        this.playActionOnce();
+      }, delay);
+    } catch (e) {}
+  }
+
+  private playActionOnce() {
+    try {
+      if (!this.spineboy || this.actionPlaying) return;
+      const state = this.spineboy.animationState;
+      // try to set action on track 2 (non-interfering)
+      try {
+        const entry = state.setAnimation(2, "action", false);
+        if (entry) {
+          this.actionPlaying = true;
+          // when finished, return to idle on track 1
+          entry.listener = {
+            complete: () => {
+              try {
+                state.addAnimation(
+                  2,
+                  this.currentIdleAnimation || "idle",
+                  true,
+                  0
+                );
+              } catch (e) {}
+              this.actionPlaying = false;
+              // schedule next random action
+              this.scheduleNextAction();
+            },
+          } as any;
+        } else {
+          // couldn't play 'action' - schedule next
+          this.scheduleNextAction();
+        }
+      } catch (e) {
+        // ignore and reschedule
+        this.scheduleNextAction();
+      }
+    } catch (e) {}
   }
 
   private fitContentToViewport() {

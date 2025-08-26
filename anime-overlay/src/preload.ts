@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld("overlayAPI", {
     url: string
   ): Promise<{ x: number; y: number; scale: number } | null> =>
     ipcRenderer.invoke("overlay-get-model-state", url),
+  // Return caret/screen typing position from host (optional)
+  getCaretPosition: (): Promise<{ x: number; y: number } | null> =>
+    ipcRenderer.invoke("overlay-get-caret-position"),
   setZoomFactor: (zoomFactor: number = 1.0) =>
     ipcRenderer.invoke("overlay-set-zoom-factor", zoomFactor),
   saveZoomSetting: (url: string, zoomFactor: number) =>
@@ -60,6 +63,7 @@ declare global {
       getModelState: (
         url: string
       ) => Promise<{ x: number; y: number; scale: number } | null>;
+      getCaretPosition: () => Promise<{ x: number; y: number } | null>;
     };
   }
 }

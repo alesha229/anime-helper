@@ -34,7 +34,7 @@ function createWindow() {
     alwaysOnTop: true,
     resizable: true,
     hasShadow: false,
-    skipTaskbar: true,
+    skipTaskbar: false,
     x,
     y,
     webPreferences: {
@@ -61,15 +61,48 @@ function createWindow() {
         try {
           const txt = fs.readFileSync(eventsFile, "utf8");
           const obj = JSON.parse(txt);
-          if (obj && obj.type === "shutdown") {
-            try {
-              if (mainWindow && !mainWindow.isDestroyed()) {
-                mainWindow.close();
-              }
-              app.quit();
-            } catch {}
-            return;
-          }
+
+          // If this is a caret event, try to estimate screen coordinates so overlay can aim
+          try {
+            if (obj && obj.type === "caret") {
+              const primary = screen.getPrimaryDisplay();
+              const area = (primary && (primary as any).workArea) ||
+                (primary as any).bounds || { x: 0, y: 0 };
+              // Basic heuristics — these can be tuned by users
+              const fontSize = Number(obj.fontSize) || 14;
+              const lineHeight = fontSize * 1.25; // px
+              const charWidth = fontSize * 0.6; // px
+              // Approximate editor top-left within work area
+              const editorLeft = (area as any).x + 40; // assume some left margin / window chrome
+              const editorTop = (area as any).y + 60; // assume some top chrome (title bar, tabs)
+              // Gutter (line numbers, folding) width
+              const gutter = 56;
+              const visibleStart =
+                typeof obj.visibleStart === "number"
+                  ? obj.visibleStart
+                  : obj.line;
+              const rowOffset =
+                (typeof obj.line === "number" ? obj.line : 0) - visibleStart;
+              const caretX =
+                editorLeft +
+                gutter +
+                (typeof obj.character === "number" ? obj.character : 0) *
+                  charWidth;
+              const caretY =
+                editorTop + rowOffset * lineHeight + lineHeight / 2;
+              obj.screenX = Math.round(caretX);
+              obj.screenY = Math.round(caretY);
+              // include some debug metadata
+              obj._caretMapping = {
+                editorLeft,
+                editorTop,
+                gutter,
+                lineHeight,
+                charWidth,
+              };
+            }
+          } catch (e) {}
+
           if (mainWindow && !mainWindow.isDestroyed())
             mainWindow.webContents.send("overlay-event", obj);
         } catch {}
