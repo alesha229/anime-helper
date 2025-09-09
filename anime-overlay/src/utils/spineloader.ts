@@ -1,64 +1,89 @@
-// spineLoader.ts
 import * as PIXI from "pixi.js";
-import { Spine as Spine40 } from "@pixi-spine/runtime-4.0";
-import { Spine as Spine41 } from "@pixi-spine/runtime-4.1";
+import { Assets } from "@pixi/assets";
+import { Spine } from "@pixi-spine/all-4.1";
 
 /**
- * Создаёт Spine-объект нужной версии (4.0 или 4.1)
+ * Современный загрузчик Spine для Pixi.js, использующий @pixi/assets (Pixi v7+).
+ * Он обрабатывает рантайм Spine 4.1.
  */
-function createSpine(spineData: any) {
-  const version = spineData.skeleton?.spine ?? "";
-  console.log(spineData);
-  if (version.startsWith("4.0")) return new Spine40(spineData);
-  if (version.startsWith("4.1")) return new Spine41(spineData);
+export class AssetSpineLoader {
+  private static initialized = false;
 
-  throw new Error(`Unsupported Spine version: ${version}`);
-}
+  /**
+   * Инициализирует загрузчик для Spine 4.1.
+   * Этот метод следует вызывать один раз при инициализации вашего приложения.
+   */
+  public static async init() {
+    if (this.initialized) {
+      console.warn("Загрузчик Spine уже был инициализирован.");
+      return;
+    }
 
-/**
- * Загружает текстовый файл (JSON или atlas)
- */
-async function loadText(path: string): Promise<string> {
-  const response = await fetch(path);
-  if (!response.ok) throw new Error(`Failed to load ${path}`);
-  return await response.text();
-}
+    // Настройка предпочтений загрузки для лучшей совместимости
+    PIXI.Assets.setPreferences({
+      preferCreateImageBitmap: false,
+    });
 
-/**
- * Загружает Spine-модель (.skel + .atlas + .png)
- */
-export async function loadSpineModel(paths: {
-  skel: string;
-  atlas: string;
-  png: string;
-}) {
-  // 1. Загружаем .skel
-  const skelText = await loadText(paths.skel);
-  let skelData: any;
-
-  try {
-    skelData = JSON.parse(skelText);
-  } catch {
-    // если бинарный .skel, можно использовать ArrayBuffer
-    const buffer = new Uint8Array(
-      await (await fetch(paths.skel)).arrayBuffer()
-    );
-    skelData = buffer;
+    this.initialized = true;
+    console.log("Инициализирован загрузчик Spine для v4.1.");
   }
 
-  // 2. Загружаем .atlas
-  const atlasText = await loadText(paths.atlas);
+  /**
+   * Создает простой графический плейсхолдер для использования в случае сбоя загрузки Spine.
+   * @returns Объект PIXI.Graphics, представляющий плейсхолдер.
+   */
+  private createSpinePlaceholder(): PIXI.Graphics {
+    const placeholder = new PIXI.Graphics();
+    placeholder.beginFill(0xff0000, 0.5); // Красный, полупрозрачный
+    placeholder.drawRect(0, 0, 100, 100);
+    placeholder.endFill();
+    console.warn(
+      "Создан плейсхолдер для ассета Spine, который не удалось загрузить."
+    );
+    return placeholder;
+  }
 
-  // 3. Загружаем текстуру
-  const texture = PIXI.Texture.from(paths.png);
+  /**
+   * Загружает модель Spine, создавая и загружая бандл ассетов.
+   * @param name - Уникальное имя для бандла ассетов (например, 'my-character').
+   * @param paths - Объект, содержащий URL-адреса для файлов skel, atlas и текстуры (png).
+   * @returns Промис, который разрешается в PIXI.Container (объект Spine или плейсхолдер).
+   */
+  public async loadSpineBundle(
+    name: string,
+    paths: { skel: string; atlas: string; png: string }
+  ): Promise<PIXI.Container> {
+    if (!AssetSpineLoader.initialized) {
+      console.error(
+        "Загрузчик Spine не инициализирован. Пожалуйста, вызовите AssetSpineLoader.init() сначала."
+      );
+      return this.createSpinePlaceholder();
+    }
 
-  // 4. Создаём Spine-объект (выбираем версию)
-  const spine = createSpine(skelData);
+    try {
+      // Добавляем бандл ассетов в загрузчик.
+      // Assets.addBundle безопасно вызывать повторно с тем же именем.
+      Assets.addBundle(name, paths);
 
-  // 5. Связываем atlas и текстуру
-  // В runtime 4.x автоматически ищет текстуру с таким именем, если она совпадает с атласом
-  // В большинстве случаев достаточно просто добавить на сцену и обновить
-  spine.update(0);
+      // Загружаем бандл.
+      const resources = await Assets.loadBundle(name);
 
-  return spine;
+      // В Pixi v7+ парсер напрямую возвращает готовый экземпляр Spine.
+      const spineInstance = resources.skel;
+
+      if (!spineInstance || !(spineInstance instanceof Spine)) {
+        throw new Error("Загруженный ресурс не является экземпляром Spine.");
+      }
+
+      return spineInstance;
+    } catch (error) {
+      console.error(
+        `Не удалось загрузить бандл Spine '${name}'. Создается плейсхолдер.`,
+        error
+      );
+      // Выгружаем бандл, чтобы можно было повторить попытку.
+      Assets.unloadBundle(name);
+      return this.createSpinePlaceholder();
+    }
+  }
 }

@@ -1,20 +1,17 @@
-// @ts-nocheck
 import * as PIXI from "pixi.js";
 
-// Типы для динамической загрузки Spine
-type SpineModule = typeof import("@pixi-spine/all-4.1");
-type SpineInstance = SpineModule["Spine"];
+import { ALPHA_MODES } from "pixi.js";
+import { Spine } from "@pixi-spine/all-4.1";
 
-class SpinePort {
-  private app: PIXI.Application;
+class PixiSpineDemo {
+  private app!: PIXI.Application;
   private holder!: PIXI.Container;
-  private spineboy: SpineInstance | null = null;
-
-  // --- Все ваши свойства из оригинального класса ---
+  private spineboy!: Spine;
   private headBone: any | null = null;
   private lookTargetBone: any | null = null;
   private pointerPos = new PIXI.Point();
   private headBaseRotationDeg = 0;
+  private aimSmoothing = 0.2;
   private baseMaxTurnDeg = 120;
   private maxTurnScale = 1;
   private chainLength = 1;
@@ -57,9 +54,9 @@ class SpinePort {
     | "ease-out"
     | "ease-in-out"
     | "smoothstep" = "ease-out";
-  private isDraggingSpine = false;
-  private dragSpineOffsetX = 0;
-  private dragSpineOffsetY = 0;
+  private isDragging = false;
+  private dragOffsetX = 0;
+  private dragOffsetY = 0;
   private currentIdleAnimation: string = "idle";
   private isAimModel: boolean = false;
   private aimXEntry: any = null;
@@ -68,6 +65,7 @@ class SpinePort {
     null;
   private testAimToCursor: boolean = false;
   private isUiHidden: boolean = false;
+  private clickThroughEnabled: boolean = false;
   private uiToggleButton: HTMLElement | null = null;
   private debugDot: HTMLElement | null = null;
   private debugLogging: boolean = true;
@@ -75,42 +73,55 @@ class SpinePort {
   private n4ExpandedCharacter: string | null = null;
   private actionTimeout: any = null;
   private actionPlaying: boolean = false;
-  private nikkeIndexCache: any = null;
-  private nikkie4IndexCache: any = null;
+  private lastFrameTime = 0;
 
   constructor() {
-    this.app = new PIXI.Application({
-      width: window.innerWidth,
-      height: window.innerHeight,
-      resizeTo: window,
-      backgroundColor: 0x000000,
-      backgroundAlpha: 0.0,
-      antialias: true,
-      resolution: window.devicePixelRatio || 1,
-      autoDensity: true,
-    });
-    document.body.appendChild(this.app.view as HTMLCanvasElement);
     this.init();
   }
 
   private async init() {
+    // Initialize PIXI Application
+    this.app = new PIXI.Application({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: 0x000000,
+      backgroundAlpha: 0,
+      antialias: true,
+      resolution: window.devicePixelRatio || 1,
+      autoDensity: true,
+      resizeTo: window,
+    });
+
+    // Add canvas to DOM
+    document.body.appendChild(this.app.view as HTMLCanvasElement);
+
+    // Create main container
     this.holder = new PIXI.Container();
+    this.holder.x = this.app.screen.width / 2;
+    this.holder.y = this.app.screen.height / 2;
     this.app.stage.addChild(this.holder);
-    this.centerHolder();
 
-    const bodyEl = document.body as HTMLBodyElement;
-    bodyEl.style.margin = "0";
-    bodyEl.style.overflow = "hidden";
-    (this.app.view as HTMLCanvasElement).style.imageRendering = "auto";
+    // Setup viewport and parameters
+    await this.preload();
+    this.create();
 
-    try {
-      this.nikkeIndexCache = await (await fetch("Nikke.json")).json();
-      this.nikkie4IndexCache = await (await fetch("nikkie4.1.json")).json();
-    } catch (e) {
-      console.error("Не удалось загрузить файлы-индексы:", e);
-    }
+    // Start update loop
+    this.app.ticker.add(this.update, this);
+  }
 
+  // Добавляем свойства для хранения данных
+  private nikkeIndexData: any = null;
+  private nikkie4IndexData: any = null;
+
+  private async preload() {
     const params = new URLSearchParams(window.location.search);
+
+    // Setup overlay API if available
+    try {
+      // (window as any).overlayAPI?.setZoomFactor?.(0.5);
+      (window as any).overlayAPI?.enterFullscreen?.();
+    } catch {}
+
     this.nikkeModelKey = params.get("nikke");
     const nikkePath = params.get("nikkePath") || params.get("path");
     this.nikkePathParts = nikkePath
@@ -120,217 +131,441 @@ class SpinePort {
           .filter((p) => !!p)
       : null;
 
-    if (
-      this.nikkeIndexCache &&
-      this.nikkePathParts &&
-      this.nikkePathParts.length
-    ) {
-      this.tryLoadModelForPath(this.nikkePathParts);
-    } else {
-      console.log("Путь к модели не указан, загрузка не будет произведена.");
+    // Load nikke index (древовидная структура)
+    try {
+      const nikkeResponse = await fetch("./Nikke.json");
+      if (nikkeResponse.ok) {
+        const nikkeData = await nikkeResponse.json();
+        console.log("Loaded Nikke.json:", nikkeData);
+        this.nikkeIndexData = nikkeData;
+      } else {
+        console.warn("Nikke.json not found, using minimal fallback");
+        this.nikkeIndexData = { name: "root", children: [], files: [] };
+      }
+    } catch (e) {
+      console.warn("Could not load Nikke.json:", e);
+      this.nikkeIndexData = { name: "root", children: [], files: [] };
     }
 
+    // Load nikkie4 index (специальный формат массива)
+    try {
+      const nikkie4Response = await fetch("./nikkie4.1.json");
+      if (nikkie4Response.ok) {
+        const rawData = await nikkie4Response.json();
+        console.log("Raw nikkie4.1.json:", rawData);
+
+        // Обрабатываем специальный формат nikkie4.1.json
+        if (
+          Array.isArray(rawData) &&
+          rawData.length > 3 &&
+          rawData[3] &&
+          rawData[3].skins
+        ) {
+          // Формат: ["$", "$Lb", null, {skins: [...]}]
+          this.nikkie4IndexData = rawData[3];
+          console.log(
+            "Using nikkie4 data from array[3]:",
+            this.nikkie4IndexData
+          );
+        } else if (rawData && rawData.skins) {
+          // Обычный формат объекта
+          this.nikkie4IndexData = rawData;
+          console.log("Using nikkie4 data as object:", this.nikkie4IndexData);
+        } else {
+          console.warn("Unexpected nikkie4.1.json format, using fallback");
+          this.nikkie4IndexData = { skins: [] };
+        }
+      } else {
+        console.warn("nikkie4.1.json not found, using minimal fallback");
+        this.nikkie4IndexData = { skins: [] };
+      }
+    } catch (e) {
+      console.warn("Could not load nikkie4.1.json:", e);
+      this.nikkie4IndexData = { skins: [] };
+    }
+
+    // Add default local model
+    PIXI.Assets.add({
+      alias: "spineboy-data",
+      src: "./assets/favorite_c550_00.skel",
+    });
+
+    PIXI.Assets.setPreferences({
+      preferCreateImageBitmap: false,
+    });
+  }
+
+  private create() {
+    // Setup full viewport
+    const htmlEl = document.documentElement;
+    const bodyEl = document.body;
+    htmlEl.style.height = "100%";
+    htmlEl.style.width = "100%";
+    bodyEl.style.margin = "0";
+    bodyEl.style.padding = "0";
+    bodyEl.style.height = "100%";
+    bodyEl.style.width = "100%";
+
+    const canvas = this.app.view as HTMLCanvasElement;
+    canvas.style.display = "block";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+
+    // Load model based on parameters
+    this.loadInitialModel();
+
+    // Setup event listeners
     this.setupEventListeners();
 
+    // Setup UI
     this.renderNikkeBrowser();
     this.renderHeadControls();
     this.addUiToggleButton();
 
-    this.app.ticker.add(() => this.update());
+    // Handle window resize
+    window.addEventListener("resize", () => {
+      this.holder.x = this.app.screen.width / 2;
+      this.holder.y = this.app.screen.height / 2;
+      this.fitContentToViewport();
+    });
+  }
+
+  private async loadInitialModel() {
+    try {
+      // Используем наши локальные данные вместо PIXI.Assets.get()
+      const nikkeData = this.nikkeIndexData;
+
+      if (nikkeData && this.nikkePathParts && this.nikkePathParts.length) {
+        await this.tryLoadModelForPath(this.nikkePathParts);
+      } else if (nikkeData && this.nikkeModelKey) {
+        const resolved = this.resolveNikkeModel(nikkeData, this.nikkeModelKey);
+        if (resolved) {
+          const nameHint = (
+            resolved.skelUrl ||
+            resolved.atlasUrl ||
+            ""
+          ).toLowerCase();
+          const idleAnim = nameHint.includes("aim")
+            ? "aim_idle"
+            : nameHint.includes("cover")
+            ? "cover_idle"
+            : "idle";
+          await this.loadModelFromUrls(
+            resolved.skelUrl,
+            resolved.atlasUrl,
+            1,
+            idleAnim
+          );
+        } else {
+          await this.spawnLocal();
+        }
+      } else {
+        await this.spawnLocal();
+      }
+    } catch (e) {
+      console.warn("Failed to load initial model, falling back to local:", e);
+      await this.spawnLocal();
+    }
+  }
+
+  private async spawnLocal() {
+    try {
+      const resource = await PIXI.Assets.load("spineboy-data");
+      const spineboy = new Spine(resource.spineData);
+
+      spineboy.x = 0;
+      spineboy.y = 400;
+      spineboy.scale.set(10);
+
+      this.holder.addChild(spineboy);
+
+      if (spineboy.state.hasAnimation("idle")) {
+        spineboy.state.setAnimation(0, "idle", true);
+      }
+
+      this.spineboy = spineboy;
+      this.baseRotationByBone = {};
+      this.setupHeadAndPointer();
+      this.setupSpineboyInteraction();
+      this.fitContentToViewport();
+      this.isOffsetCalibrated = false;
+      this.parallaxInitialized = false;
+    } catch (e) {
+      console.error("Failed to spawn local model:", e);
+    }
   }
 
   private setupEventListeners() {
-    window.addEventListener("resize", () => this.centerHolder());
-
+    // Track pointer position
     this.app.stage.eventMode = "static";
     this.app.stage.hitArea = this.app.screen;
 
-    this.app.stage.on("pointermove", (e: PIXI.FederatedPointerEvent) => {
-      this.pointerPos.copyFrom(e.global);
-    });
-    this.app.stage.on("pointerdown", (e: PIXI.FederatedPointerEvent) => {
-      this.pointerPos.copyFrom(e.global);
+    this.app.stage.on("pointermove", (event: PIXI.FederatedPointerEvent) => {
+      this.pointerPos.set(event.global.x, event.global.y);
     });
 
+    this.app.stage.on("pointerdown", (event: PIXI.FederatedPointerEvent) => {
+      this.pointerPos.set(event.global.x, event.global.y);
+    });
+
+    // Test cursor tracking
     this.testAimToCursor = true;
     window.addEventListener("mousemove", (ev: MouseEvent) => {
-      if (!this.isAimModel) return;
-      this.latestCaret = { x: ev.screenX, y: ev.screenY, isScreen: true };
+      try {
+        if (!this.isAimModel) return;
+        const x = ev.screenX;
+        const y = ev.screenY;
+        this.latestCaret = { x, y, isScreen: true };
+        this.updateAimTracksFromCaret();
+      } catch (e) {}
     });
 
+    // Keyboard events for aim models
     window.addEventListener("keydown", (e) => {
-      if (!this.spineboy || !this.isAimModel) return;
+      if (!this.spineboy) return;
+      const isAimModel = (this.currentIdleAnimation || "")
+        .toLowerCase()
+        .includes("aim");
+      if (!isAimModel) return;
+
       try {
-        this.spineboy.state.setAnimation(1, "aim_fire", false);
-        this.spineboy.state.addAnimation(1, this.currentIdleAnimation, true, 0);
+        if (this.spineboy.state.hasAnimation("aim_fire")) {
+          this.spineboy.state.setAnimation(1, "aim_fire", false);
+          this.spineboy.state.addAnimation(
+            1,
+            this.currentIdleAnimation,
+            true,
+            0
+          );
+        }
       } catch (err) {
-        /* ignore */
+        // ignore if animation missing
+      }
+
+      // Try to get caret position from overlay API
+      try {
+        if ((window as any).overlayAPI?.getCaretPosition) {
+          (window as any).overlayAPI.getCaretPosition().then((pos: any) => {
+            if (pos && typeof pos.x === "number" && typeof pos.y === "number") {
+              this.pointerPos.set(pos.x, pos.y);
+              this.latestCaret = { x: pos.x, y: pos.y };
+              this.updateAimTracksFromCaret();
+            }
+          });
+        }
+      } catch {}
+    });
+
+    // Overlay API events
+    try {
+      if ((window as any).overlayAPI?.onEvent) {
+        (window as any).overlayAPI.onEvent((data: any) => {
+          try {
+            if (!data) return;
+            if (data.type === "caret") {
+              if (
+                typeof data.screenX === "number" &&
+                typeof data.screenY === "number"
+              ) {
+                this.latestCaret = { x: data.screenX, y: data.screenY };
+                this.pointerPos.set(data.screenX, data.screenY);
+                this.updateAimTracksFromCaret();
+              }
+            }
+          } catch (e) {}
+        });
+      }
+    } catch (e) {}
+  }
+
+  private setupSpineboyInteraction() {
+    if (!this.spineboy) return;
+
+    this.spineboy.eventMode = "static";
+    this.spineboy.cursor = "grab";
+
+    let isDragging = false;
+    let dragOffset = new PIXI.Point();
+
+    this.spineboy.on("pointerdown", (event: PIXI.FederatedPointerEvent) => {
+      isDragging = true;
+      const globalPos = event.global;
+      dragOffset.set(
+        this.spineboy.x - globalPos.x,
+        this.spineboy.y - globalPos.y
+      );
+      this.spineboy.cursor = "grabbing";
+      console.log("Drag start", globalPos.x, globalPos.y);
+    });
+
+    this.app.stage.on("pointermove", (event: PIXI.FederatedPointerEvent) => {
+      if (isDragging && this.spineboy) {
+        const globalPos = event.global;
+        this.spineboy.x = globalPos.x + dragOffset.x;
+        this.spineboy.y = globalPos.y + dragOffset.y;
+        console.log("Drag move", this.spineboy.x, this.spineboy.y);
       }
     });
+
+    this.app.stage.on("pointerup", () => {
+      if (isDragging) {
+        isDragging = false;
+        this.spineboy.cursor = "grab";
+        console.log("Drag end");
+      }
+    });
+
+    this.spineboy.on("pointerover", () => {
+      if (!isDragging) this.spineboy.cursor = "grab";
+    });
+
+    this.spineboy.on("pointerout", () => {
+      if (!isDragging) this.spineboy.cursor = "auto";
+    });
+  }
+
+  private setupHeadAndPointer() {
+    if (!this.spineboy) return;
+
+    const skeleton = this.spineboy.skeleton;
+    if (!skeleton) return;
+
+    const nameMatches = (n: string) =>
+      /head|голов|голова|headbone|neck|nec|skull/i.test(n);
+
+    // Find head bone
+    this.headBone =
+      skeleton.findBone("head") ||
+      skeleton.bones.find((b: any) => nameMatches(b.data?.name || b.name)) ||
+      null;
+
+    if (this.headBone) {
+      this.headBaseRotationDeg = this.headBone.rotation || 0;
+    }
+
+    // Capture base rotations for head and parents
+    this.baseRotationByBone = {};
+    let node: any = this.headBone;
+    for (let i = 0; i < 12 && node; i++) {
+      const n = node.data?.name || node.name || String(i);
+      this.baseRotationByBone[n] = node.rotation || 0;
+      node = node.parent;
+    }
+
+    // Capture base local position of head for parallax
+    if (this.headBone) {
+      this.headBaseLocalX = this.headBone.x || 0;
+      this.headBaseLocalY = this.headBone.y || 0;
+    }
+    this.parallaxInitialized = false;
+
+    // Detect eye bones
+    this.eyeBones = [];
+    this.eyeBasePosByName = {};
+    const looksLikeEye = (n: string) =>
+      /eye/i.test(n) && !/(lash|brow|lid)/i.test(n);
+
+    for (const b of skeleton.bones || []) {
+      const nm = (b.data?.name || b.name || "").toString();
+      if (looksLikeEye(nm)) {
+        this.eyeBones.push(b);
+        this.eyeBasePosByName[nm] = { x: b.x || 0, y: b.y || 0 };
+      }
+    }
+
+    // Find look target bone
+    const targetNames = [
+      "crosshair",
+      "look",
+      "look_target",
+      "lookTarget",
+      "head_target",
+      "headTarget",
+      "eye_target",
+      "eyes_target",
+      "eyeTarget",
+      "eyesTarget",
+    ];
+
+    this.lookTargetBone = null;
+    for (const name of targetNames) {
+      const bone = skeleton.findBone(name);
+      if (bone) {
+        this.lookTargetBone = bone;
+        break;
+      }
+    }
+
+    if (this.lookTargetBone) {
+      this.lookTargetBaseX = this.lookTargetBone.x || 0;
+      this.lookTargetBaseY = this.lookTargetBone.y || 0;
+    } else {
+      this.lookTargetBaseX = 0;
+      this.lookTargetBaseY = 0;
+    }
+
+    // Initialize pointer to current head position to avoid snapping
+    const scaleX = this.spineboy.scale.x;
+    const scaleY = this.spineboy.scale.y;
+    const originX = this.holder.x + this.spineboy.x;
+    const originY = this.holder.y + this.spineboy.y;
+    const anchor = this.lookTargetBone || this.headBone;
+
+    if (anchor) {
+      this.pointerPos.set(
+        originX + (anchor.worldX || 0) * scaleX,
+        originY + (anchor.worldY || 0) * scaleY
+      );
+    }
   }
 
   private update() {
-    if (!this.spineboy) return;
+    const currentTime = performance.now();
+    const deltaTime = this.lastFrameTime
+      ? (currentTime - this.lastFrameTime) / 1000
+      : 0;
+    this.lastFrameTime = currentTime;
 
-    if (this.isAimModel) {
-      this.updateAimTracksFromCaret();
-    } else {
-      this.headAndEyeTracking();
-    }
+    // Post-update logic (head tracking, parallax, etc.)
+    this.postUpdate(deltaTime);
   }
 
-  private centerHolder() {
-    this.holder.x = this.app.screen.width / 2;
-    this.holder.y = this.app.screen.height / 2;
-    this.fitContentToViewport();
-  }
-
-  // =========================================================================
-  // ЗАГРУЗКА И УПРАВЛЕНИЕ МОДЕЛЯМИ
-  // =========================================================================
-
-  private async loadModelFromUrls(
-    skelUrl: string,
-    atlasUrl: string,
-    scale: number,
-    idle: string
-  ) {
-    if (this.spineboy) {
-      this.spineboy.destroy();
-      this.spineboy = null;
-    }
-    if (this.actionTimeout) clearTimeout(this.actionTimeout);
-    this.actionPlaying = false;
-    this.headBone = null;
-    this.lookTargetBone = null;
-    this.isOffsetCalibrated = false;
-
-    const localToken = ++this.loadToken;
-
-    try {
-      const spineInstance = await this.loadSpineModelWithAutoVersion(skelUrl);
-      if (localToken !== this.loadToken) return;
-
-      this.spineboy = spineInstance;
-      this.holder.addChild(this.spineboy);
-      this.spineboy.state.setAnimation(0, idle, true);
-      this.currentIdleAnimation = idle;
-
-      this.isAimModel = (idle || "").toLowerCase().includes("aim");
-      if (this.isAimModel) {
-        try {
-          const ax = this.spineboy.state.setAnimation(2, "aim_x", true);
-          if (ax) ax.timeScale = 0;
-          this.aimXEntry = ax;
-          const ay = this.spineboy.state.setAnimation(3, "aim_y", true);
-          if (ay) ay.timeScale = 0;
-          this.aimYEntry = ay;
-        } catch (e) {}
-      } else {
-        if (!idle.toLowerCase().includes("cover")) {
-          this.scheduleNextAction();
-        }
-      }
-
-      this.setupHeadAndPointer();
-      this.setupSpineboyDrag();
-      this.fitContentToViewport();
-    } catch (error) {
-      console.error(
-        "Ошибка при загрузке модели:",
-        { skelUrl, atlasUrl },
-        error
-      );
-    }
-  }
-
-  private async loadSpineModelWithAutoVersion(
-    skelOrJsonUrl: string
-  ): Promise<SpineInstance> {
-    const jsonUrl = skelOrJsonUrl.replace(/\.skel$/, ".json");
-
-    const response = await fetch(jsonUrl);
-    if (!response.ok) throw new Error(`Файл модели не найден: ${jsonUrl}`);
-    const spineJsonData = await response.json();
-
-    const spineVersion = spineJsonData?.skeleton?.spine;
-    if (!spineVersion)
-      throw new Error("Не удалось определить версию Spine в файле.");
-
-    let SpinePlugin: SpineModule;
-    if (spineVersion.startsWith("4.1")) {
-      SpinePlugin = await import("@pixi-spine/all-4.1");
-    } else if (spineVersion.startsWith("4.0")) {
-      SpinePlugin = await import("@pixi-spine/all-4.0");
-    } else {
-      throw new Error(`Версия Spine "${spineVersion}" не поддерживается.`);
-    }
-
-    const atlasUrl = jsonUrl.replace(/\.json$/, ".atlas");
-    const asset = await PIXI.Assets.load({
-      src: jsonUrl,
-      data: { spineAtlas: atlasUrl },
-    });
-
-    return new SpinePlugin.Spine(asset.spineData);
-  }
-
-  private tryLoadModelForPath(parts: string[]) {
-    try {
-      if (this.currentRepo === "nikkie4" || (parts && parts[0] === "dotgg")) {
-        const realParts = parts[0] === "dotgg" ? parts.slice(1) : parts;
-        const skin = realParts.join("/");
-        if (!skin) return;
-        const skelUrl = SpinePort.DOTGG_BASE + skin + ".skel";
-        const atlasUrl = skelUrl.replace(".skel", ".atlas");
-        const idleAnim = skelUrl.includes("aim")
-          ? "aim_idle"
-          : skelUrl.includes("cover")
-          ? "cover_idle"
-          : "idle";
-        this.loadModelFromUrls(skelUrl, atlasUrl, 1, idleAnim);
-        return;
-      }
-    } catch (e) {}
-
-    const indexData = this.nikkeIndexCache;
-    if (!indexData) return;
-    const node = this.resolveNodeByPath(indexData, parts);
-    const picked = node ? this.pickModelFromNode(node, parts) : null;
-    if (!picked) return;
-    const idleAnim = picked.skelUrl.includes("aim")
-      ? "aim_idle"
-      : picked.skelUrl.includes("cover")
-      ? "cover_idle"
-      : "idle";
-    this.loadModelFromUrls(picked.skelUrl, picked.atlasUrl, 1, idleAnim);
-  }
-
-  // =========================================================================
-  // ЛОГИКА ОТСЛЕЖИВАНИЯ КУРСОРА И ПРИЦЕЛИВАНИЯ
-  // =========================================================================
-
-  private headAndEyeTracking() {
+  private postUpdate(deltaTime: number) {
+    // If current model is an aim model we must not run head control logic
+    if (this.isAimModel) return;
     if (!this.spineboy || !this.spineboy.skeleton) return;
-    if (!this.headBone) return; // Не выполнять, если нет кости головы
 
     const skeleton = this.spineboy.skeleton;
-    const localPointerPos = this.spineboy.toLocal(this.pointerPos);
 
-    // --- Логика для lookTargetBone ---
-    if (
-      this.lookTargetBone &&
-      this.lookTargetBone.parent &&
-      this.lookTargetBone.parent.worldToLocal
-    ) {
-      const pos = new PIXI.Point();
-      this.lookTargetBone.parent.worldToLocal(
-        localPointerPos.x,
-        localPointerPos.y,
-        pos,
-        skeleton
-      );
+    if (!this.headBone) {
+      const nameMatches = (n: string) =>
+        /head|голов|голова|headbone|neck|nec|skull/i.test(n);
+      this.headBone =
+        skeleton.findBone("head") ||
+        skeleton.bones.find((b: any) => nameMatches(b.data?.name || b.name)) ||
+        null;
 
+      if (this.headBone) {
+        this.headBaseRotationDeg = this.headBone.rotation || 0;
+      }
+      if (!this.headBone) return;
+    }
+
+    const originX = this.holder.x + this.spineboy.x;
+    const originY = this.holder.y + this.spineboy.y;
+
+    // Convert pointer from screen space to world space
+    const scaleX = this.spineboy.scale.x;
+    const scaleY = this.spineboy.scale.y;
+    const pointerWorldX = (this.pointerPos.x - originX) / scaleX;
+    const pointerWorldY = (this.pointerPos.y - originY) / scaleY;
+
+    // Handle look target bone parallax
+    if (this.lookTargetBone && this.lookTargetBone.parent) {
+      const pos = { x: pointerWorldX, y: pointerWorldY };
+      this.lookTargetBone.parent.worldToLocal(pos);
+
+      // Compute delta from neutral base
       let dx = pos.x - this.lookTargetBaseX;
       let dy = pos.y - this.lookTargetBaseY;
       const r0 = Math.hypot(dx, dy);
@@ -346,11 +581,11 @@ class SpinePort {
 
       let desX = this.lookTargetBaseX + dx * this.parallaxScale;
       let desY = this.lookTargetBaseY + dy * this.parallaxScale;
-      const rMax = this.targetBaseRadius * this.parallaxScale;
       const r = Math.hypot(
         desX - this.lookTargetBaseX,
         desY - this.lookTargetBaseY
       );
+      const rMax = Math.max(0, this.targetBaseRadius * this.parallaxScale);
 
       if (r > rMax && r > 0) {
         const k = rMax / r;
@@ -359,65 +594,78 @@ class SpinePort {
       }
 
       if (!this.parallaxInitialized) {
-        this.parallaxSmoothX = this.lookTargetBone.x;
-        this.parallaxSmoothY = this.lookTargetBone.y;
+        this.parallaxSmoothX = this.lookTargetBone.x || 0;
+        this.parallaxSmoothY = this.lookTargetBone.y || 0;
         this.parallaxInitialized = true;
       }
 
-      const dt = this.app.ticker.deltaMS / 1000;
       const tau = Math.max(0.001, this.parallaxLagSeconds);
-      const alpha = 1 - Math.exp(-dt / tau);
+      const alpha = 1 - Math.exp(-deltaTime / tau);
       this.parallaxSmoothX += (desX - this.parallaxSmoothX) * alpha;
       this.parallaxSmoothY += (desY - this.parallaxSmoothY) * alpha;
+
       this.lookTargetBone.x = this.parallaxSmoothX;
       this.lookTargetBone.y = this.parallaxSmoothY;
     }
 
-    // --- Логика вращения головы ---
-    const head = this.headBone as any;
-    const dx = localPointerPos.x - head.worldX;
-    const dy = localPointerPos.y - head.worldY;
-    if (dx * dx + dy * dy < 0.0001) return;
+    // Handle head bone rotation
+    const head = this.headBone;
+    const headWorldX = head.worldX || 0;
+    const headWorldY = head.worldY || 0;
+
+    const dx = pointerWorldX - headWorldX;
+    const dy = pointerWorldY - headWorldY;
+
+    if (dx * dx + dy * dy < 0.0001) return; // deadzone
 
     let angleDegBase = (Math.atan2(dy, dx) * 180) / Math.PI;
 
+    // Auto-calibrate axis offset
     if (!this.isOffsetCalibrated) {
-      // Ваша логика автокалибровки
+      const currentLocalTmp = head.rotation || 0;
       let bestOffset = this.aimAxisOffsetDeg;
       let bestAbsDelta = Number.POSITIVE_INFINITY;
+
       for (const off of this.candidateOffsets) {
         const testDeg = angleDegBase + off;
-        const desiredLocalTest = head.worldToLocalRotation(testDeg);
-        const d = this.shortestDeltaDeg(head.rotation, desiredLocalTest);
-        if (Math.abs(d) < bestAbsDelta) {
-          bestAbsDelta = Math.abs(d);
+        const desiredLocalTest = head.worldToLocalRotation
+          ? head.worldToLocalRotation(testDeg)
+          : testDeg;
+        const d = this.shortestDeltaDeg(currentLocalTmp, desiredLocalTest);
+        const ad = Math.abs(d);
+
+        if (ad < bestAbsDelta) {
+          bestAbsDelta = ad;
           bestOffset = off;
         }
       }
+
       this.aimAxisOffsetDeg = bestOffset;
       this.isOffsetCalibrated = true;
     }
 
     const angleDeg = angleDegBase + this.aimAxisOffsetDeg;
-    let desiredLocal = head.worldToLocalRotation(angleDeg);
+    let desiredLocal = head.worldToLocalRotation
+      ? head.worldToLocalRotation(angleDeg)
+      : angleDeg;
 
     const offsetFromBase = desiredLocal - this.headBaseRotationDeg;
     desiredLocal =
       this.headBaseRotationDeg + offsetFromBase * this.maxTurnScale;
-    const maxTurn = this.baseMaxTurnDeg * this.maxTurnScale;
-    desiredLocal = PIXI.utils.clamp(
-      desiredLocal,
-      this.headBaseRotationDeg - maxTurn,
-      this.headBaseRotationDeg + maxTurn
-    );
 
-    const delta = this.shortestDeltaDeg(head.rotation, desiredLocal);
-    const dtRot = this.app.ticker.deltaMS / 1000;
+    const maxTurn = Math.max(0, this.baseMaxTurnDeg * this.maxTurnScale);
+    const minDeg = this.headBaseRotationDeg - maxTurn;
+    const maxDeg = this.headBaseRotationDeg + maxTurn;
+    desiredLocal = Math.max(minDeg, Math.min(maxDeg, desiredLocal));
+
+    const currentLocal = head.rotation || 0;
+    const delta = this.shortestDeltaDeg(currentLocal, desiredLocal);
     const tauRot = Math.max(0.001, this.rotationLagSeconds);
-    let alphaRot = 1 - Math.exp(-dtRot / tauRot);
+    let alphaRot = 1 - Math.exp(-deltaTime / tauRot);
     alphaRot = this.applyRotationEasing(alphaRot, this.rotationEasing);
     const stepBase = delta * alphaRot;
 
+    // Build chain: head + N parents
     const bones: any[] = [];
     let node: any = head;
     for (let i = 0; i < Math.max(1, this.chainLength) && node; i++) {
@@ -426,251 +674,523 @@ class SpinePort {
     }
 
     const fall = 0.7;
-    const weights = bones.map((_, i) => Math.pow(fall, i));
-    const sum = weights.reduce((a, b) => a + b, 0);
+    const weights: number[] = [];
+    let sum = 0;
+    for (let i = 0; i < bones.length; i++) {
+      const w = Math.pow(fall, i);
+      weights.push(w);
+      sum += w;
+    }
 
-    if (sum > 0) {
-      for (let i = 0; i < bones.length; i++) {
-        const bone = bones[i];
-        const add = stepBase * (weights[i] / sum);
-        let proposed = bone.rotation + add;
-        if (i === 0) {
-          bone.rotation = PIXI.utils.clamp(
-            proposed,
-            this.headBaseRotationDeg - maxTurn,
-            this.headBaseRotationDeg + maxTurn
-          );
-        } else {
-          const name = bone.data?.name || bone.name;
-          const base = this.baseRotationByBone[name] ?? bone.rotation;
-          const range = this.parentMaxRangeDeg * this.maxTurnScale;
-          bone.rotation = PIXI.utils.clamp(
-            proposed,
-            base - range,
-            base + range
-          );
-        }
+    if (sum <= 0) return;
+
+    for (let i = 0; i < bones.length; i++) {
+      const add = stepBase * (weights[i] / sum);
+      const bone = bones[i];
+      const proposed = (bone.rotation || 0) + add;
+
+      if (i === 0) {
+        bone.rotation = Math.max(minDeg, Math.min(maxDeg, proposed));
+      } else {
+        const name = bone.data?.name || bone.name || String(i);
+        const base = this.baseRotationByBone[name] ?? (bone.rotation || 0);
+        const range = this.parentMaxRangeDeg * this.maxTurnScale;
+        const minP = base - range;
+        const maxP = base + range;
+        bone.rotation = Math.max(minP, Math.min(maxP, proposed));
       }
     }
 
-    // --- Логика изгиба головы (Shear) ---
-    if (head.parent && head.parent.worldToLocal) {
-      const locHead = new PIXI.Point();
-      head.parent.worldToLocal(
-        localPointerPos.x,
-        localPointerPos.y,
-        locHead,
-        skeleton
+    // Head bending via shear
+    if (head.parent) {
+      const locHead = { x: pointerWorldX, y: pointerWorldY };
+      head.parent.worldToLocal(locHead);
+
+      const desX =
+        this.headBaseLocalX +
+        (locHead.x - this.headBaseLocalX) * this.parallaxScale;
+      const desY =
+        this.headBaseLocalY +
+        (locHead.y - this.headBaseLocalY) * this.parallaxScale;
+      const dxh = desX - this.headBaseLocalX;
+      const dyh = desY - this.headBaseLocalY;
+      const dMaxShear = Math.max(
+        0.0001,
+        this.parallaxMaxOffset * this.parallaxScale
       );
-      const dxh = (locHead.x - this.headBaseLocalX) * this.parallaxScale;
-      const dyh = (locHead.y - this.headBaseLocalY) * this.parallaxScale;
-      const dMaxShear = this.parallaxMaxOffset * this.parallaxScale;
-      const nx = PIXI.utils.clamp(dxh / dMaxShear, -1, 1);
-      const ny = PIXI.utils.clamp(dyh / dMaxShear, -1, 1);
+      const nx = Math.max(-1, Math.min(1, dxh / dMaxShear));
+      const ny = Math.max(-1, Math.min(1, dyh / dMaxShear));
       const targetShearX = nx * this.headShearMaxXDeg * this.headBendScale;
       const targetShearY = ny * this.headShearMaxYDeg * this.headBendScale;
 
-      const dtShear = this.app.ticker.deltaMS / 1000;
       const tauShear = Math.max(0.001, this.parallaxLagSeconds);
-      const alphaShear = 1 - Math.exp(-dtShear / tauShear);
-      head.shearX += (targetShearX - head.shearX) * alphaShear;
-      head.shearY += (targetShearY - head.shearY) * alphaShear;
+      const alphaShear = 1 - Math.exp(-deltaTime / tauShear);
+
+      head.shearX =
+        (head.shearX || 0) + (targetShearX - (head.shearX || 0)) * alphaShear;
+      head.shearY =
+        (head.shearY || 0) + (targetShearY - (head.shearY || 0)) * alphaShear;
     }
 
-    // --- Логика параллакса глаз ---
+    // Eye parallax
     if (this.eyeBones.length) {
-      const dtEye = this.app.ticker.deltaMS / 1000;
       const tauEye = Math.max(0.001, this.parallaxLagSeconds);
-      const alphaEye = 1 - Math.exp(-dtEye / tauEye);
+      const alphaEye = 1 - Math.exp(-deltaTime / tauEye);
+
       for (const eye of this.eyeBones) {
-        const name = eye.data?.name || eye.name;
-        const base = this.eyeBasePosByName[name] || { x: eye.x, y: eye.y };
-        if (eye.parent && eye.parent.worldToLocal) {
-          const loc = new PIXI.Point();
-          eye.parent.worldToLocal(
-            localPointerPos.x,
-            localPointerPos.y,
-            loc,
-            skeleton
-          );
+        const name = eye.data?.name || eye.name || "eye";
+        const base = this.eyeBasePosByName[name] || {
+          x: eye.x || 0,
+          y: eye.y || 0,
+        };
+
+        if (eye.parent) {
+          const loc = { x: pointerWorldX, y: pointerWorldY };
+          eye.parent.worldToLocal(loc);
+
           let tx = base.x + (loc.x - base.x) * this.eyeParallaxScale;
           let ty = base.y + (loc.y - base.y) * this.eyeParallaxScale;
 
-          // Эллиптическое ограничение
           const dx = tx - base.x;
           const dy = ty - base.y;
-          const a = this.eyeParallaxMaxX * this.eyeParallaxScale;
-          const b = this.eyeParallaxMaxY * this.eyeParallaxScale;
-          if (a > 0 && b > 0) {
-            const s = (dx * dx) / (a * a) + (dy * dy) / (b * b);
-            if (s > 1) {
-              const k = 1 / Math.sqrt(s);
-              tx = base.x + dx * k;
-              ty = base.y + dy * k;
-            }
+          const a = Math.max(
+            0.0001,
+            this.eyeParallaxMaxX * this.eyeParallaxScale
+          );
+          const b = Math.max(
+            0.0001,
+            this.eyeParallaxMaxY * this.eyeParallaxScale
+          );
+          const s = (dx * dx) / (a * a) + (dy * dy) / (b * b);
+
+          if (s > 1) {
+            const k = 1 / Math.sqrt(s);
+            tx = base.x + dx * k;
+            ty = base.y + dy * k;
           }
-          eye.x += (tx - eye.x) * alphaEye;
-          eye.y += (ty - eye.y) * alphaEye;
+
+          eye.x = (eye.x || 0) + (tx - (eye.x || 0)) * alphaEye;
+          eye.y = (eye.y || 0) + (ty - (eye.y || 0)) * alphaEye;
         }
       }
     }
 
-    // Обновляем трансформации после всех манипуляций
-    skeleton.updateWorldTransform();
+    // Head parallax translation when no look-target
+    if (!this.lookTargetBone && head.parent) {
+      const loc = { x: pointerWorldX, y: pointerWorldY };
+      head.parent.worldToLocal(loc);
+
+      let dx0 = loc.x - this.headBaseLocalX;
+      let dy0 = loc.y - this.headBaseLocalY;
+      const r0 = Math.hypot(dx0, dy0);
+
+      if (r0 <= this.parallaxNeutralRadius) {
+        dx0 = 0;
+        dy0 = 0;
+      } else if (r0 > 0) {
+        const k0 = (r0 - this.parallaxNeutralRadius) / r0;
+        dx0 *= k0;
+        dy0 *= k0;
+      }
+
+      const px = this.headBaseLocalX + dx0 * this.parallaxScale;
+      const py = this.headBaseLocalY + dy0 * this.parallaxScale;
+
+      const dxp = px - this.headBaseLocalX;
+      const dyp = py - this.headBaseLocalY;
+      const d = Math.hypot(dxp, dyp);
+      const dMax = Math.max(0, this.parallaxMaxOffset * this.parallaxScale);
+      let tx = px,
+        ty = py;
+
+      if (d > dMax && d > 0) {
+        const k = dMax / d;
+        tx = this.headBaseLocalX + dxp * k;
+        ty = this.headBaseLocalY + dyp * k;
+      }
+
+      if (!this.parallaxInitialized) {
+        this.parallaxSmoothX = head.x || 0;
+        this.parallaxSmoothY = head.y || 0;
+        this.parallaxInitialized = true;
+      }
+
+      const tau = Math.max(0.001, this.parallaxLagSeconds);
+      const alpha = 1 - Math.exp(-deltaTime / tau);
+      this.parallaxSmoothX += (tx - this.parallaxSmoothX) * alpha;
+      this.parallaxSmoothY += (ty - this.parallaxSmoothY) * alpha;
+
+      head.x = this.parallaxSmoothX;
+      head.y = this.parallaxSmoothY;
+    }
+  }
+
+  private shortestDeltaDeg(from: number, to: number) {
+    let delta = ((to - from + 180) % 360) - 180;
+    if (delta < -180) delta += 360;
+    return delta;
   }
 
   private updateAimTracksFromCaret() {
     if (!this.spineboy || !this.isAimModel || !this.latestCaret) return;
 
-    let tx = 0.5,
-      ty = 0.5;
-    const vw = window.innerWidth,
-      vh = window.innerHeight;
-    const centerX = vw / 2,
-      centerY = vh / 2;
+    try {
+      // Get canvas and world coordinates
+      const canvas = this.app.view as HTMLCanvasElement;
+      const rect = canvas.getBoundingClientRect();
 
-    let clientPageX: number | null = null,
-      clientPageY: number | null = null;
-    if (this.latestCaret) {
-      clientPageX = this.latestCaret.isScreen
-        ? this.latestCaret.x - window.screenX
-        : this.latestCaret.x;
-      clientPageY = this.latestCaret.isScreen
-        ? this.latestCaret.y - window.screenY
-        : this.latestCaret.y;
+      let clientX = this.latestCaret.x;
+      let clientY = this.latestCaret.y;
+
+      if (this.latestCaret.isScreen) {
+        try {
+          clientX = this.latestCaret.x - (window as any).screenX;
+          clientY = this.latestCaret.y - (window as any).screenY;
+        } catch {
+          clientX = this.latestCaret.x;
+          clientY = this.latestCaret.y;
+        }
+      }
+
+      const canvasClientX = clientX - rect.left;
+      const canvasClientY = clientY - rect.top;
+
+      // Map relative to viewport center
+      const vw =
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        screen.width;
+      const vh =
+        window.innerHeight ||
+        document.documentElement.clientHeight ||
+        screen.height;
+      const centerX = vw / 2;
+      const centerY = vh / 2;
+
+      const nx = Math.max(
+        -1,
+        Math.min(1, (clientX - centerX) / (centerX || 1))
+      );
+      const ny = Math.max(
+        -1,
+        Math.min(1, -(clientY - centerY) / (centerY || 1))
+      );
+      const tx = Math.max(0, Math.min(1, 0.5 + nx * 0.5));
+      const ty = Math.max(0, Math.min(1, 0.5 + ny * 0.5));
+
+      if (this.debugLogging) {
+        console.info(
+          `[aim] percent X=${Math.round(tx * 100)}% Y=${Math.round(ty * 100)}%`
+        );
+      }
+
+      // Set track time proportionally to animation duration
+      try {
+        if (this.aimXEntry && this.aimXEntry.animation) {
+          const dur = this.aimXEntry.animation.duration || 1;
+          this.aimXEntry.trackTime = tx * dur;
+        }
+      } catch {}
+
+      try {
+        if (this.aimYEntry && this.aimYEntry.animation) {
+          const dur = this.aimYEntry.animation.duration || 1;
+          this.aimYEntry.trackTime = ty * dur;
+        }
+      } catch {}
+
+      if (this.debugDot) {
+        try {
+          this.debugDot.style.left = `${rect.left + canvasClientX}px`;
+          this.debugDot.style.top = `${rect.top + canvasClientY}px`;
+          this.debugDot.style.display = this.debugLogging ? "block" : "none";
+        } catch {}
+      }
+    } catch (e) {
+      console.error("Error in updateAimTracksFromCaret:", e);
+    }
+  }
+
+  private resolveNikkeModel(
+    indexRoot: any,
+    key: string
+  ): { atlasUrl: string; skelUrl: string } | null {
+    if (!indexRoot || !key) return null;
+    const lcKey = key.toLowerCase();
+    let foundPath: string[] = [];
+    let foundFiles: string[] = [];
+
+    const dfs = (node: any, path: string[]) => {
+      if (foundPath.length) return;
+      const nodeName = (node.name || "").toLowerCase();
+      const files: string[] = node.files || [];
+
+      if (
+        nodeName === lcKey ||
+        files.some((f) => f.toLowerCase().includes(lcKey))
+      ) {
+        foundPath = path;
+        foundFiles = files;
+        return;
+      }
+
+      for (const child of node.children || [])
+        dfs(child, path.concat(child.name));
+    };
+
+    dfs(indexRoot, []);
+    if (!foundPath || foundPath.length === 0) return null;
+
+    let base = PixiSpineDemo.NIKKE_BASE + foundPath.join("/") + "/";
+    if (foundPath[0] && (foundPath[0] as string).toLowerCase() === "dotgg") {
+      base = PixiSpineDemo.NIKKE_BASE + foundPath.slice(1).join("/") + "/";
     }
 
-    if (clientPageX != null && clientPageY != null) {
-      const nx = PIXI.utils.clamp(
-        (clientPageX - centerX) / (centerX || 1),
-        -1,
-        1
+    const pick = (ext: string) => {
+      const candidates = foundFiles.filter((f) =>
+        f.toLowerCase().endsWith(ext)
       );
-      const ny = PIXI.utils.clamp(
-        -(clientPageY - centerY) / (centerY || 1),
-        -1,
-        1
+      if (candidates.length === 0) return null;
+      candidates.sort((a, b) => a.length - b.length);
+      return base + candidates[0];
+    };
+
+    const atlasUrl = pick(".atlas");
+    const skelUrl = pick(".skel");
+    if (!atlasUrl || !skelUrl) return null;
+    return { atlasUrl, skelUrl };
+  }
+
+  private resolveNodeByPath(indexRoot: any, parts: string[]) {
+    const cleanedParts =
+      parts && parts.length && parts[0] === "dotgg"
+        ? parts.slice(1)
+        : parts || [];
+    const lower = cleanedParts.map((p) => p.toLowerCase());
+    let node = indexRoot;
+
+    for (const part of lower) {
+      const next = (node.children || []).find(
+        (c: any) => (c.name || "").toLowerCase() === part
       );
-      tx = PIXI.utils.clamp(0.5 + nx * 0.5, 0, 1);
-      ty = PIXI.utils.clamp(0.5 + ny * 0.5, 0, 1);
+      if (!next) return null;
+      node = next;
     }
+    return node;
+  }
+
+  private pickModelFromNode(
+    node: any
+  ): { atlasUrl: string; skelUrl: string } | null {
+    const files: string[] = node.files || [];
+    if (!files.length) return null;
+
+    let base =
+      PixiSpineDemo.NIKKE_BASE +
+      (this.nikkePathParts ? this.nikkePathParts.join("/") + "/" : "");
+
+    if (this.nikkePathParts && this.nikkePathParts[0] === "dotgg") {
+      base = PixiSpineDemo.DOTGG_BASE;
+      const real = this.nikkePathParts.slice(1);
+      if (real.length) base += real.join("/") + "/";
+    }
+
+    const pick = (ext: string) => {
+      const candidates = files.filter((f) => f.toLowerCase().endsWith(ext));
+      if (candidates.length === 0) return null;
+      candidates.sort((a, b) => a.length - b.length);
+      return base + candidates[0];
+    };
+
+    const atlasUrl = pick(".atlas");
+    const skelUrl = pick(".skel");
+    if (!atlasUrl || !skelUrl) return null;
+    return { atlasUrl, skelUrl };
+  }
+
+  private async loadModelFromUrls(
+    skelUrl: string,
+    atlasUrl: string,
+    scale: number,
+    idle: string
+  ) {
+    // Destroy previous instance
+    if (this.spineboy) {
+      this.holder.removeChild(this.spineboy);
+      this.spineboy.destroy();
+    }
+
+    // Clear scheduled actions
+    try {
+      if (this.actionTimeout) {
+        clearTimeout(this.actionTimeout);
+        this.actionTimeout = null;
+      }
+      this.actionPlaying = false;
+    } catch (e) {}
+
+    // Reset bone refs
+    this.headBone = null;
+    this.lookTargetBone = null;
+    this.isOffsetCalibrated = false;
+    this.baseRotationByBone = {};
+
+    const localToken = ++this.loadToken;
 
     try {
-      if (this.aimXEntry?.animation)
-        this.aimXEntry.trackTime = tx * this.aimXEntry.animation.duration;
-      if (this.aimYEntry?.animation)
-        this.aimYEntry.trackTime = ty * this.aimYEntry.animation.duration;
-    } catch {}
+      // Load spine assets using PIXI.Assets
+      PIXI.Assets.add({ alias: `spine-data-${localToken}`, src: skelUrl });
+      const resource = await PIXI.Assets.load(`spine-data-${localToken}`);
+
+      if (localToken !== this.loadToken) return; // stale load
+
+      const spineboy = new Spine(resource.spineData);
+      spineboy.x = 0;
+      spineboy.y = 1000;
+      spineboy.scale.set(scale);
+
+      this.holder.addChild(spineboy);
+
+      if (spineboy.state.hasAnimation(idle)) {
+        spineboy.state.setAnimation(0, idle, true);
+      }
+
+      this.spineboy = spineboy;
+      this.currentIdleAnimation = idle;
+
+      // Detect aim model and prepare aim tracks
+      this.isAimModel = (idle || "").toLowerCase().includes("aim");
+      if (this.isAimModel) {
+        try {
+          const ax = this.spineboy.state.setAnimation(1, "aim_x", true);
+          if (ax) ax.timeScale = 0;
+          this.aimXEntry = ax;
+        } catch (e) {}
+
+        try {
+          const ay = this.spineboy.state.setAnimation(2, "aim_y", true);
+          if (ay) ay.timeScale = 0;
+          this.aimYEntry = ay;
+        } catch (e) {}
+
+        this.headBone = null;
+        this.lookTargetBone = null;
+      }
+
+      this.setupHeadAndPointer();
+      this.setupSpineboyInteraction();
+      this.fitContentToViewport();
+
+      // Schedule random actions for standing models
+      try {
+        const isAim = (idle || "").toLowerCase().includes("aim");
+        const isCover = (idle || "").toLowerCase().includes("cover");
+        if (!isAim && !isCover) {
+          this.scheduleNextAction();
+        }
+      } catch (e) {}
+    } catch (error) {
+      console.error("Failed to load model:", error);
+    }
   }
 
-  // =========================================================================
-  // ИНТЕРАКТИВНОСТЬ И ХЕЛПЕРЫ
-  // =========================================================================
-
-  private setupSpineboyDrag() {
-    if (!this.spineboy) return;
-    this.spineboy.eventMode = "static";
-    this.spineboy.cursor = "grab";
-
-    const onDragStart = (event: PIXI.FederatedPointerEvent) => {
-      this.isDraggingSpine = true;
-      this.spineboy!.cursor = "grabbing";
-      const localPos = this.holder.toLocal(event.global);
-      this.dragSpineOffsetX = this.spineboy!.x - localPos.x;
-      this.dragSpineOffsetY = this.spineboy!.y - localPos.y;
-      this.app.stage.on("pointermove", onDragMove);
-      this.app.stage.on("pointerup", onDragEnd);
-      this.app.stage.on("pointerupoutside", onDragEnd);
-    };
-
-    const onDragMove = (event: PIXI.FederatedPointerEvent) => {
-      if (this.isDraggingSpine) {
-        const localPos = this.holder.toLocal(event.global);
-        this.spineboy!.x = localPos.x + this.dragSpineOffsetX;
-        this.spineboy!.y = localPos.y + this.dragSpineOffsetY;
+  private async tryLoadModelForPath(parts: string[]) {
+    try {
+      if (this.currentRepo === "nikkie4" || (parts && parts[0] === "dotgg")) {
+        const skin = parts[parts.length - 1];
+        if (!skin) return;
+        const atlasUrl =
+          PixiSpineDemo.DOTGG_BASE + encodeURIComponent(skin) + ".atlas";
+        const skelUrl =
+          PixiSpineDemo.DOTGG_BASE + encodeURIComponent(skin) + ".skel";
+        const nameHint = (skelUrl || atlasUrl || "").toLowerCase();
+        const idleAnim = nameHint.includes("aim")
+          ? "aim_idle"
+          : nameHint.includes("cover")
+          ? "cover_idle"
+          : "idle";
+        await this.loadModelFromUrls(skelUrl, atlasUrl, 1, idleAnim);
+        return;
       }
-    };
+    } catch (e) {}
 
-    const onDragEnd = () => {
-      this.isDraggingSpine = false;
-      if (this.spineboy) this.spineboy.cursor = "grab";
-      this.app.stage.off("pointermove", onDragMove);
-      this.app.stage.off("pointerup", onDragEnd);
-      this.app.stage.off("pointerupoutside", onDragEnd);
-    };
+    // Default: resolve from nikke-index tree
+    const indexData = this.nikkeIndexData; // Используем наши локальные данные
+    if (!indexData) return;
 
-    this.spineboy.on("pointerdown", onDragStart);
+    const node = this.resolveNodeByPath(indexData, parts);
+    const picked = node ? this.pickModelFromNode(node) : null;
+    if (!picked) return;
+
+    const nameHint = (picked.skelUrl || picked.atlasUrl || "").toLowerCase();
+    const idleAnim = nameHint.includes("aim")
+      ? "aim_idle"
+      : nameHint.includes("cover")
+      ? "cover_idle"
+      : "idle";
+    await this.loadModelFromUrls(picked.skelUrl, picked.atlasUrl, 1, idleAnim);
   }
 
-  private setupHeadAndPointer() {
-    if (!this.spineboy) return;
-    const skeleton = this.spineboy.skeleton;
-    if (!skeleton) return;
+  private scheduleNextAction() {
+    try {
+      if (this.actionTimeout) clearTimeout(this.actionTimeout);
+      const delay = 6000 + Math.floor(Math.random() * 19000);
+      this.actionTimeout = setTimeout(() => {
+        this.playActionOnce();
+      }, delay);
+    } catch (e) {}
+  }
 
-    const nameMatches = (n: string) =>
-      /head|голов|голова|headbone|neck|nec|skull/i.test(n);
-    this.headBone =
-      skeleton.findBone("head") ||
-      skeleton.bones.find((b: any) => nameMatches(b.data?.name || b.name)) ||
-      null;
-    if (this.headBone) this.headBaseRotationDeg = this.headBone.rotation || 0;
+  private playActionOnce() {
+    try {
+      if (!this.spineboy || this.actionPlaying) return;
 
-    this.baseRotationByBone = {};
-    let node: any = this.headBone;
-    for (let i = 0; i < 12 && node; i++) {
-      const n = node.data?.name || node.name || String(i);
-      this.baseRotationByBone[n] = node.rotation || 0;
-      node = node.parent;
-    }
-
-    if (this.headBone) {
-      this.headBaseLocalX = this.headBone.x || 0;
-      this.headBaseLocalY = this.headBone.y || 0;
-    }
-    this.parallaxInitialized = false;
-
-    this.eyeBones = [];
-    this.eyeBasePosByName = {};
-    const looksLikeEye = (n: string) =>
-      /eye/i.test(n) && !/(lash|brow|lid)/i.test(n);
-    for (const b of skeleton.bones || []) {
-      const nm = (b.data?.name || b.name || "").toString();
-      if (looksLikeEye(nm)) {
-        this.eyeBones.push(b);
-        this.eyeBasePosByName[nm] = { x: b.x || 0, y: b.y || 0 };
+      if (this.spineboy.state.hasAnimation("action")) {
+        const entry = this.spineboy.state.setAnimation(1, "action", false);
+        if (entry) {
+          this.actionPlaying = true;
+          entry.complete = () => {
+            try {
+              this.spineboy.state.addAnimation(
+                1,
+                this.currentIdleAnimation || "idle",
+                true,
+                0
+              );
+            } catch (e) {}
+            this.actionPlaying = false;
+            this.scheduleNextAction();
+          };
+        } else {
+          this.scheduleNextAction();
+        }
+      } else {
+        this.scheduleNextAction();
       }
-    }
-
-    const targetNames = [
-      "crosshair",
-      "look",
-      "look_target",
-      "head_target",
-      "eye_target",
-    ];
-    this.lookTargetBone = null;
-    for (const n of targetNames) {
-      const b = skeleton.findBone(n);
-      if (b) {
-        this.lookTargetBone = b;
-        break;
-      }
-    }
-
-    if (this.lookTargetBone) {
-      this.lookTargetBaseX = this.lookTargetBone.x || 0;
-      this.lookTargetBaseY = this.lookTargetBone.y || 0;
+    } catch (e) {
+      this.scheduleNextAction();
     }
   }
 
   private fitContentToViewport() {
     if (!this.spineboy) return;
 
-    const bounds = this.spineboy.getBounds();
-    const contentW = bounds.width / this.spineboy.scale.x; // Учитываем масштаб
-    const contentH = bounds.height / this.spineboy.scale.y;
+    let contentW = 0;
+    let contentH = 0;
 
-    if (!contentW || !contentH) return;
+    try {
+      const bounds = this.spineboy.getBounds();
+      if (bounds && (bounds.width || bounds.height)) {
+        contentW = Math.max(1, bounds.width);
+        contentH = Math.max(1, bounds.height);
+      }
+    } catch {}
+
+    if (!contentW || !contentH) {
+      // Fallback to nominal size
+      contentW = 1000;
+      contentH = 1000;
+    }
 
     const viewW = this.app.screen.width;
     const viewH = this.app.screen.height;
@@ -681,53 +1201,18 @@ class SpinePort {
 
     if (!this.userAdjustedZoom) {
       this.cameraZoom = fitZoom;
-      const zoomInput = document.querySelector(
-        "#head-controls input[data-control=zoom]"
-      ) as HTMLInputElement;
-      if (zoomInput) {
-        zoomInput.value = String(this.cameraZoom);
-        const zoomLabel = zoomInput.previousElementSibling as HTMLLabelElement;
-        if (zoomLabel)
-          zoomLabel.textContent = `Zoom: ${this.cameraZoom.toFixed(2)}`;
-      }
+      this.holder.scale.set(this.cameraZoom);
     }
-    this.holder.scale.set(this.cameraZoom);
-  }
 
-  private scheduleNextAction() {
-    if (this.actionTimeout) clearTimeout(this.actionTimeout);
-    const delay = 6000 + Math.floor(Math.random() * 19000);
-    this.actionTimeout = setTimeout(() => this.playActionOnce(), delay);
-  }
-
-  private playActionOnce() {
-    if (!this.spineboy || this.actionPlaying) return;
-    const state = this.spineboy.state;
-    try {
-      const entry = state.setAnimation(2, "action", false);
-      this.actionPlaying = true;
-      entry.listener = {
-        complete: () => {
-          this.actionPlaying = false;
-          this.scheduleNextAction();
-        },
-      };
-    } catch (e) {
-      this.scheduleNextAction();
-    }
-  }
-
-  private shortestDeltaDeg(from: number, to: number) {
-    let delta = ((to - from + 180) % 360) - 180;
-    if (delta < -180) delta += 360;
-    return delta;
+    this.holder.x = this.app.screen.width / 2;
+    this.holder.y = this.app.screen.height / 2;
   }
 
   private applyRotationEasing(
     x: number,
     mode: typeof this.rotationEasing
   ): number {
-    const t = PIXI.utils.clamp(x, 0, 1);
+    const t = Math.max(0, Math.min(1, x));
     switch (mode) {
       case "linear":
         return t;
@@ -744,389 +1229,550 @@ class SpinePort {
     }
   }
 
-  // =========================================================================
-  // UI (DOM-ЭЛЕМЕНТЫ) - КОПИРУЮТСЯ БЕЗ ИЗМЕНЕНИЙ
-  // =========================================================================
-
   private addUiToggleButton() {
     try {
+      const existing = document.getElementById("overlay-ui-toggle");
+      if (existing) {
+        this.uiToggleButton = existing;
+        return;
+      }
+
       const btn = document.createElement("button");
       btn.id = "overlay-ui-toggle";
       btn.textContent = "Hide UI";
-      Object.assign(btn.style, {
-        position: "absolute",
-        left: "12px",
-        bottom: "12px",
-        zIndex: "100000",
-        padding: "12px 18px",
-        fontSize: "16px",
-        minWidth: "140px",
-        height: "48px",
-        background: "rgba(0,0,0,0.7)",
-        color: "#fff",
-        border: "none",
-        borderRadius: "10px",
-        cursor: "pointer",
-        boxShadow: "0 4px 14px rgba(0,0,0,0.4)",
-      });
+      btn.style.position = "absolute";
+      btn.style.left = "12px";
+      btn.style.bottom = "12px";
+      btn.style.zIndex = "100000";
+      btn.style.padding = "12px 18px";
+      btn.style.fontSize = "16px";
+      btn.style.minWidth = "140px";
+      btn.style.height = "48px";
+      btn.style.background = "rgba(0,0,0,0.7)";
+      btn.style.color = "#fff";
+      btn.style.border = "none";
+      btn.style.borderRadius = "10px";
+      btn.style.cursor = "pointer";
+      btn.style.boxShadow = "0 4px 14px rgba(0,0,0,0.4)";
+
       btn.onclick = () => {
         this.isUiHidden = !this.isUiHidden;
-        const controls = document.getElementById("head-controls");
-        const browser = document.getElementById("nikke-browser");
         if (this.isUiHidden) {
           btn.textContent = "Show UI";
-          if (controls) controls.style.display = "none";
-          if (browser) browser.style.display = "none";
+          const el = document.getElementById("head-controls");
+          if (el) el.style.display = "none";
+          const nik = document.getElementById("nikke-browser");
+          if (nik) nik.style.display = "none";
+          try {
+            (window as any).overlayAPI?.toggleClickThrough?.(true);
+            this.clickThroughEnabled = true;
+          } catch {}
         } else {
           btn.textContent = "Hide UI";
-          if (controls) controls.style.display = "block";
-          if (browser) browser.style.display = "block";
+          const el = document.getElementById("head-controls");
+          if (el) el.style.display = "block";
+          const nik = document.getElementById("nikke-browser");
+          if (nik) nik.style.display = "block";
+          try {
+            (window as any).overlayAPI?.toggleClickThrough?.(false);
+            this.clickThroughEnabled = false;
+          } catch {}
         }
       };
+
       document.body.appendChild(btn);
       this.uiToggleButton = btn;
+
+      // Create debug dot
+      try {
+        const dd = document.createElement("div");
+        dd.id = "overlay-debug-dot";
+        dd.style.position = "absolute";
+        dd.style.width = "12px";
+        dd.style.height = "12px";
+        dd.style.borderRadius = "50%";
+        dd.style.background = "rgba(255,0,0,0.9)";
+        dd.style.pointerEvents = "none";
+        dd.style.zIndex = "100001";
+        dd.style.transform = "translate(-50%, -50%)";
+        dd.style.display = "none";
+        document.body.appendChild(dd);
+        this.debugDot = dd;
+      } catch {}
     } catch {}
   }
 
   private renderNikkeBrowser() {
     const existing = document.getElementById("nikke-browser");
     if (existing) existing.remove();
+
     const container = document.createElement("div");
     container.id = "nikke-browser";
-    // Стили можно добавить здесь, если нужно
+    container.style.position = "absolute";
+    container.style.top = "8px";
+    container.style.left = "8px";
+    container.style.background = "rgba(0,0,0,0.8)";
+    container.style.color = "#fff";
+    container.style.padding = "12px";
+    container.style.borderRadius = "8px";
+    container.style.maxWidth = "300px";
+    container.style.maxHeight = "400px";
+    container.style.overflow = "auto";
+    container.style.fontSize = "14px";
+    container.style.zIndex = "1000";
 
+    // Repo selector
     const repoWrap = document.createElement("div");
     repoWrap.style.marginBottom = "8px";
     const sel = document.createElement("select");
-    sel.innerHTML = `<option value="nikke">Nikke.json</option><option value="nikkie4">nikkie4.1.json</option>`;
+    sel.style.background = "#333";
+    sel.style.color = "#fff";
+    sel.style.border = "1px solid #666";
+    sel.style.padding = "4px";
+
+    const opt1 = document.createElement("option");
+    opt1.value = "nikke";
+    opt1.textContent = "Nikke.json";
+    const opt2 = document.createElement("option");
+    opt2.value = "nikkie4";
+    opt2.textContent = "nikkie4.1.json";
+
+    sel.appendChild(opt1);
+    sel.appendChild(opt2);
     sel.value = this.currentRepo;
+
     sel.onchange = () => {
       this.currentRepo = sel.value as any;
       this.nikkePathParts = null;
       this.n4ExpandedCharacter = null;
       this.renderNikkeBrowser();
     };
+
     repoWrap.appendChild(sel);
     container.appendChild(repoWrap);
 
+    // File list
     const list = document.createElement("div");
     list.className = "nikke-file-list";
 
     if (this.currentRepo === "nikke") {
-      const indexData = this.nikkeIndexCache;
+      const indexData = this.nikkeIndexData; // Используем наши локальные данные
       if (!indexData) {
-        list.textContent = "Nikke index not loaded";
+        const msg = document.createElement("div");
+        msg.textContent = "Nikke index not loaded";
+        list.appendChild(msg);
       } else {
-        const node = this.nikkePathParts?.length
-          ? this.resolveNodeByPath(indexData, this.nikkePathParts)
-          : indexData;
-        const crumbs = document.createElement("div");
-        crumbs.className = "nikke-breadcrumbs";
-        const rootCrumb = document.createElement("a");
-        rootCrumb.textContent = "/";
-        rootCrumb.onclick = (e) => {
-          e.preventDefault();
-          this.navigateToPath([]);
-        };
-        crumbs.appendChild(rootCrumb);
-        (this.nikkePathParts || []).forEach((part, idx) => {
-          crumbs.appendChild(document.createTextNode(" / "));
-          const c = document.createElement("a");
-          c.textContent = part;
-          c.onclick = (e) => {
-            e.preventDefault();
-            this.navigateToPath((this.nikkePathParts || []).slice(0, idx + 1));
-          };
-          crumbs.appendChild(c);
-        });
-        list.appendChild(crumbs);
-
-        if (node?.children) {
-          for (const child of node.children) {
-            const row = document.createElement("div");
-            row.textContent = `📁 ${child.name}`;
-            row.onclick = () =>
-              this.navigateToPath([...(this.nikkePathParts || []), child.name]);
-            list.appendChild(row);
-          }
-        }
-        if (
-          node?.files?.some(
-            (f: string) => f.endsWith(".skel") || f.endsWith(".atlas")
-          )
-        ) {
-          const loadBtn = document.createElement("button");
-          loadBtn.textContent = "Загрузить модель из этой папки";
-          loadBtn.onclick = () =>
-            this.tryLoadModelForPath(this.nikkePathParts || []);
-          list.appendChild(loadBtn);
-        }
+        this.renderNikkeFileList(list, indexData);
       }
     } else {
-      const n4 = this.nikkie4IndexCache;
+      const n4 = this.nikkie4IndexData; // Используем наши локальные данные
       if (!n4) {
-        list.textContent = "nikkie4 index not loaded";
+        const msg = document.createElement("div");
+        msg.textContent = "nikkie4 index not loaded";
+        list.appendChild(msg);
       } else {
-        const src = Array.isArray(n4)
-          ? n4.find((x) => x?.skins) || { skins: [] }
-          : n4 || { skins: [] };
-        for (const ch of src.skins || []) {
-          const row = document.createElement("div");
-          row.textContent = `👤 ${ch.name}`;
-          const skinContainer = document.createElement("div");
-          skinContainer.style.display =
-            this.n4ExpandedCharacter === ch.name ? "block" : "none";
-          skinContainer.style.paddingLeft = "20px";
-
-          for (const s of ch.skins || []) {
-            const skinRow = document.createElement("div");
-            skinRow.textContent = `📁 ${s.name} (${s.skin})`;
-            skinRow.onclick = (e) => {
-              e.stopPropagation();
-              this.navigateToPath(["dotgg", ch.name, s.skin]);
-            };
-            skinContainer.appendChild(skinRow);
-          }
-
-          row.onclick = () => {
-            const open = skinContainer.style.display === "block";
-            skinContainer.style.display = open ? "none" : "block";
-            this.n4ExpandedCharacter = open ? null : ch.name;
-          };
-          list.appendChild(row);
-          list.appendChild(skinContainer);
-        }
+        this.renderNikkie4FileList(list, n4);
       }
     }
 
     container.appendChild(list);
     document.body.appendChild(container);
+  }
 
-    // Применяем стили (CSS-in-JS для простоты)
-    const style = document.createElement("style");
-    style.textContent = `
-            #nikke-browser { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); color: #fff; padding: 10px; font-family: monospace; border-radius: 6px; z-index: 1000; min-width: 250px; max-height: 80vh; overflow-y: auto; }
-            #nikke-browser a { color: #8bf; text-decoration: none; cursor: pointer; }
-            #nikke-browser a:hover { text-decoration: underline; }
-            .nikke-file-list > div { padding: 4px; cursor: pointer; border-radius: 3px; }
-            .nikke-file-list > div:hover { background: rgba(255,255,255,0.1); }
-            .nikke-breadcrumbs { margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #555; }
-            #nikke-browser button { background: #3a3; border: none; color: white; padding: 8px; margin-top: 10px; border-radius: 4px; cursor: pointer; }
-        `;
-    document.head.appendChild(style);
+  private renderNikkeFileList(list: HTMLElement, indexData: any) {
+    const node =
+      this.nikkePathParts && this.nikkePathParts.length
+        ? this.resolveNodeByPath(indexData, this.nikkePathParts) || null
+        : indexData;
+
+    // Breadcrumbs
+    const crumbs = document.createElement("div");
+    crumbs.style.marginBottom = "8px";
+    const rootCrumb = document.createElement("a");
+    rootCrumb.textContent = "/";
+    rootCrumb.style.color = "#4a9eff";
+    rootCrumb.style.cursor = "pointer";
+    rootCrumb.onclick = (e) => {
+      e.preventDefault();
+      this.nikkePathParts = null;
+      this.renderNikkeBrowser();
+    };
+    crumbs.appendChild(rootCrumb);
+
+    const parts = this.nikkePathParts || [];
+    parts.forEach((part, idx) => {
+      crumbs.appendChild(document.createTextNode(" / "));
+      const c = document.createElement("a");
+      c.textContent = part;
+      c.style.color = "#4a9eff";
+      c.style.cursor = "pointer";
+      c.onclick = (e) => {
+        e.preventDefault();
+        this.nikkePathParts = parts.slice(0, idx + 1);
+        this.renderNikkeBrowser();
+      };
+      crumbs.appendChild(c);
+    });
+    list.appendChild(crumbs);
+
+    // Up one level
+    if (this.nikkePathParts && this.nikkePathParts.length) {
+      const upRow = document.createElement("div");
+      upRow.style.padding = "4px";
+      upRow.style.cursor = "pointer";
+      upRow.style.borderRadius = "4px";
+      upRow.innerHTML = '<span style="margin-right: 8px;">⬆️</span>..';
+      upRow.onmouseover = () =>
+        (upRow.style.background = "rgba(255,255,255,0.1)");
+      upRow.onmouseout = () => (upRow.style.background = "");
+      upRow.onclick = () => {
+        this.nikkePathParts = this.nikkePathParts!.slice(0, -1);
+        this.renderNikkeBrowser();
+      };
+      list.appendChild(upRow);
+    }
+
+    // Children directories
+    for (const child of node?.children || []) {
+      const row = document.createElement("div");
+      row.style.padding = "4px";
+      row.style.cursor = "pointer";
+      row.style.borderRadius = "4px";
+      row.innerHTML = '<span style="margin-right: 8px;">📁</span>' + child.name;
+      row.onmouseover = () => (row.style.background = "rgba(255,255,255,0.1)");
+      row.onmouseout = () => (row.style.background = "");
+      row.onclick = () => {
+        this.nikkePathParts = [...(this.nikkePathParts || []), child.name];
+        this.renderNikkeBrowser();
+      };
+      list.appendChild(row);
+    }
+
+    // Files
+    const files: string[] = node?.files || [];
+    const modelFiles = files.filter(
+      (f) => f.endsWith(".skel") || f.endsWith(".atlas")
+    );
+
+    for (const f of modelFiles) {
+      const row = document.createElement("div");
+      row.style.padding = "4px";
+      row.style.borderRadius = "4px";
+      const icon = f.endsWith(".skel") ? "🦴" : "🗎";
+      row.innerHTML = `<span style="margin-right: 8px;">${icon}</span>${f}`;
+      list.appendChild(row);
+    }
+
+    if (modelFiles.length) {
+      const loadBtn = document.createElement("button");
+      loadBtn.textContent = "Load Model from This Folder";
+      loadBtn.style.marginTop = "8px";
+      loadBtn.style.padding = "8px 12px";
+      loadBtn.style.background = "#4a9eff";
+      loadBtn.style.color = "#fff";
+      loadBtn.style.border = "none";
+      loadBtn.style.borderRadius = "4px";
+      loadBtn.style.cursor = "pointer";
+      loadBtn.onclick = () => {
+        this.tryLoadModelForPath(this.nikkePathParts || []);
+      };
+      list.appendChild(loadBtn);
+    }
+  }
+
+  private renderNikkie4FileList(list: HTMLElement, n4: any) {
+    let src: any = n4;
+    if (!n4.skins && Array.isArray(n4)) {
+      const found = n4.find((x: any) => x && x.skins && Array.isArray(x.skins));
+      if (found) src = found;
+    }
+
+    for (const ch of src.skins || []) {
+      const row = document.createElement("div");
+      row.style.padding = "4px";
+      row.style.cursor = "pointer";
+      row.style.borderRadius = "4px";
+      row.innerHTML = `<span style="margin-right: 8px;">👤</span>${ch.name}`;
+
+      const skinContainer = document.createElement("div");
+      skinContainer.style.display =
+        this.n4ExpandedCharacter === ch.name ? "block" : "none";
+
+      for (const s of ch.skins || []) {
+        const skinRow = document.createElement("div");
+        skinRow.style.padding = "4px 4px 4px 22px";
+        skinRow.style.cursor = "pointer";
+        skinRow.style.borderRadius = "4px";
+        skinRow.innerHTML = `<span style="margin-right: 8px;">📁</span>${s.name} (${s.skin})`;
+        skinRow.onmouseover = () =>
+          (skinRow.style.background = "rgba(255,255,255,0.1)");
+        skinRow.onmouseout = () => (skinRow.style.background = "");
+        skinRow.onclick = () => {
+          this.nikkePathParts = ["dotgg", ch.name, s.skin];
+          this.tryLoadModelForPath(this.nikkePathParts);
+        };
+        skinContainer.appendChild(skinRow);
+      }
+
+      row.onmouseover = () => (row.style.background = "rgba(255,255,255,0.1)");
+      row.onmouseout = () => (row.style.background = "");
+      row.onclick = () => {
+        const open = skinContainer.style.display === "block";
+        skinContainer.style.display = open ? "none" : "block";
+        this.n4ExpandedCharacter = open ? null : ch.name;
+      };
+
+      list.appendChild(row);
+      list.appendChild(skinContainer);
+    }
   }
 
   private renderHeadControls() {
     const existing = document.getElementById("head-controls");
     if (existing) existing.remove();
+
     const wrap = document.createElement("div");
     wrap.id = "head-controls";
-    Object.assign(wrap.style, {
-      position: "absolute",
-      transformOrigin: "top right",
-      transform: "scale(1)",
-      top: "8px",
-      right: "8px",
-      background: "rgba(0,0,0,0.6)",
-      color: "#fff",
-      padding: "8px",
-      font: "12px/1.4 monospace",
-      borderRadius: "6px",
-      zIndex: "1000",
-      minWidth: "200px",
-    });
+    wrap.style.position = "absolute";
+    wrap.style.top = "8px";
+    wrap.style.right = "8px";
+    wrap.style.background = "rgba(0,0,0,0.8)";
+    wrap.style.color = "#fff";
+    wrap.style.padding = "12px";
+    wrap.style.font = "12px/1.4 monospace";
+    wrap.style.borderRadius = "8px";
+    wrap.style.zIndex = "1000";
+    wrap.style.minWidth = "240px";
 
-    wrap.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 6px;">Head Controls</div>
-        `;
+    const title = document.createElement("div");
+    title.textContent = "Head Controls";
+    title.style.fontWeight = "bold";
+    title.style.marginBottom = "8px";
+    wrap.appendChild(title);
 
-    const createSlider = (
-      label: string,
-      min: string,
-      max: string,
-      step: string,
-      value: number,
-      controlName: string,
-      onInput: (val: number) => void
-    ) => {
-      const id = `slider-${controlName}`;
-      const labelEl = document.createElement("label");
-      labelEl.htmlFor = id;
-      labelEl.textContent = `${label}: ${value.toFixed(2)}`;
-      labelEl.style.display = "block";
-      labelEl.style.margin = "8px 0 2px";
-
-      const inputEl = document.createElement("input");
-      inputEl.type = "range";
-      inputEl.id = id;
-      inputEl.min = min;
-      inputEl.max = max;
-      inputEl.step = step;
-      inputEl.value = String(value);
-      inputEl.dataset.control = controlName;
-      inputEl.style.width = "180px";
-      inputEl.addEventListener("input", () => {
-        const val = parseFloat(inputEl.value);
-        onInput(val);
-        labelEl.textContent = `${label}: ${val.toFixed(2)}`;
-      });
-
-      wrap.appendChild(labelEl);
-      wrap.appendChild(inputEl);
-    };
-
-    createSlider(
+    // Create control sliders
+    this.addSlider(
+      wrap,
       "Nodes from head",
-      "1",
-      "5",
-      "1",
       this.chainLength,
-      "chainLength",
-      (v) => (this.chainLength = v)
+      1,
+      5,
+      1,
+      (val) => {
+        this.chainLength = val;
+      }
     );
-    createSlider(
+
+    this.addSlider(
+      wrap,
       "Rotation scale",
-      "0",
-      "2",
-      "0.05",
       this.maxTurnScale,
-      "maxTurnScale",
-      (v) => (this.maxTurnScale = v)
+      0,
+      2,
+      0.05,
+      (val) => {
+        this.maxTurnScale = val;
+      }
     );
-    createSlider(
+
+    this.addSlider(
+      wrap,
       "Parallax scale",
-      "0",
-      "10",
-      "0.05",
       this.parallaxScale,
-      "parallaxScale",
-      (v) => (this.parallaxScale = v)
+      0,
+      10,
+      0.05,
+      (val) => {
+        this.parallaxScale = val;
+      }
     );
-    createSlider(
+
+    this.addSlider(
+      wrap,
       "Bend scale",
-      "0",
-      "2",
-      "0.05",
       this.headBendScale,
-      "headBendScale",
-      (v) => (this.headBendScale = v)
+      0,
+      2,
+      0.05,
+      (val) => {
+        this.headBendScale = val;
+      }
     );
-    createSlider(
+
+    this.addSlider(
+      wrap,
       "Eye parallax",
-      "0",
-      "10",
-      "0.1",
       this.eyeParallaxScale,
-      "eyeParallaxScale",
-      (v) => (this.eyeParallaxScale = v)
+      0,
+      10,
+      0.1,
+      (val) => {
+        this.eyeParallaxScale = val;
+      }
     );
 
-    // Sliders for time require a different label update
-    const createTimeSlider = (
-      label: string,
-      min: string,
-      max: string,
-      step: string,
-      valueSec: number,
-      onInput: (sec: number) => void
-    ) => {
-      const labelEl = document.createElement("label");
-      labelEl.textContent = `${label}: ${(valueSec * 1000).toFixed(0)} ms`;
-      labelEl.style.display = "block";
-      labelEl.style.margin = "8px 0 2px";
-
-      const inputEl = document.createElement("input");
-      inputEl.type = "range";
-      inputEl.min = min;
-      inputEl.max = max;
-      inputEl.step = step;
-      inputEl.value = String(valueSec * 1000);
-      inputEl.style.width = "180px";
-      inputEl.addEventListener("input", () => {
-        const ms = parseInt(inputEl.value);
-        onInput(ms / 1000);
-        labelEl.textContent = `${label}: ${ms} ms`;
-      });
-      wrap.appendChild(labelEl);
-      wrap.appendChild(inputEl);
-    };
-
-    createTimeSlider(
-      "Parallax time",
-      "50",
-      "1000",
-      "10",
-      this.parallaxLagSeconds,
-      (v) => (this.parallaxLagSeconds = v)
-    );
-    createTimeSlider(
-      "Rotation time",
-      "50",
-      "1000",
-      "10",
-      this.rotationLagSeconds,
-      (v) => (this.rotationLagSeconds = v)
+    this.addSlider(
+      wrap,
+      "Parallax time (ms)",
+      this.parallaxLagSeconds * 1000,
+      50,
+      1000,
+      10,
+      (val) => {
+        this.parallaxLagSeconds = val / 1000;
+      }
     );
 
-    // Zoom slider
-    createSlider("Zoom", "0.1", "3", "0.05", this.cameraZoom, "zoom", (v) => {
-      this.cameraZoom = v;
+    this.addSlider(
+      wrap,
+      "Rotation time (ms)",
+      this.rotationLagSeconds * 1000,
+      50,
+      1000,
+      10,
+      (val) => {
+        this.rotationLagSeconds = val / 1000;
+      }
+    );
+
+    this.addSlider(wrap, "Zoom", this.cameraZoom, 0.1, 3, 0.05, (val) => {
+      this.cameraZoom = val;
       this.userAdjustedZoom = true;
       this.holder.scale.set(this.cameraZoom);
+      this.holder.x = this.app.screen.width / 2;
+      this.holder.y = this.app.screen.height / 2;
     });
 
     document.body.appendChild(wrap);
   }
 
-  private navigateToPath(parts: string[]) {
-    this.nikkePathParts = parts;
-    const params = new URLSearchParams(window.location.search);
-    if (parts.length) params.set("nikkePath", parts.join("/"));
-    else params.delete("nikkePath");
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState(null, "", newUrl);
+  private addSlider(
+    parent: HTMLElement,
+    label: string,
+    value: number,
+    min: number,
+    max: number,
+    step: number,
+    onChange: (value: number) => void
+  ) {
+    const container = document.createElement("div");
+    container.style.marginBottom = "8px";
 
-    this.renderNikkeBrowser();
-    this.tryLoadModelForPath(parts);
+    const labelEl = document.createElement("label");
+    labelEl.textContent = `${label}: ${value.toFixed(2)}`;
+    labelEl.style.display = "block";
+    labelEl.style.marginBottom = "4px";
+    container.appendChild(labelEl);
+
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = String(min);
+    slider.max = String(max);
+    slider.step = String(step);
+    slider.value = String(value);
+    slider.style.width = "200px";
+    slider.style.accentColor = "#4a9eff";
+
+    slider.addEventListener("input", () => {
+      const newValue = parseFloat(slider.value);
+      onChange(newValue);
+      labelEl.textContent = `${label}: ${newValue.toFixed(2)}`;
+    });
+
+    container.appendChild(slider);
+    parent.appendChild(container);
   }
 
-  private resolveNodeByPath(indexRoot: any, parts: string[]): any {
-    const cleanedParts =
-      parts && parts.length && parts[0] === "dotgg"
-        ? parts.slice(1)
-        : parts || [];
-    const lower = cleanedParts.map((p) => p.toLowerCase());
-    let node = indexRoot;
-    for (const part of lower) {
-      const next = (node.children || []).find(
-        (c: any) => (c.name || "").toLowerCase() === part
-      );
-      if (!next) return null;
-      node = next;
+  private mergeNikkie4IntoIndex(indexRoot: any, n4: any) {
+    try {
+      const top = indexRoot;
+      if (!n4) return;
+
+      let src: any = n4;
+      if (!n4.skins && Array.isArray(n4)) {
+        const found = n4.find(
+          (x: any) => x && x.skins && Array.isArray(x.skins)
+        );
+        if (found) src = found;
+      }
+
+      if (!src.skins || !Array.isArray(src.skins)) return;
+
+      top.children = top.children || [];
+      for (const entry of src.skins) {
+        const name = entry.name || entry._id || "unknown";
+        let folder = top.children.find(
+          (c: any) =>
+            String(c.name || "").toLowerCase() === String(name).toLowerCase()
+        );
+
+        if (!folder) {
+          folder = { name, children: [], files: [] };
+          top.children.push(folder);
+        }
+
+        folder._dotgg = folder._dotgg || [];
+        if (entry.skins && Array.isArray(entry.skins)) {
+          folder.children = folder.children || [];
+          for (const s of entry.skins) {
+            folder._dotgg.push({ name: s.name, skin: s.skin });
+            const skinFolderName = String(s.skin || s.name);
+            const exists = folder.children.some(
+              (c: any) =>
+                String(c.name || "").toLowerCase() ===
+                skinFolderName.toLowerCase()
+            );
+            if (!exists) {
+              folder.children.push({
+                name: skinFolderName,
+                files: [skinFolderName + ".skel", skinFolderName + ".atlas"],
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // swallow merge errors
     }
-    return node;
-  }
-
-  private pickModelFromNode(
-    node: any,
-    pathParts: string[]
-  ): { atlasUrl: string; skelUrl: string } | null {
-    const files: string[] = node.files || [];
-    if (!files.length) return null;
-    let base =
-      SpinePort.NIKKE_BASE + (pathParts ? pathParts.join("/") + "/" : "");
-    const pick = (ext: string) => {
-      const candidates = files.filter((f) => f.toLowerCase().endsWith(ext));
-      if (candidates.length === 0) return null;
-      candidates.sort((a, b) => a.length - b.length);
-      return base + candidates[0];
-    };
-    const atlasUrl = pick(".atlas");
-    const skelUrl = pick(".skel");
-    if (!atlasUrl || !skelUrl) return null;
-    return { atlasUrl, skelUrl };
   }
 }
 
-// Запуск приложения
-new SpinePort();
+// Add CSS styles for the UI
+const style = document.createElement("style");
+style.textContent = `
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
+  
+  .nikke-file-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .nikke-file-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .nikke-file-list::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+  }
+  
+  .nikke-file-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+  }
+  
+  .nikke-file-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+  }
+`;
+document.head.appendChild(style);
+
+// Initialize the demo
+window.addEventListener("load", () => {
+  new PixiSpineDemo();
+});

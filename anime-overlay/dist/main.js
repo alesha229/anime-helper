@@ -110,6 +110,8 @@ function createWindow() {
   import_electron.ipcMain.handle("overlay-toggle-click-through", (_event, enabled) => {
     if (mainWindow) {
       mainWindow.setIgnoreMouseEvents(!!enabled, { forward: true });
+      mainWindow.setAlwaysOnTop(true, "screen-saver");
+      mainWindow.webContents.send("");
       return true;
     }
     return false;

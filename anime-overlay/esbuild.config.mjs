@@ -84,7 +84,9 @@ async function buildAll({ watch } = { watch: false }) {
     entryPoints: [
       join(ROOT, "src/renderer/index.ts"),
       join(ROOT, "src/renderer/viewer.ts"),
+      join(ROOT, "src/renderer/spine1.ts"),
       join(ROOT, "src/renderer/spine.ts"),
+      join(ROOT, "src/renderer/spine2.ts"),
     ],
     outdir: join(DIST, "renderer"),
     bundle: true,

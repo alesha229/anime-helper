@@ -10,16 +10,18 @@
     "dev": "concurrently \"node esbuild.config.mjs --watch\" \"wait-on dist/main.js && electron .\""
   },
   "dependencies": {
-    "electron": "^26.0.0",
-    "pixi.js": "^6.5.8",
     "@esotericsoftware/spine-phaser": "~4.1.31",
-    "phaser": "3.60.0"
+    "@pixi-spine/all-4.0": "^4.0.6",
+    "@pixi-spine/all-4.1": "^4.0.6",
+    "electron": "^26.0.0",
+    "phaser": "3.60.0",
+    "pixi.js": "7.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
-    "esbuild": "^0.21.5",
     "concurrently": "^8.2.2",
-    "wait-on": "^7.2.0",
-    "typescript": "^5.5.4"
+    "esbuild": "^0.21.5",
+    "typescript": "^5.5.4",
+    "wait-on": "^7.2.0"
   }
 }
