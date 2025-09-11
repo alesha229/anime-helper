@@ -1,0 +1,9 @@
+{
+  "VersionCode": 3,
+  "FireShakeMinForce": 1.0,
+  "FireShakeMaxForce": 5.0,
+  "ForceRandomAngleMin": 180.0,
+  "ForceRandomAngleMax": 270.0,
+  "UseRK4": true,
+  "BoneSpringPhysicsSettingCollection": {}
+}

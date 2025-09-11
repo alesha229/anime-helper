@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("overlayAPI", {
+  onRequestBounds: (cb:()=>void) => ipcRenderer.on('request-pin-bounds', cb),
   toggleClickThrough: (enabled: boolean) =>
     ipcRenderer.invoke("overlay-toggle-click-through", enabled),
   close: () => ipcRenderer.send("overlay-close"),
@@ -37,6 +38,12 @@ contextBridge.exposeInMainWorld("overlayAPI", {
       }
     });
   },
+    onUIMode: (cb: (mode:'normal'|'hidden')=>void) =>
+    ipcRenderer.on('ui-mode', (_ev, m) => cb(m)),
+
+  /* просим рендер отдать актуальные bounds кнопки */
+  reportPinBounds: (b:{x:number,y:number,w:number,h:number}) =>
+    ipcRenderer.send('report-pin-bounds', b),
 });
 
 declare global {

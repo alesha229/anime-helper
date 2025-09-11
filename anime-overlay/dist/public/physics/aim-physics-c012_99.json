@@ -1,0 +1,263 @@
+{
+  "FireShakeMinForce": 1.0,
+  "FireShakeMaxForce": 5.0,
+  "CharacterResourceId": null,
+  "BoneSpringPhysicsSettingCollection": {
+    "@a_face2": {
+      "Shiftiness": 250.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@a_face3": {
+      "Shiftiness": 100.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.35
+    },
+    "@a_face7": {
+      "Shiftiness": 100.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.7
+    },
+    "@a_face4": {
+      "Shiftiness": 150.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@a_face5": {
+      "Shiftiness": 100.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.35
+    },
+    "@a_face6": {
+      "Shiftiness": 100.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.7
+    },
+    "@a_hair_4": {
+      "Shiftiness": 150.0,
+      "Damping": 15.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@a_hair_5": {
+      "Shiftiness": 150.0,
+      "Damping": 15.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.4
+    },
+    "@a_hair_2": {
+      "Shiftiness": 250.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@a_hair_6": {
+      "Shiftiness": 150.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@pelvis2": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@ass_r": {
+      "Shiftiness": 150.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@pelvis3": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@ass_l": {
+      "Shiftiness": 150.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.4
+    },
+    "@a_leg_h_l2": {
+      "Shiftiness": 150.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.4
+    },
+    "@a_leg_h_r2": {
+      "Shiftiness": 150.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.35
+    }
+  },
+  "EnableSupportSpring": true
+}

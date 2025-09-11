@@ -115,7 +115,7 @@
       #uiToggle {
         position: absolute;
         left: 8px;
-        bottom: 8px;
+        bottom: 40px;
         z-index: 20;
         -webkit-app-region: no-drag;
       }
@@ -177,8 +177,7 @@
         </div>
       </div>
       <div id="controls" class="glass">
-        <div class="toolbar">
-          <button id="pin" class="btn">Pin</button>
+        <div class="toolbar" id="toolbar">
           <label class="label"
             >Scale
             <input
@@ -190,7 +189,6 @@
               value="1"
           /></label>
           <button id="toggleUI" class="btn">Hide UI</button>
-          <button id="close" class="btn btn-danger">Close</button>
         </div>
       </div>
       <div id="uiToggle">

@@ -18,6 +18,7 @@ const zoomSettingsFile = () =>
   path.join(app.getPath("userData"), "zoom_settings.json");
 
 function createWindow() {
+  
   const primary = screen.getPrimaryDisplay();
   const area = (primary && (primary as any).workArea) ||
     (primary as any).bounds || { width: 1920, height: 1080, x: 0, y: 0 };
@@ -48,6 +49,45 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, "../public/index.html"));
   mainWindow.setIgnoreMouseEvents(false);
+  mainWindow.setAlwaysOnTop(true, 'screen-saver'); // highest possible level
+  mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  mainWindow.focus();
+  mainWindow.moveTop();  
+  let clickThroughActive = false;          // глобальный флаг режима
+const PIN_BTN_BOUNDS = { x: 0, y: 0, w: 80, h: 32 }; // пере-заполняем динамически
+
+/* таймер, который «дырявит» окно, но оставляет кнопку активной */
+const pinAreaChecker = setInterval(() => {
+  if (!mainWindow || mainWindow.isDestroyed()) { clearInterval(pinAreaChecker); return; }
+  if (!clickThroughActive) return;       // обычный режим – ничего не делаем
+
+  const win = mainWindow.getBounds();
+  const { x: mx, y: my } = screen.getCursorScreenPoint();
+
+  /* узнаём реальные координаты кнопки из рендера (раз в 100 мс) */
+  mainWindow.webContents.send('request-pin-bounds'); // попросим отдать bounds
+}, 100);
+
+/* получаем bounds кнопки от рендера */
+ipcMain.on('report-pin-bounds', (_e, b: {x:number,y:number,w:number,h:number}) => {
+  Object.assign(PIN_BTN_BOUNDS, b);
+});
+const mousePoller = setInterval(() => {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    clearInterval(mousePoller);
+    return;
+  }
+  if (!clickThroughActive) return;    
+
+  syncIgnore();
+}, 50);
+/* каждый раз, когда курсор двигается, проверяем – над кнопкой ли он */
+mainWindow.on('will-move' as any, () => syncIgnore());
+mainWindow.on('will-resize' as any, () => syncIgnore());
+mainWindow.hookWindowMessage(0x0200, syncIgnore); // WM_MOUSEMOVE
+mainWindow.webContents.on('dom-ready', () => {
+  mainWindow?.webContents.send('request-pin-bounds');
+});
 
   // watch for events.json written by the VS Code extension
   try {
@@ -116,17 +156,28 @@ function createWindow() {
   } catch (e) {
     console.warn("Events watcher failed", e);
   }
+  function syncIgnore() {
+  if (!mainWindow || mainWindow.isDestroyed() || !clickThroughActive) return;
 
+  const { x: wx, y: wy } = mainWindow.getBounds();
+  const { x: mx, y: my } = screen.getCursorScreenPoint();
+  const { x, y, w, h } = PIN_BTN_BOUNDS;
+
+  const overBtn =
+    mx >= wx + x && mx <= wx + x + w &&
+    my >= wy + y && my <= wy + y + h;
+
+  mainWindow.setIgnoreMouseEvents(!overBtn, { forward: true });
+}
   // IPC handlers
-  ipcMain.handle("overlay-toggle-click-through", (_event, enabled: boolean) => {
-    if (mainWindow) {
-      mainWindow.setIgnoreMouseEvents(!!enabled, { forward: true });
-      mainWindow.setAlwaysOnTop(true, "screen-saver");
-      mainWindow.webContents.send("");
-      return true;
-    }
-    return false;
-  });
+ipcMain.handle("overlay-toggle-click-through", (_e, enabled: boolean) => {
+  if (!mainWindow || mainWindow.isDestroyed()) return false;
+
+  clickThroughActive = Boolean(enabled);
+  mainWindow.setIgnoreMouseEvents(clickThroughActive, { forward: true });
+  mainWindow.webContents.send('ui-mode', clickThroughActive ? 'hidden' : 'normal');
+  return true;
+});
 
   ipcMain.on("overlay-close", () => {
     if (mainWindow) mainWindow.close();
@@ -139,21 +190,17 @@ function createWindow() {
     if (mainWindow) mainWindow.webContents.openDevTools({ mode: "right" });
   });
 
-  ipcMain.on("overlay-enter-fullscreen", () => {
-    if (!mainWindow) return;
-    try {
-      initialBounds = mainWindow.getBounds();
-    } catch {}
-    const { bounds } = screen.getPrimaryDisplay();
-    mainWindow.setBounds(
-      { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height },
-      false
-    );
-  });
-  ipcMain.on("overlay-exit-fullscreen", () => {
-    if (!mainWindow) return;
-    if (initialBounds) mainWindow.setBounds(initialBounds, false);
-  });
+ipcMain.on("overlay-enter-fullscreen", () => {
+  if (!mainWindow) return;
+  try { initialBounds = mainWindow.getBounds(); } catch {}
+  const { workArea } = screen.getPrimaryDisplay();   // ← берём рабочую область
+  mainWindow.setBounds(workArea, false);             // на весь экран без панели
+});
+
+ipcMain.on("overlay-exit-fullscreen", () => {
+  if (!mainWindow || !initialBounds) return;
+  mainWindow.setBounds(initialBounds, false);
+});
 
   // Persist last model via filesystem (sync writes are fine for small JSON)
   ipcMain.on("overlay-save-last-model", (_ev, url: string) => {

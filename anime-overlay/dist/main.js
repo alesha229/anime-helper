@@ -58,6 +58,39 @@ function createWindow() {
   initialBounds = mainWindow.getBounds();
   mainWindow.loadFile(path.join(__dirname, "../public/index.html"));
   mainWindow.setIgnoreMouseEvents(false);
+  mainWindow.setAlwaysOnTop(true, "screen-saver");
+  mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  mainWindow.focus();
+  mainWindow.moveTop();
+  let clickThroughActive = false;
+  const PIN_BTN_BOUNDS = { x: 0, y: 0, w: 80, h: 32 };
+  const pinAreaChecker = setInterval(() => {
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      clearInterval(pinAreaChecker);
+      return;
+    }
+    if (!clickThroughActive) return;
+    const win = mainWindow.getBounds();
+    const { x: mx, y: my } = import_electron.screen.getCursorScreenPoint();
+    mainWindow.webContents.send("request-pin-bounds");
+  }, 100);
+  import_electron.ipcMain.on("report-pin-bounds", (_e, b) => {
+    Object.assign(PIN_BTN_BOUNDS, b);
+  });
+  const mousePoller = setInterval(() => {
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      clearInterval(mousePoller);
+      return;
+    }
+    if (!clickThroughActive) return;
+    syncIgnore();
+  }, 50);
+  mainWindow.on("will-move", () => syncIgnore());
+  mainWindow.on("will-resize", () => syncIgnore());
+  mainWindow.hookWindowMessage(512, syncIgnore);
+  mainWindow.webContents.on("dom-ready", () => {
+    mainWindow?.webContents.send("request-pin-bounds");
+  });
   try {
     const candidates = [
       path.join(__dirname, "../public/events.json"),
@@ -107,14 +140,20 @@ function createWindow() {
   } catch (e) {
     console.warn("Events watcher failed", e);
   }
-  import_electron.ipcMain.handle("overlay-toggle-click-through", (_event, enabled) => {
-    if (mainWindow) {
-      mainWindow.setIgnoreMouseEvents(!!enabled, { forward: true });
-      mainWindow.setAlwaysOnTop(true, "screen-saver");
-      mainWindow.webContents.send("");
-      return true;
-    }
-    return false;
+  function syncIgnore() {
+    if (!mainWindow || mainWindow.isDestroyed() || !clickThroughActive) return;
+    const { x: wx, y: wy } = mainWindow.getBounds();
+    const { x: mx, y: my } = import_electron.screen.getCursorScreenPoint();
+    const { x: x2, y: y2, w, h } = PIN_BTN_BOUNDS;
+    const overBtn = mx >= wx + x2 && mx <= wx + x2 + w && my >= wy + y2 && my <= wy + y2 + h;
+    mainWindow.setIgnoreMouseEvents(!overBtn, { forward: true });
+  }
+  import_electron.ipcMain.handle("overlay-toggle-click-through", (_e, enabled) => {
+    if (!mainWindow || mainWindow.isDestroyed()) return false;
+    clickThroughActive = Boolean(enabled);
+    mainWindow.setIgnoreMouseEvents(clickThroughActive, { forward: true });
+    mainWindow.webContents.send("ui-mode", clickThroughActive ? "hidden" : "normal");
+    return true;
   });
   import_electron.ipcMain.on("overlay-close", () => {
     if (mainWindow) mainWindow.close();
@@ -131,15 +170,12 @@ function createWindow() {
       initialBounds = mainWindow.getBounds();
     } catch {
     }
-    const { bounds } = import_electron.screen.getPrimaryDisplay();
-    mainWindow.setBounds(
-      { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height },
-      false
-    );
+    const { workArea } = import_electron.screen.getPrimaryDisplay();
+    mainWindow.setBounds(workArea, false);
   });
   import_electron.ipcMain.on("overlay-exit-fullscreen", () => {
-    if (!mainWindow) return;
-    if (initialBounds) mainWindow.setBounds(initialBounds, false);
+    if (!mainWindow || !initialBounds) return;
+    mainWindow.setBounds(initialBounds, false);
   });
   import_electron.ipcMain.on("overlay-save-last-model", (_ev, url) => {
     try {

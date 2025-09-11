@@ -149059,7 +149059,7 @@ void main () {
     }
     preload() {
       const params = new URLSearchParams(window.location.search);
-      window.overlayAPI.setZoomFactor(0.5);
+      window.overlayAPI.setZoomFactor(1);
       window.overlayAPI.enterFullscreen();
       this.nikkeModelKey = params.get("nikke");
       const nikkePath = params.get("nikkePath") || params.get("path");
@@ -149135,13 +149135,11 @@ void main () {
         const isAimModel = (this.currentIdleAnimation || "").toLowerCase().includes("aim");
         if (!isAimModel) return;
         try {
-          this.spineboy.animationState.setAnimation(1, "aim_fire", false);
-          this.spineboy.animationState.addAnimation(
-            1,
-            this.currentIdleAnimation,
-            true,
-            0
-          );
+          const track = this.spineboy.animationState.getCurrent(4);
+          if (track && track.animation.name === "aim_fire" && !track.isComplete()) return;
+          this.spineboy.animationState.setAnimation(4, "aim_fire", false);
+          this.spineboy.animationState.timeScale = 0.7;
+          this.spineboy.animationState.addAnimation(4, this.currentIdleAnimation, true, 0);
         } catch (err) {
         }
         try {
@@ -149259,6 +149257,13 @@ void main () {
             const nik = document.getElementById("nikke-browser");
             if (nik) nik.style.display = "none";
             try {
+              const b = btn.getBoundingClientRect();
+              window.overlayAPI?.reportPinBounds({
+                x: b.left,
+                y: b.top,
+                w: b.width,
+                h: b.height
+              });
               window.overlayAPI?.toggleClickThrough?.(true);
               this.clickThroughEnabled = true;
             } catch {
@@ -149278,22 +149283,6 @@ void main () {
         };
         document.body.appendChild(btn);
         this.uiToggleButton = btn;
-        try {
-          const dd = document.createElement("div");
-          dd.id = "overlay-debug-dot";
-          dd.style.position = "absolute";
-          dd.style.width = "12px";
-          dd.style.height = "12px";
-          dd.style.borderRadius = "50%";
-          dd.style.background = "rgba(255,0,0,0.9)";
-          dd.style.pointerEvents = "none";
-          dd.style.zIndex = "100001";
-          dd.style.transform = "translate(-50%, -50%)";
-          dd.style.display = "none";
-          document.body.appendChild(dd);
-          this.debugDot = dd;
-        } catch {
-        }
       } catch {
       }
     }

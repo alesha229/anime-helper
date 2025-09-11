@@ -37024,6 +37024,830 @@ void main(void)\r
   };
   new SpineParser().installLoader();
 
+  // src/renderer/spine/bonePhysics.ts
+  var BonePhysics = class {
+    constructor(bone, settings3, physicsConfig, globalSettings) {
+      this.pureAnimationLocalX = 0;
+      this.pureAnimationLocalY = 0;
+      this.pureAnimationLocalRotation = 0;
+      this.pureAnimationLocalScaleX = 1;
+      this.pureAnimationLocalScaleY = 1;
+      this.pureWorldX = 0;
+      this.pureWorldY = 0;
+      this.pureWorldRotation = 0;
+      this.pureBoneLength = 0;
+      this.warmupTime = 0;
+      this.warmupDuration = 0.5;
+      this.isWarmedUp = false;
+      this.frameCount = 0;
+      this.isHipBone = false;
+      this.isAtBone = false;
+      this.bone = bone;
+      this.settings = settings3;
+      this.physicsConfig = physicsConfig;
+      this.globalSettings = globalSettings;
+      const boneName = bone.data?.name || "";
+      this.isHipBone = boneName.includes("#") || !boneName;
+      this.isAtBone = boneName.includes("@");
+      if (this.isHipBone) {
+        this.pureAnimationLocalX = bone.data.x;
+        this.pureAnimationLocalY = bone.data.y;
+        this.pureAnimationLocalRotation = bone.data.rotation;
+        this.pureAnimationLocalScaleX = bone.data.scaleX;
+        this.pureAnimationLocalScaleY = bone.data.scaleY;
+      } else {
+        this.pureAnimationLocalX = bone.x;
+        this.pureAnimationLocalY = bone.y;
+        this.pureAnimationLocalRotation = bone.rotation;
+        this.pureAnimationLocalScaleX = bone.scaleX;
+        this.pureAnimationLocalScaleY = bone.scaleY;
+      }
+      this.initialLocalPosition = new Point(bone.x, bone.y);
+      this.currentPosition = new Point(0, 0);
+      this.previousPosition = new Point(0, 0);
+      this.restPosition = new Point(0, 0);
+      this.velocity = new Point(0, 0);
+      this.currentRotation = 0;
+      this.previousRotation = 0;
+      this.restRotation = 0;
+      this.angleVelocity = 0;
+      this.isInitialized = false;
+      this.lastHolderPosition = new Point(0, 0);
+      this.holderVelocity = new Point(0, 0);
+      this.computePureBoneLength();
+      this.originalBoneLength = this.pureBoneLength;
+    }
+    computePureBoneLength() {
+      if (!this.bone.parent) {
+        this.pureBoneLength = Math.sqrt(
+          this.pureAnimationLocalX * this.pureAnimationLocalX + this.pureAnimationLocalY * this.pureAnimationLocalY
+        );
+      } else {
+        let parentLocalX = 0;
+        let parentLocalY = 0;
+        if (this.bone.parent.physics) {
+          parentLocalX = this.bone.parent.physics.pureAnimationLocalX;
+          parentLocalY = this.bone.parent.physics.pureAnimationLocalY;
+        } else {
+          parentLocalX = this.bone.parent.x;
+          parentLocalY = this.bone.parent.y;
+        }
+        const dx = this.pureAnimationLocalX - parentLocalX;
+        const dy = this.pureAnimationLocalY - parentLocalY;
+        this.pureBoneLength = Math.sqrt(dx * dx + dy * dy);
+      }
+      if (this.pureBoneLength < 1) {
+        this.pureBoneLength = 1;
+      }
+    }
+    computePureWorldTransform() {
+      this.computePureBoneLength();
+      if (!this.bone.parent) {
+        this.pureWorldX = this.pureAnimationLocalX;
+        this.pureWorldY = this.pureAnimationLocalY;
+        this.pureWorldRotation = this.pureAnimationLocalRotation;
+        return;
+      }
+      if (this.isAtBone) {
+        const parentWorldX = this.bone.parent.worldX;
+        const parentWorldY = this.bone.parent.worldY;
+        const parentWorldRotation = this.bone.parent.rotation;
+        const localDeltaX = this.pureAnimationLocalX - this.initialLocalPosition.x;
+        const localDeltaY = this.pureAnimationLocalY - this.initialLocalPosition.y;
+        const cos2 = Math.cos(parentWorldRotation);
+        const sin2 = Math.sin(parentWorldRotation);
+        this.pureWorldX = parentWorldX + (localDeltaX * cos2 - localDeltaY * sin2);
+        this.pureWorldY = parentWorldY + (localDeltaX * sin2 + localDeltaY * cos2);
+        this.pureWorldRotation = parentWorldRotation + this.pureAnimationLocalRotation;
+        return;
+      }
+      let parentPureWorldX = 0;
+      let parentPureWorldY = 0;
+      let parentPureWorldRotation = 0;
+      if (this.bone.parent.physics) {
+        parentPureWorldX = this.bone.parent.physics.pureWorldX;
+        parentPureWorldY = this.bone.parent.physics.pureWorldY;
+        parentPureWorldRotation = this.bone.parent.physics.pureWorldRotation;
+      } else {
+        parentPureWorldX = this.bone.parent.worldX;
+        parentPureWorldY = this.bone.parent.worldY;
+        parentPureWorldRotation = this.bone.parent.rotation;
+      }
+      const cos = Math.cos(parentPureWorldRotation);
+      const sin = Math.sin(parentPureWorldRotation);
+      this.pureWorldX = parentPureWorldX + (this.pureAnimationLocalX * cos - this.pureAnimationLocalY * sin);
+      this.pureWorldY = parentPureWorldY + (this.pureAnimationLocalX * sin + this.pureAnimationLocalY * cos);
+      this.pureWorldRotation = parentPureWorldRotation + this.pureAnimationLocalRotation;
+    }
+    get pureAnimationWorldX() {
+      return this.pureWorldX;
+    }
+    get pureAnimationWorldY() {
+      return this.pureWorldY;
+    }
+    get pureAnimationWorldRotation() {
+      return this.pureWorldRotation;
+    }
+    initialize(holderPosition) {
+      if (!this.isInitialized) {
+        this.computePureWorldTransform();
+        this.currentPosition.set(
+          this.pureAnimationWorldX,
+          this.pureAnimationWorldY
+        );
+        this.previousPosition.set(
+          this.pureAnimationWorldX,
+          this.pureAnimationWorldY
+        );
+        this.restPosition.set(this.pureAnimationWorldX, this.pureAnimationWorldY);
+        this.currentRotation = this.pureAnimationWorldRotation;
+        this.previousRotation = this.pureAnimationWorldRotation;
+        this.restRotation = this.pureAnimationWorldRotation;
+        this.originalBoneLength = this.pureBoneLength;
+        this.velocity.set(0, 0);
+        this.angleVelocity = 0;
+        this.lastHolderPosition.copyFrom(holderPosition);
+        this.holderVelocity.set(0, 0);
+        this.isInitialized = true;
+        this.warmupTime = 0;
+        this.frameCount = 0;
+      }
+    }
+    shouldApplyPhysics(deltaTime) {
+      this.frameCount++;
+      this.warmupTime += deltaTime;
+      if (this.frameCount < 5) return false;
+      const animationMovement = Math.sqrt(
+        (this.pureAnimationWorldX - this.previousPosition.x) ** 2 + (this.pureAnimationWorldY - this.previousPosition.y) ** 2
+      );
+      const animationRotationChange = Math.abs(
+        this.pureAnimationWorldRotation - this.previousRotation
+      );
+      if (animationMovement > 0.5 || animationRotationChange > 0.01) {
+        this.isWarmedUp = true;
+        return true;
+      }
+      const totalMovement = Math.sqrt(
+        (this.pureAnimationWorldX - this.restPosition.x) ** 2 + (this.pureAnimationWorldY - this.restPosition.y) ** 2
+      );
+      if (totalMovement > 2) {
+        this.isWarmedUp = true;
+        return true;
+      }
+      if (this.warmupTime >= this.warmupDuration) {
+        this.isWarmedUp = true;
+        return true;
+      }
+      return false;
+    }
+    getForceMultiplier() {
+      if (!this.isWarmedUp) return 0;
+      const rampTime = 0.5;
+      const timeAfterWarmup = Math.max(0, this.warmupTime - this.warmupDuration);
+      if (timeAfterWarmup < rampTime) {
+        return timeAfterWarmup / rampTime * this.settings.ForceMultiplier;
+      }
+      return this.settings.ForceMultiplier;
+    }
+    updateHolderVelocity(currentHolderPosition, deltaTime) {
+      if (deltaTime > 0) {
+        this.holderVelocity.set(
+          (currentHolderPosition.x - this.lastHolderPosition.x) / deltaTime,
+          (currentHolderPosition.y - this.lastHolderPosition.y) / deltaTime
+        );
+        this.lastHolderPosition.copyFrom(currentHolderPosition);
+      }
+    }
+    applyHolderInertia(deltaTime) {
+      if (this.settings.Mass > 0) {
+        const inertiaFactor = 0.5 / this.settings.Mass;
+        this.velocity.x += this.holderVelocity.x * inertiaFactor;
+        this.velocity.y += this.holderVelocity.y * inertiaFactor;
+      }
+    }
+    applyRandomForce(multiplayer = 1e3) {
+      if (!this.settings.FixPosition && this.settings.Mass > 0 && this.isWarmedUp) {
+        const force = (this.physicsConfig.FireShakeMinForce + Math.random() * (this.physicsConfig.FireShakeMaxForce - this.physicsConfig.FireShakeMinForce)) * this.globalSettings.physicsStrengthMultiplier;
+        const minAngle = this.physicsConfig.ForceRandomAngleMin * (Math.PI / 180);
+        const maxAngle = this.physicsConfig.ForceRandomAngleMax * (Math.PI / 180);
+        const angle = minAngle + Math.random() * (maxAngle - minAngle);
+        this.velocity.x += Math.cos(angle) * force * multiplayer;
+        this.velocity.y += Math.sin(angle) * force * multiplayer;
+        const rotationImpulse = force * 0.02 * this.globalSettings.physicsStrengthMultiplier;
+        this.angleVelocity += (Math.random() - 0.5) * 2 * rotationImpulse;
+      }
+    }
+    normalizeAngle(angle) {
+      while (angle > Math.PI) angle -= 2 * Math.PI;
+      while (angle < -Math.PI) angle += 2 * Math.PI;
+      return angle;
+    }
+    applyToBone() {
+      if (this.bone.parent) {
+        let parentWorldX = 0;
+        let parentWorldY = 0;
+        let parentWorldRotation = 0;
+        if (this.isAtBone) {
+          parentWorldX = this.bone.parent.worldX;
+          parentWorldY = this.bone.parent.worldY;
+          parentWorldRotation = this.bone.parent.rotation;
+        } else {
+          if (this.bone.parent.physics) {
+            parentWorldX = this.bone.parent.physics.pureWorldX;
+            parentWorldY = this.bone.parent.physics.pureWorldY;
+            parentWorldRotation = this.bone.parent.physics.pureWorldRotation;
+          } else {
+            parentWorldX = this.bone.parent.worldX;
+            parentWorldY = this.bone.parent.worldY;
+            parentWorldRotation = this.bone.parent.rotation;
+          }
+        }
+        const worldDeltaX = this.currentPosition.x - parentWorldX;
+        const worldDeltaY = this.currentPosition.y - parentWorldY;
+        const cos = Math.cos(-parentWorldRotation);
+        const sin = Math.sin(-parentWorldRotation);
+        const localDeltaX = worldDeltaX * cos - worldDeltaY * sin;
+        const localDeltaY = worldDeltaX * sin + worldDeltaY * cos;
+        if (this.isAtBone) {
+          this.bone.x = this.initialLocalPosition.x + localDeltaX * 0.4;
+          this.bone.y = this.initialLocalPosition.y + localDeltaY * 0.4;
+        } else {
+          this.bone.x = this.pureAnimationLocalX + localDeltaX * (this.globalSettings.physicsStrengthMultiplier / 2);
+          this.bone.y = this.pureAnimationLocalY + localDeltaY * (this.globalSettings.physicsStrengthMultiplier / 2);
+        }
+        if (this.frameCount % 60 === 0) {
+          const boneName = this.bone.data?.name || "unnamed";
+          const boneType = this.isHipBone ? "#" : this.isAtBone ? "@" : "unnamed";
+        }
+      } else {
+        this.bone.x = this.initialLocalPosition.x + (this.currentPosition.x - this.pureAnimationWorldX);
+        this.bone.y = this.initialLocalPosition.y + (this.currentPosition.y - this.pureAnimationWorldY);
+      }
+    }
+    applyConstraints() {
+      if (!this.bone.parent) return;
+      let parentWorldX = 0;
+      let parentWorldY = 0;
+      let parentWorldRotation = 0;
+      if (this.isAtBone) {
+        parentWorldX = this.bone.parent.worldX;
+        parentWorldY = this.bone.parent.worldY;
+        parentWorldRotation = this.bone.parent.rotation;
+      } else {
+        if (this.bone.parent.physics) {
+          parentWorldX = this.bone.parent.physics.pureWorldX;
+          parentWorldY = this.bone.parent.physics.pureWorldY;
+          parentWorldRotation = this.bone.parent.physics.pureWorldRotation;
+        } else {
+          parentWorldX = this.bone.parent.worldX;
+          parentWorldY = this.bone.parent.worldY;
+          parentWorldRotation = this.bone.parent.rotation;
+        }
+      }
+      const currentWorldVector = new Point(
+        this.currentPosition.x - parentWorldX,
+        this.currentPosition.y - parentWorldY
+      );
+      const currentDistance = Math.sqrt(
+        currentWorldVector.x * currentWorldVector.x + currentWorldVector.y * currentWorldVector.y
+      );
+      const maxDistance = this.pureBoneLength * this.settings.StretchLimit;
+      if (currentDistance > maxDistance && currentDistance > 1e-3) {
+        const ratio = maxDistance / currentDistance;
+        this.currentPosition.set(
+          parentWorldX + currentWorldVector.x * ratio,
+          parentWorldY + currentWorldVector.y * ratio
+        );
+        const normal = new Point(
+          currentWorldVector.x / currentDistance,
+          currentWorldVector.y / currentDistance
+        );
+        const velocityDotNormal = this.velocity.x * normal.x + this.velocity.y * normal.y;
+        if (velocityDotNormal > 0) {
+          this.velocity.x -= velocityDotNormal * normal.x * 0.8;
+          this.velocity.y -= velocityDotNormal * normal.y * 0.8;
+        }
+      }
+      if (this.settings.AngleLimit < 180) {
+        const relativeRotation = this.normalizeAngle(
+          this.currentRotation - parentWorldRotation
+        );
+        const angleLimit = this.settings.AngleLimit * (Math.PI / 180);
+        if (Math.abs(relativeRotation) > angleLimit) {
+          const correction = Math.sign(relativeRotation) * angleLimit;
+          const oldRotation = this.currentRotation;
+          this.currentRotation = parentWorldRotation + correction;
+          const rotationDiff = this.currentRotation - oldRotation;
+          this.angleVelocity += rotationDiff / 0.016 * 0.5;
+        }
+      }
+      if (this.settings.FixSpringLength) {
+        if (currentDistance > 1e-3) {
+          const ratio = this.pureBoneLength / currentDistance;
+          this.currentPosition.set(
+            parentWorldX + currentWorldVector.x * ratio,
+            parentWorldY + currentWorldVector.y * ratio
+          );
+        }
+      }
+    }
+    update(deltaTime) {
+      if (deltaTime === 0) return;
+      if (!this.shouldApplyPhysics(deltaTime)) {
+        this.currentPosition.set(
+          this.pureAnimationWorldX,
+          this.pureAnimationWorldY
+        );
+        this.currentRotation = this.pureAnimationWorldRotation;
+        this.restPosition.set(this.pureAnimationWorldX, this.pureAnimationWorldY);
+        this.restRotation = this.pureAnimationWorldRotation;
+        this.velocity.set(0, 0);
+        this.angleVelocity = 0;
+        this.previousPosition.copyFrom(this.currentPosition);
+        this.previousRotation = this.currentRotation;
+        return;
+      }
+      if (this.settings.FixPosition) {
+        this.currentPosition.set(
+          this.pureAnimationWorldX,
+          this.pureAnimationWorldY
+        );
+        this.currentRotation = this.pureAnimationWorldRotation;
+        this.velocity.set(0, 0);
+        this.angleVelocity = 0;
+        return;
+      }
+      this.applyHolderInertia(deltaTime);
+      this.previousPosition.copyFrom(this.currentPosition);
+      this.previousRotation = this.currentRotation;
+      const targetX = this.pureAnimationWorldX;
+      const targetY = this.pureAnimationWorldY;
+      const targetRotation = this.pureAnimationWorldRotation;
+      const springForceX = (targetX - this.currentPosition.x) * this.settings.Shiftiness;
+      const springForceY = (targetY - this.currentPosition.y) * this.settings.Shiftiness;
+      const dampingForceX = -this.velocity.x * this.settings.Damping;
+      const dampingForceY = -this.velocity.y * this.settings.Damping;
+      const angleSpringForce = (targetRotation - this.currentRotation) * this.settings.SupportSpringShiftiness;
+      const angleDampingForce = -this.angleVelocity * this.settings.SupportSpringDamping;
+      const forceMultiplier = this.globalSettings.physicsStrengthMultiplier;
+      let totalForceX = (springForceX + dampingForceX) * forceMultiplier * this.globalSettings.physicsStrengthMultiplier;
+      let totalForceY = (springForceY + dampingForceY) * forceMultiplier * this.globalSettings.physicsStrengthMultiplier;
+      let totalAngleForce = (angleSpringForce + angleDampingForce) * forceMultiplier * this.globalSettings.physicsStrengthMultiplier;
+      const maxForce = this.globalSettings.maxForce || 1e4;
+      totalForceX = Math.max(-maxForce, Math.min(maxForce, totalForceX));
+      totalForceY = Math.max(-maxForce, Math.min(maxForce, totalForceY));
+      totalAngleForce = Math.max(-maxForce, Math.min(maxForce, totalAngleForce));
+      this.velocity.x += totalForceX / this.settings.Mass * deltaTime;
+      this.velocity.y += totalForceY / this.settings.Mass * deltaTime;
+      this.angleVelocity += totalAngleForce / this.settings.Mass * deltaTime;
+      const maxSpeed = this.globalSettings.maxSpeed || 1e3;
+      const speed = Math.sqrt(
+        this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y
+      );
+      if (speed > maxSpeed) {
+        this.velocity.x = this.velocity.x / speed * maxSpeed;
+        this.velocity.y = this.velocity.y / speed * maxSpeed;
+      }
+      this.currentPosition.x += this.velocity.x * deltaTime;
+      this.currentPosition.y += this.velocity.y * deltaTime;
+      this.currentRotation += this.angleVelocity * deltaTime;
+      this.currentRotation = this.normalizeAngle(this.currentRotation);
+      this.applyConstraints();
+      this.velocity.set(
+        (this.currentPosition.x - this.previousPosition.x) / deltaTime,
+        (this.currentPosition.y - this.previousPosition.y) / deltaTime
+      );
+      this.angleVelocity = (this.currentRotation - this.previousRotation) / deltaTime;
+      const velocityThreshold = 0.1;
+      if (Math.abs(this.velocity.x) < velocityThreshold) this.velocity.x = 0;
+      if (Math.abs(this.velocity.y) < velocityThreshold) this.velocity.y = 0;
+      if (Math.abs(this.angleVelocity) < velocityThreshold)
+        this.angleVelocity = 0;
+      this.applyToBone();
+    }
+    resetPhysics() {
+      this.warmupTime = 0;
+      this.frameCount = 0;
+      this.isWarmedUp = false;
+      this.isInitialized = false;
+      this.velocity.set(0, 0);
+      this.angleVelocity = 0;
+    }
+    forceActivatePhysics() {
+      this.isWarmedUp = true;
+      this.warmupTime = this.warmupDuration + 1;
+      this.frameCount = 10;
+    }
+    get isPhysicsActive() {
+      return this.isWarmedUp;
+    }
+    get currentBoneLength() {
+      if (this.bone.parent) {
+        let parentWorldX = 0;
+        let parentWorldY = 0;
+        if (this.bone.parent.physics) {
+          parentWorldX = this.bone.parent.physics.currentPosition.x;
+          parentWorldY = this.bone.parent.physics.currentPosition.y;
+        } else {
+          parentWorldX = this.bone.parent.worldX;
+          parentWorldY = this.bone.parent.worldY;
+        }
+        const deltaX = this.currentPosition.x - parentWorldX;
+        const deltaY = this.currentPosition.y - parentWorldY;
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      }
+      return 0;
+    }
+    get initialBoneLength() {
+      return this.pureBoneLength;
+    }
+    getDebugInfo() {
+      const boneName = this.bone.data?.name || "unnamed";
+      const boneType = this.isHipBone ? "#" : this.isAtBone ? "@" : "unnamed";
+      return {
+        boneName,
+        boneType,
+        isInitialized: this.isInitialized,
+        isWarmedUp: this.isWarmedUp,
+        frameCount: this.frameCount,
+        warmupTime: this.warmupTime,
+        originalBoneLength: this.originalBoneLength,
+        currentBoneLength: this.currentBoneLength,
+        stretchLimit: this.settings.StretchLimit,
+        maxAllowedLength: this.originalBoneLength * this.settings.StretchLimit,
+        currentPosition: { x: this.currentPosition.x, y: this.currentPosition.y },
+        velocity: { x: this.velocity.x, y: this.velocity.y },
+        pureAnimationPosition: {
+          x: this.pureAnimationWorldX,
+          y: this.pureAnimationWorldY
+        },
+        boneLocalPosition: { x: this.bone.x, y: this.bone.y },
+        settings: this.settings
+      };
+    }
+  };
+
+  // src/renderer/spine/uiManager.ts
+  var UIManager = class {
+    constructor(demo) {
+      this.uiToggleButton = null;
+      this.demo = demo;
+    }
+    addUiToggleButton() {
+      try {
+        const existing = document.getElementById("overlay-ui-toggle");
+        if (existing) {
+          this.uiToggleButton = existing;
+          return;
+        }
+        const btn = document.createElement("button");
+        btn.id = "overlay-ui-toggle";
+        btn.textContent = "Hide UI";
+        btn.style.position = "absolute";
+        btn.style.left = "12px";
+        btn.style.bottom = "12px";
+        btn.style.zIndex = "100000";
+        btn.style.padding = "12px 18px";
+        btn.style.fontSize = "16px";
+        btn.style.minWidth = "140px";
+        btn.style.height = "48px";
+        btn.style.background = "rgba(0,0,0,0.7)";
+        btn.style.color = "#fff";
+        btn.style.border = "none";
+        btn.style.borderRadius = "10px";
+        btn.style.cursor = "pointer";
+        btn.style.boxShadow = "0 4px 14px rgba(0,0,0,0.4)";
+        btn.onclick = () => {
+          this.demo.isUiHidden = !this.demo.isUiHidden;
+          if (this.demo.isUiHidden) {
+            btn.textContent = "Show UI";
+            const el = document.getElementById("head-controls");
+            if (el) el.style.display = "none";
+            const nik = document.getElementById("nikke-browser");
+            if (nik) nik.style.display = "none";
+            try {
+              window.overlayAPI?.toggleClickThrough?.(true);
+              this.demo.clickThroughEnabled = true;
+            } catch {
+            }
+          } else {
+            btn.textContent = "Hide UI";
+            const el = document.getElementById("head-controls");
+            if (el) el.style.display = "block";
+            const nik = document.getElementById("nikke-browser");
+            if (nik) nik.style.display = "block";
+            try {
+              window.overlayAPI?.toggleClickThrough?.(false);
+              this.demo.clickThroughEnabled = false;
+            } catch {
+            }
+          }
+        };
+        document.body.appendChild(btn);
+        this.uiToggleButton = btn;
+      } catch {
+      }
+    }
+    renderNikkeBrowser() {
+      const existing = document.getElementById("nikke-browser");
+      if (existing) existing.remove();
+      const container = document.createElement("div");
+      container.id = "nikke-browser";
+      container.style.position = "absolute";
+      container.style.top = "8px";
+      container.style.left = "8px";
+      container.style.background = "rgba(0,0,0,0.8)";
+      container.style.color = "#fff";
+      container.style.padding = "12px";
+      container.style.borderRadius = "8px";
+      container.style.maxWidth = "300px";
+      container.style.maxHeight = "900px";
+      container.style.overflow = "auto";
+      container.style.fontSize = "14px";
+      container.style.zIndex = "1000";
+      const repoWrap = document.createElement("div");
+      repoWrap.style.marginBottom = "8px";
+      const sel = document.createElement("select");
+      sel.style.background = "#333";
+      sel.style.color = "#fff";
+      sel.style.border = "1px solid #666";
+      sel.style.padding = "4px";
+      const opt1 = document.createElement("option");
+      opt1.value = "nikke";
+      opt1.textContent = "Nikke.json";
+      const opt2 = document.createElement("option");
+      opt2.value = "nikkie4";
+      opt2.textContent = "nikkie4.1.json";
+      sel.appendChild(opt1);
+      sel.appendChild(opt2);
+      sel.value = this.demo.currentRepo;
+      sel.onchange = () => {
+        this.demo.currentRepo = sel.value;
+        this.demo.nikkePathParts = null;
+        this.demo.n4ExpandedCharacter = null;
+        this.renderNikkeBrowser();
+      };
+      repoWrap.appendChild(sel);
+      container.appendChild(repoWrap);
+      const list = document.createElement("div");
+      list.className = "nikke-file-list";
+      if (this.demo.currentRepo === "nikke") {
+        const indexData = this.demo.nikkeIndexData;
+        if (!indexData) {
+          const msg = document.createElement("div");
+          msg.textContent = "Nikke index not loaded";
+          list.appendChild(msg);
+        } else {
+          this.renderNikkeFileList(list, indexData);
+        }
+      } else {
+        const n4 = this.demo.nikkie4IndexData;
+        if (!n4) {
+          const msg = document.createElement("div");
+          msg.textContent = "nikkie4 index not loaded";
+          list.appendChild(msg);
+        } else {
+          this.renderNikkie4FileList(list, n4);
+        }
+      }
+      container.appendChild(list);
+      document.body.appendChild(container);
+    }
+    renderNikkeFileList(list, indexData) {
+      const node = this.demo.nikkePathParts && this.demo.nikkePathParts.length ? this.resolveNodeByPath(indexData, this.demo.nikkePathParts) || null : indexData;
+      const crumbs = document.createElement("div");
+      crumbs.style.marginBottom = "8px";
+      const rootCrumb = document.createElement("a");
+      rootCrumb.textContent = "/";
+      rootCrumb.style.color = "#4a9eff";
+      rootCrumb.style.cursor = "pointer";
+      rootCrumb.onclick = (e2) => {
+        e2.preventDefault();
+        this.demo.nikkePathParts = null;
+        this.renderNikkeBrowser();
+      };
+      crumbs.appendChild(rootCrumb);
+      const parts = this.demo.nikkePathParts || [];
+      parts.forEach((part, idx) => {
+        crumbs.appendChild(document.createTextNode(" / "));
+        const c2 = document.createElement("a");
+        c2.textContent = part;
+        c2.style.color = "#4a9eff";
+        c2.style.cursor = "pointer";
+        c2.onclick = (e2) => {
+          e2.preventDefault();
+          this.demo.nikkePathParts = parts.slice(0, idx + 1);
+          this.renderNikkeBrowser();
+        };
+        crumbs.appendChild(c2);
+      });
+      list.appendChild(crumbs);
+      if (this.demo.nikkePathParts && this.demo.nikkePathParts.length) {
+        const upRow = document.createElement("div");
+        upRow.style.padding = "4px";
+        upRow.style.cursor = "pointer";
+        upRow.style.borderRadius = "4px";
+        upRow.innerHTML = '<span style="margin-right: 8px;">\u2B06\uFE0F</span>..';
+        upRow.onmouseover = () => upRow.style.background = "rgba(255,255,255,0.1)";
+        upRow.onmouseout = () => upRow.style.background = "";
+        upRow.onclick = () => {
+          this.demo.nikkePathParts = this.demo.nikkePathParts.slice(0, -1);
+          this.renderNikkeBrowser();
+        };
+        list.appendChild(upRow);
+      }
+      for (const child of node?.children || []) {
+        const row = document.createElement("div");
+        row.style.padding = "4px";
+        row.style.cursor = "pointer";
+        row.style.borderRadius = "4px";
+        row.innerHTML = '<span style="margin-right: 8px;">\u{1F4C1}</span>' + child.name;
+        row.onmouseover = () => row.style.background = "rgba(255,255,255,0.1)";
+        row.onmouseout = () => row.style.background = "";
+        row.onclick = () => {
+          this.demo.nikkePathParts = [...this.demo.nikkePathParts || [], child.name];
+          this.renderNikkeBrowser();
+        };
+        list.appendChild(row);
+      }
+      const files = node?.files || [];
+      const modelFiles = files.filter((f2) => f2.endsWith(".skel") || f2.endsWith(".atlas"));
+      for (const f2 of modelFiles) {
+        const row = document.createElement("div");
+        row.style.padding = "4px";
+        row.style.borderRadius = "4px";
+        const icon = f2.endsWith(".skel") ? "\u{1F9B4}" : "\u{1F5CE}";
+        row.innerHTML = `<span style="margin-right: 8px;">${icon}</span>${f2}`;
+        list.appendChild(row);
+      }
+      if (modelFiles.length) {
+        const loadBtn = document.createElement("button");
+        loadBtn.textContent = "Load Model from This Folder";
+        loadBtn.style.marginTop = "8px";
+        loadBtn.style.padding = "8px 12px";
+        loadBtn.style.background = "#4a9eff";
+        loadBtn.style.color = "#fff";
+        loadBtn.style.border = "none";
+        loadBtn.style.borderRadius = "4px";
+        loadBtn.style.cursor = "pointer";
+        loadBtn.onclick = () => {
+          this.demo.tryLoadModelForPath(this.demo.nikkePathParts || []);
+        };
+        list.appendChild(loadBtn);
+      }
+    }
+    renderNikkie4FileList(list, n4) {
+      let src = n4;
+      if (!n4.skins && Array.isArray(n4)) {
+        const found = n4.find((x2) => x2 && x2.skins && Array.isArray(x2.skins));
+        if (found) src = found;
+      }
+      for (const ch of src.skins || []) {
+        const row = document.createElement("div");
+        row.style.padding = "4px";
+        row.style.cursor = "pointer";
+        row.style.borderRadius = "4px";
+        const iconContainer = document.createElement("span");
+        iconContainer.style.marginRight = "8px";
+        iconContainer.style.display = "inline-block";
+        iconContainer.style.width = "155px";
+        iconContainer.style.height = "201px";
+        iconContainer.style.textAlign = "center";
+        iconContainer.style.verticalAlign = "middle";
+        iconContainer.textContent = "\u{1F464}";
+        const img = document.createElement("img");
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.display = "none";
+        img.style.objectFit = "contain";
+        const thumbnailUrl = `https://gitea.com/alesha332/yohoho/raw/branch/main/${encodeURIComponent(ch.name)}/thumbnail.png`;
+        img.onload = () => {
+          iconContainer.textContent = "";
+          iconContainer.appendChild(img);
+          img.style.display = "block";
+        };
+        img.onerror = () => {
+          console.log(`Failed to load thumbnail for ${ch.name}`);
+        };
+        img.src = thumbnailUrl;
+        row.appendChild(iconContainer);
+        row.appendChild(document.createTextNode(ch.name));
+        const skinContainer = document.createElement("div");
+        skinContainer.style.display = this.demo.n4ExpandedCharacter === ch.name ? "block" : "none";
+        for (const s2 of ch.skins || []) {
+          const skinRow = document.createElement("div");
+          skinRow.style.padding = "4px 4px 4px 22px";
+          skinRow.style.cursor = "pointer";
+          skinRow.style.borderRadius = "4px";
+          skinRow.innerHTML = `<span style="margin-right: 8px;">\u{1F4C1}</span>${s2.name} (${s2.skin})`;
+          skinRow.onmouseover = () => skinRow.style.background = "rgba(255,255,255,0.1)";
+          skinRow.onmouseout = () => skinRow.style.background = "";
+          skinRow.onclick = () => {
+            this.demo.nikkePathParts = ["dotgg", ch.name, s2.skin];
+            this.demo.tryLoadModelForPath(this.demo.nikkePathParts);
+          };
+          skinContainer.appendChild(skinRow);
+        }
+        row.onmouseover = () => row.style.background = "rgba(255,255,255,0.1)";
+        row.onmouseout = () => row.style.background = "";
+        row.onclick = () => {
+          const open = skinContainer.style.display === "block";
+          skinContainer.style.display = open ? "none" : "block";
+          this.demo.n4ExpandedCharacter = open ? null : ch.name;
+        };
+        list.appendChild(row);
+        list.appendChild(skinContainer);
+      }
+    }
+    renderHeadControls() {
+      const existing = document.getElementById("head-controls");
+      if (existing) existing.remove();
+      const wrap = document.createElement("div");
+      wrap.id = "head-controls";
+      wrap.style.position = "absolute";
+      wrap.style.top = "8px";
+      wrap.style.right = "8px";
+      wrap.style.background = "rgba(0,0,0,0.8)";
+      wrap.style.color = "#fff";
+      wrap.style.padding = "12px";
+      wrap.style.font = "12px/1.4 monospace";
+      wrap.style.borderRadius = "8px";
+      wrap.style.zIndex = "1000";
+      wrap.style.minWidth = "240px";
+      const title = document.createElement("div");
+      title.textContent = "Head Controls";
+      title.style.fontWeight = "bold";
+      title.style.marginBottom = "8px";
+      wrap.appendChild(title);
+      this.addSlider(wrap, "Nodes from head", this.demo.chainLength, 1, 5, 1, (val) => {
+        this.demo.chainLength = val;
+      });
+      this.addSlider(wrap, "Rotation scale", this.demo.maxTurnScale, 0, 2, 0.05, (val) => {
+        this.demo.maxTurnScale = val;
+      });
+      this.addSlider(wrap, "Parallax scale", this.demo.parallaxScale, 0, 10, 0.05, (val) => {
+        this.demo.parallaxScale = val;
+      });
+      this.addSlider(wrap, "Bend scale", this.demo.headBendScale, 0, 2, 0.05, (val) => {
+        this.demo.headBendScale = val;
+      });
+      this.addSlider(wrap, "Eye parallax", this.demo.eyeParallaxScale, 0, 10, 0.1, (val) => {
+        this.demo.eyeParallaxScale = val;
+      });
+      this.addSlider(wrap, "Parallax time (ms)", this.demo.parallaxLagSeconds * 1e3, 50, 1e3, 10, (val) => {
+        this.demo.parallaxLagSeconds = val / 1e3;
+      });
+      this.addSlider(wrap, "Rotation time (ms)", this.demo.rotationLagSeconds * 1e3, 50, 1e3, 10, (val) => {
+        this.demo.rotationLagSeconds = val / 1e3;
+      });
+      this.addSlider(wrap, "Zoom", this.demo.cameraZoom, 0.1, 3, 0.05, (val) => {
+        this.demo.cameraZoom = val;
+        this.demo.userAdjustedZoom = true;
+        this.demo.holder.scale.set(this.demo.cameraZoom);
+        this.demo.holder.x = this.demo.app.screen.width / 2;
+        this.demo.holder.y = this.demo.app.screen.height / 2;
+      });
+      document.body.appendChild(wrap);
+    }
+    addSlider(parent, label, value, min, max, step, onChange) {
+      const container = document.createElement("div");
+      container.style.marginBottom = "8px";
+      const labelEl = document.createElement("label");
+      labelEl.textContent = `${label}: ${value.toFixed(2)}`;
+      labelEl.style.display = "block";
+      labelEl.style.marginBottom = "4px";
+      container.appendChild(labelEl);
+      const slider = document.createElement("input");
+      slider.type = "range";
+      slider.min = String(min);
+      slider.max = String(max);
+      slider.step = String(step);
+      slider.value = String(value);
+      slider.style.width = "200px";
+      slider.style.accentColor = "#4a9eff";
+      slider.addEventListener("input", () => {
+        const newValue = parseFloat(slider.value);
+        onChange(newValue);
+        labelEl.textContent = `${label}: ${newValue.toFixed(2)}`;
+      });
+      container.appendChild(slider);
+      parent.appendChild(container);
+    }
+    resolveNodeByPath(indexRoot, parts) {
+      const cleanedParts = parts && parts.length && parts[0] === "dotgg" ? parts.slice(1) : parts || [];
+      const lower = cleanedParts.map((p2) => p2.toLowerCase());
+      let node = indexRoot;
+      for (const part of lower) {
+        const next = (node.children || []).find(
+          (c2) => (c2.name || "").toLowerCase() === part
+        );
+        if (!next) return null;
+        node = next;
+      }
+      return node;
+    }
+  };
+
   // src/renderer/spine1.ts
   var _PixiSpineDemo = class _PixiSpineDemo {
     constructor() {
@@ -37067,29 +37891,28 @@ void main(void)\r
       this.eyeParallaxMaxX = 6;
       this.eyeParallaxMaxY = 4;
       this.rotationEasing = "ease-out";
-      this.isDragging = false;
-      this.dragOffsetX = 0;
-      this.dragOffsetY = 0;
       this.currentIdleAnimation = "idle";
       this.isAimModel = false;
       this.aimXEntry = null;
       this.aimYEntry = null;
       this.latestCaret = null;
-      this.testAimToCursor = false;
       this.isUiHidden = false;
       this.clickThroughEnabled = false;
-      this.uiToggleButton = null;
-      this.debugDot = null;
-      this.debugLogging = true;
       this.currentRepo = "nikke";
       this.n4ExpandedCharacter = null;
       this.actionTimeout = null;
       this.actionPlaying = false;
       this.lastFrameTime = 0;
-      // Добавляем свойства для хранения данных
+      this.state = {
+        spineboy: null,
+        physicsBones: [],
+        isLoading: false,
+        boneVisualizer: null
+      };
       this.nikkeIndexData = null;
       this.nikkie4IndexData = null;
       this.init();
+      this.ui = new UIManager(this);
     }
     async init() {
       this.app = new Application({
@@ -37109,7 +37932,23 @@ void main(void)\r
       this.app.stage.addChild(this.holder);
       await this.preload();
       this.create();
-      this.app.ticker.add(this.update, this);
+      this.app.ticker.add((dt) => {
+        const deltaTime = this.app.ticker.deltaMS / 1e3;
+        const currentTime = Date.now();
+        if (!this.spineboy) return;
+        this.update();
+        for (const bone of this.state.physicsBones) {
+          bone.computePureWorldTransform();
+        }
+        for (const bone of this.state.physicsBones) {
+          bone.update(deltaTime);
+        }
+        try {
+          this.spineboy.skeleton.updateWorldTransform();
+        } catch {
+        }
+        this.state.boneVisualizer?.update();
+      });
     }
     async preload() {
       const params = new URLSearchParams(window.location.search);
@@ -37135,16 +37974,13 @@ void main(void)\r
         this.nikkeIndexData = { name: "root", children: [], files: [] };
       }
       try {
-        const nikkie4Response = await fetch("./nikkie4.1.json");
+        const nikkie4Response = await fetch("./nikkie4.2.json");
         if (nikkie4Response.ok) {
           const rawData = await nikkie4Response.json();
           console.log("Raw nikkie4.1.json:", rawData);
           if (Array.isArray(rawData) && rawData.length > 3 && rawData[3] && rawData[3].skins) {
             this.nikkie4IndexData = rawData[3];
-            console.log(
-              "Using nikkie4 data from array[3]:",
-              this.nikkie4IndexData
-            );
+            console.log("Using nikkie4 data from array[3]:", this.nikkie4IndexData);
           } else if (rawData && rawData.skins) {
             this.nikkie4IndexData = rawData;
             console.log("Using nikkie4 data as object:", this.nikkie4IndexData);
@@ -37183,9 +38019,9 @@ void main(void)\r
       canvas.style.height = "100%";
       this.loadInitialModel();
       this.setupEventListeners();
-      this.renderNikkeBrowser();
-      this.renderHeadControls();
-      this.addUiToggleButton();
+      this.ui.renderNikkeBrowser();
+      this.ui.renderHeadControls();
+      this.ui.addUiToggleButton();
       window.addEventListener("resize", () => {
         this.holder.x = this.app.screen.width / 2;
         this.holder.y = this.app.screen.height / 2;
@@ -37206,7 +38042,8 @@ void main(void)\r
               resolved.skelUrl,
               resolved.atlasUrl,
               1,
-              idleAnim
+              idleAnim,
+              "favorive_c550_00"
             );
           } else {
             await this.spawnLocal();
@@ -37232,7 +38069,6 @@ void main(void)\r
         }
         this.spineboy = spineboy;
         this.baseRotationByBone = {};
-        this.setupHeadAndPointer();
         this.setupSpineboyInteraction();
         this.fitContentToViewport();
         this.isOffsetCalibrated = false;
@@ -37263,31 +38099,19 @@ void main(void)\r
       });
       window.addEventListener("keydown", (e2) => {
         if (!this.spineboy) return;
-        const isAimModel = (this.currentIdleAnimation || "").toLowerCase().includes("aim");
-        if (!isAimModel) return;
+        const currentAnim = (this.currentIdleAnimation || "").toLowerCase();
+        const isAimModel = currentAnim.includes("aim");
+        const isCoverModel = currentAnim.includes("cover");
+        if (!isAimModel && !isCoverModel) return;
         try {
-          if (this.spineboy.state.hasAnimation("aim_fire")) {
-            this.spineboy.state.setAnimation(1, "aim_fire", false);
-            this.spineboy.state.addAnimation(
-              1,
-              this.currentIdleAnimation,
-              true,
-              0
-            );
-          }
+          const track = this.spineboy.state.getCurrent(4);
+          const fireAnimation = isAimModel ? "aim_fire" : "cover_hit";
+          if (track && track.animation.name === fireAnimation && !track.isComplete()) return;
+          this.state.physicsBones.forEach((bone) => bone.applyRandomForce());
+          this.spineboy.state.setAnimation(4, fireAnimation, false);
+          this.spineboy.state.timeScale = 0.7;
+          this.spineboy.state.addAnimation(4, this.currentIdleAnimation, true, 0);
         } catch (err) {
-        }
-        try {
-          if (window.overlayAPI?.getCaretPosition) {
-            window.overlayAPI.getCaretPosition().then((pos) => {
-              if (pos && typeof pos.x === "number" && typeof pos.y === "number") {
-                this.pointerPos.set(pos.x, pos.y);
-                this.latestCaret = { x: pos.x, y: pos.y };
-                this.updateAimTracksFromCaret();
-              }
-            });
-          }
-        } catch {
         }
       });
       try {
@@ -37323,21 +38147,18 @@ void main(void)\r
           this.spineboy.y - globalPos.y
         );
         this.spineboy.cursor = "grabbing";
-        console.log("Drag start", globalPos.x, globalPos.y);
       });
       this.app.stage.on("pointermove", (event) => {
         if (isDragging && this.spineboy) {
           const globalPos = event.global;
           this.spineboy.x = globalPos.x + dragOffset.x;
           this.spineboy.y = globalPos.y + dragOffset.y;
-          console.log("Drag move", this.spineboy.x, this.spineboy.y);
         }
       });
       this.app.stage.on("pointerup", () => {
         if (isDragging) {
           isDragging = false;
           this.spineboy.cursor = "grab";
-          console.log("Drag end");
         }
       });
       this.spineboy.on("pointerover", () => {
@@ -37678,11 +38499,6 @@ void main(void)\r
         );
         const tx = Math.max(0, Math.min(1, 0.5 + nx * 0.5));
         const ty = Math.max(0, Math.min(1, 0.5 + ny * 0.5));
-        if (this.debugLogging) {
-          console.info(
-            `[aim] percent X=${Math.round(tx * 100)}% Y=${Math.round(ty * 100)}%`
-          );
-        }
         try {
           if (this.aimXEntry && this.aimXEntry.animation) {
             const dur = this.aimXEntry.animation.duration || 1;
@@ -37696,14 +38512,6 @@ void main(void)\r
             this.aimYEntry.trackTime = ty * dur;
           }
         } catch {
-        }
-        if (this.debugDot) {
-          try {
-            this.debugDot.style.left = `${rect.left + canvasClientX}px`;
-            this.debugDot.style.top = `${rect.top + canvasClientY}px`;
-            this.debugDot.style.display = this.debugLogging ? "block" : "none";
-          } catch {
-          }
         }
       } catch (e2) {
         console.error("Error in updateAimTracksFromCaret:", e2);
@@ -37745,6 +38553,210 @@ void main(void)\r
       if (!atlasUrl || !skelUrl) return null;
       return { atlasUrl, skelUrl };
     }
+    async loadModelFromUrls(skelUrl, atlasUrl, scale, idle, modelName, isNikkie4Model = false) {
+      if (this.spineboy) {
+        this.holder.removeChild(this.spineboy);
+        this.spineboy.destroy();
+      }
+      try {
+        if (this.actionTimeout) {
+          clearTimeout(this.actionTimeout);
+          this.actionTimeout = null;
+        }
+        this.actionPlaying = false;
+      } catch (e2) {
+      }
+      this.headBone = null;
+      this.lookTargetBone = null;
+      this.isOffsetCalibrated = false;
+      this.baseRotationByBone = {};
+      const localToken = ++this.loadToken;
+      try {
+        Assets.add({ alias: `spine-data-${localToken}`, src: skelUrl });
+        const resource = await Assets.load(`spine-data-${localToken}`);
+        Assets.setPreferences({ preferCreateImageBitmap: false });
+        if (localToken !== this.loadToken) return;
+        const spineboy = new Spine(resource.spineData);
+        spineboy.x = 0;
+        spineboy.y = 1e3;
+        spineboy.scale.set(scale);
+        this.holder.addChild(spineboy);
+        if (spineboy.state.hasAnimation(idle)) {
+          spineboy.state.setAnimation(0, idle, true);
+        }
+        this.spineboy = spineboy;
+        this.currentIdleAnimation = idle;
+        let physicsFile;
+        if (isNikkie4Model) {
+          const parts = modelName.split("/");
+          let fileName = parts[parts.length - 1] || modelName;
+          const nameParts = fileName.split("_");
+          let typeIndex = -1;
+          for (let i2 = 0; i2 < nameParts.length; i2++) {
+            const part = nameParts[i2].toLowerCase();
+            if (part === "aim" || part === "cover") {
+              typeIndex = i2;
+              break;
+            }
+          }
+          if (typeIndex !== -1) {
+            nameParts.splice(typeIndex, 1);
+            if (typeIndex > 0) {
+              const previousPart = nameParts[typeIndex - 1];
+              if (/^\d+$/.test(previousPart)) {
+                nameParts.splice(typeIndex);
+              }
+            }
+          }
+          const cleanedName = nameParts.join("_");
+          physicsFile = `${idle.includes("aim") ? "aim" : idle.includes("cover") ? "cover" : "idle"}-physics-${cleanedName}.json`;
+        } else {
+          const type = modelName.includes("_cover_") ? "cover" : "aim";
+          const base = modelName.replace(/_(aim|cover)_/, "_").replace(/^_+|_+$/g, "");
+          physicsFile = `${type}-physics-${base}.json`;
+        }
+        console.log("Loading physics file:", physicsFile);
+        const physicsConfig = await fetch(
+          `physics/${physicsFile}`
+        ).then((r2) => r2.json()).catch(() => ({}));
+        const physicsBoneNames = Object.keys(
+          physicsConfig.BoneSpringPhysicsSettingCollection || {}
+        );
+        const allBoneNames = this.spineboy.skeleton.bones.map((bone) => bone.data.name);
+        const matchingBones = allBoneNames.filter(
+          (boneName) => physicsBoneNames.includes(boneName)
+        );
+        const globalSettings = {
+          maxForce: 6e3,
+          maxSpeed: 3e3,
+          physicsStrengthMultiplier: 0.6
+        };
+        for (const bone of this.spineboy.skeleton.bones) {
+          const boneName = bone.data.name;
+          if (physicsBoneNames.includes(boneName)) {
+            const settings3 = physicsConfig.BoneSpringPhysicsSettingCollection[boneName];
+            const bonePhysics = new BonePhysics(
+              bone,
+              settings3,
+              physicsConfig,
+              globalSettings
+            );
+            this.state.physicsBones.push(bonePhysics);
+            console.log(`[MODEL] Bone "${boneName}" added to physics.`);
+          }
+        }
+        this.isAimModel = (idle || "").toLowerCase().includes("aim");
+        if (this.isAimModel) {
+          try {
+            const ax = this.spineboy.state.setAnimation(1, "aim_x", true);
+            if (ax) ax.timeScale = 0;
+            this.aimXEntry = ax;
+          } catch (e2) {
+          }
+          try {
+            const ay = this.spineboy.state.setAnimation(2, "aim_y", true);
+            if (ay) ay.timeScale = 0;
+            this.aimYEntry = ay;
+          } catch (e2) {
+          }
+          this.headBone = null;
+          this.lookTargetBone = null;
+        }
+        this.setupHeadAndPointer();
+        this.setupSpineboyInteraction();
+        this.fitContentToViewport();
+        try {
+          const isAim = (idle || "").toLowerCase().includes("aim");
+          const isCover = (idle || "").toLowerCase().includes("cover");
+          if (!isAim && !isCover) {
+            this.scheduleNextAction();
+          }
+        } catch (e2) {
+        }
+      } catch (error) {
+        console.error("Failed to load model:", error);
+        console.error("URLs:", { skelUrl, atlasUrl });
+        if (modelName.includes("_")) {
+          const parts = modelName.split("_");
+          if (parts.length >= 2) {
+            const characterName = parts[0];
+            const skinName = parts.slice(1).join("_");
+            const baseUrl = "https://codeberg.org/alesha229/nikke/raw/branch/main";
+            const altSkelUrl = `${baseUrl}/${encodeURIComponent(characterName)}/${encodeURIComponent(skinName)}.skel`;
+            const altAtlasUrl = `${baseUrl}/${encodeURIComponent(characterName)}/${encodeURIComponent(skinName)}.atlas`;
+            console.log("Trying alternative URLs:", { altSkelUrl, altAtlasUrl });
+            try {
+              Assets.add({ alias: `spine-data-${localToken}`, src: altSkelUrl });
+              const resource = await Assets.load(`spine-data-${localToken}`);
+              if (localToken !== this.loadToken) return;
+              const spineboy = new Spine(resource.spineData);
+              spineboy.x = 0;
+              spineboy.y = 1e3;
+              spineboy.scale.set(scale);
+              this.holder.addChild(spineboy);
+              if (spineboy.state.hasAnimation(idle)) {
+                spineboy.state.setAnimation(0, idle, true);
+              }
+              this.spineboy = spineboy;
+              this.currentIdleAnimation = idle;
+              console.log("Successfully loaded from alternative location");
+              return;
+            } catch (altError) {
+              console.error("Alternative load failed:", altError);
+            }
+          }
+        }
+        const errorMsg = document.createElement("div");
+        errorMsg.style.position = "fixed";
+        errorMsg.style.top = "20px";
+        errorMsg.style.left = "50%";
+        errorMsg.style.transform = "translateX(-50%)";
+        errorMsg.style.backgroundColor = "rgba(255, 0, 0, 0.8)";
+        errorMsg.style.color = "white";
+        errorMsg.style.padding = "10px 20px";
+        errorMsg.style.borderRadius = "5px";
+        errorMsg.style.zIndex = "100000";
+        errorMsg.textContent = `Failed to load model: ${error.message || error}`;
+        document.body.appendChild(errorMsg);
+        setTimeout(() => {
+          document.body.removeChild(errorMsg);
+        }, 5e3);
+      }
+    }
+    async tryLoadModelForPath(parts) {
+      try {
+        if (this.currentRepo === "nikkie4" || parts && parts[0] === "dotgg") {
+          if (parts.length < 3) return;
+          const characterName = parts[1];
+          const skinName = parts[2];
+          if (!characterName || !skinName) return;
+          let subfolder = "";
+          if (skinName.toLowerCase().includes("aim")) {
+            subfolder = "aim/";
+          } else if (skinName.toLowerCase().includes("cover")) {
+            subfolder = "cover/";
+          }
+          const baseUrl = "https://codeberg.org/alesha229/nikke/raw/branch/main";
+          const atlasUrl = `${baseUrl}/${encodeURIComponent(characterName)}/${subfolder}${encodeURIComponent(skinName)}.atlas`;
+          const skelUrl = `${baseUrl}/${encodeURIComponent(characterName)}/${subfolder}${encodeURIComponent(skinName)}.skel`;
+          const nameHint2 = skinName.toLowerCase();
+          const idleAnim2 = nameHint2.includes("aim") ? "aim_idle" : nameHint2.includes("cover") ? "cover_idle" : "idle";
+          await this.loadModelFromUrls(skelUrl, atlasUrl, 1, idleAnim2, skinName, true);
+          return;
+        }
+      } catch (e2) {
+        console.error("Error loading nikkie4 model:", e2);
+      }
+      const indexData = this.nikkeIndexData;
+      if (!indexData) return;
+      const node = this.resolveNodeByPath(indexData, parts);
+      const picked = node ? this.pickModelFromNode(node) : null;
+      if (!picked) return;
+      const nameHint = (picked.skelUrl || picked.atlasUrl || "").toLowerCase();
+      const idleAnim = nameHint.includes("aim") ? "aim_idle" : nameHint.includes("cover") ? "cover_idle" : "idle";
+      let modelName = nameHint.split("/").pop()?.split(".").slice(0, -1).join(".") || "";
+      await this.loadModelFromUrls(picked.skelUrl, picked.atlasUrl, 1, idleAnim, modelName, false);
+    }
     resolveNodeByPath(indexRoot, parts) {
       const cleanedParts = parts && parts.length && parts[0] === "dotgg" ? parts.slice(1) : parts || [];
       const lower = cleanedParts.map((p2) => p2.toLowerCase());
@@ -37777,93 +38789,6 @@ void main(void)\r
       const skelUrl = pick(".skel");
       if (!atlasUrl || !skelUrl) return null;
       return { atlasUrl, skelUrl };
-    }
-    async loadModelFromUrls(skelUrl, atlasUrl, scale, idle) {
-      if (this.spineboy) {
-        this.holder.removeChild(this.spineboy);
-        this.spineboy.destroy();
-      }
-      try {
-        if (this.actionTimeout) {
-          clearTimeout(this.actionTimeout);
-          this.actionTimeout = null;
-        }
-        this.actionPlaying = false;
-      } catch (e2) {
-      }
-      this.headBone = null;
-      this.lookTargetBone = null;
-      this.isOffsetCalibrated = false;
-      this.baseRotationByBone = {};
-      const localToken = ++this.loadToken;
-      try {
-        Assets.add({ alias: `spine-data-${localToken}`, src: skelUrl });
-        const resource = await Assets.load(`spine-data-${localToken}`);
-        if (localToken !== this.loadToken) return;
-        const spineboy = new Spine(resource.spineData);
-        spineboy.x = 0;
-        spineboy.y = 1e3;
-        spineboy.scale.set(scale);
-        this.holder.addChild(spineboy);
-        if (spineboy.state.hasAnimation(idle)) {
-          spineboy.state.setAnimation(0, idle, true);
-        }
-        this.spineboy = spineboy;
-        this.currentIdleAnimation = idle;
-        this.isAimModel = (idle || "").toLowerCase().includes("aim");
-        if (this.isAimModel) {
-          try {
-            const ax = this.spineboy.state.setAnimation(1, "aim_x", true);
-            if (ax) ax.timeScale = 0;
-            this.aimXEntry = ax;
-          } catch (e2) {
-          }
-          try {
-            const ay = this.spineboy.state.setAnimation(2, "aim_y", true);
-            if (ay) ay.timeScale = 0;
-            this.aimYEntry = ay;
-          } catch (e2) {
-          }
-          this.headBone = null;
-          this.lookTargetBone = null;
-        }
-        this.setupHeadAndPointer();
-        this.setupSpineboyInteraction();
-        this.fitContentToViewport();
-        try {
-          const isAim = (idle || "").toLowerCase().includes("aim");
-          const isCover = (idle || "").toLowerCase().includes("cover");
-          if (!isAim && !isCover) {
-            this.scheduleNextAction();
-          }
-        } catch (e2) {
-        }
-      } catch (error) {
-        console.error("Failed to load model:", error);
-      }
-    }
-    async tryLoadModelForPath(parts) {
-      try {
-        if (this.currentRepo === "nikkie4" || parts && parts[0] === "dotgg") {
-          const skin = parts[parts.length - 1];
-          if (!skin) return;
-          const atlasUrl = _PixiSpineDemo.DOTGG_BASE + encodeURIComponent(skin) + ".atlas";
-          const skelUrl = _PixiSpineDemo.DOTGG_BASE + encodeURIComponent(skin) + ".skel";
-          const nameHint2 = (skelUrl || atlasUrl || "").toLowerCase();
-          const idleAnim2 = nameHint2.includes("aim") ? "aim_idle" : nameHint2.includes("cover") ? "cover_idle" : "idle";
-          await this.loadModelFromUrls(skelUrl, atlasUrl, 1, idleAnim2);
-          return;
-        }
-      } catch (e2) {
-      }
-      const indexData = this.nikkeIndexData;
-      if (!indexData) return;
-      const node = this.resolveNodeByPath(indexData, parts);
-      const picked = node ? this.pickModelFromNode(node) : null;
-      if (!picked) return;
-      const nameHint = (picked.skelUrl || picked.atlasUrl || "").toLowerCase();
-      const idleAnim = nameHint.includes("aim") ? "aim_idle" : nameHint.includes("cover") ? "cover_idle" : "idle";
-      await this.loadModelFromUrls(picked.skelUrl, picked.atlasUrl, 1, idleAnim);
     }
     scheduleNextAction() {
       try {
@@ -37951,476 +38876,11 @@ void main(void)\r
           return t2;
       }
     }
-    addUiToggleButton() {
-      try {
-        const existing = document.getElementById("overlay-ui-toggle");
-        if (existing) {
-          this.uiToggleButton = existing;
-          return;
-        }
-        const btn = document.createElement("button");
-        btn.id = "overlay-ui-toggle";
-        btn.textContent = "Hide UI";
-        btn.style.position = "absolute";
-        btn.style.left = "12px";
-        btn.style.bottom = "12px";
-        btn.style.zIndex = "100000";
-        btn.style.padding = "12px 18px";
-        btn.style.fontSize = "16px";
-        btn.style.minWidth = "140px";
-        btn.style.height = "48px";
-        btn.style.background = "rgba(0,0,0,0.7)";
-        btn.style.color = "#fff";
-        btn.style.border = "none";
-        btn.style.borderRadius = "10px";
-        btn.style.cursor = "pointer";
-        btn.style.boxShadow = "0 4px 14px rgba(0,0,0,0.4)";
-        btn.onclick = () => {
-          this.isUiHidden = !this.isUiHidden;
-          if (this.isUiHidden) {
-            btn.textContent = "Show UI";
-            const el = document.getElementById("head-controls");
-            if (el) el.style.display = "none";
-            const nik = document.getElementById("nikke-browser");
-            if (nik) nik.style.display = "none";
-            try {
-              window.overlayAPI?.toggleClickThrough?.(true);
-              this.clickThroughEnabled = true;
-            } catch {
-            }
-          } else {
-            btn.textContent = "Hide UI";
-            const el = document.getElementById("head-controls");
-            if (el) el.style.display = "block";
-            const nik = document.getElementById("nikke-browser");
-            if (nik) nik.style.display = "block";
-            try {
-              window.overlayAPI?.toggleClickThrough?.(false);
-              this.clickThroughEnabled = false;
-            } catch {
-            }
-          }
-        };
-        document.body.appendChild(btn);
-        this.uiToggleButton = btn;
-        try {
-          const dd = document.createElement("div");
-          dd.id = "overlay-debug-dot";
-          dd.style.position = "absolute";
-          dd.style.width = "12px";
-          dd.style.height = "12px";
-          dd.style.borderRadius = "50%";
-          dd.style.background = "rgba(255,0,0,0.9)";
-          dd.style.pointerEvents = "none";
-          dd.style.zIndex = "100001";
-          dd.style.transform = "translate(-50%, -50%)";
-          dd.style.display = "none";
-          document.body.appendChild(dd);
-          this.debugDot = dd;
-        } catch {
-        }
-      } catch {
-      }
-    }
-    renderNikkeBrowser() {
-      const existing = document.getElementById("nikke-browser");
-      if (existing) existing.remove();
-      const container = document.createElement("div");
-      container.id = "nikke-browser";
-      container.style.position = "absolute";
-      container.style.top = "8px";
-      container.style.left = "8px";
-      container.style.background = "rgba(0,0,0,0.8)";
-      container.style.color = "#fff";
-      container.style.padding = "12px";
-      container.style.borderRadius = "8px";
-      container.style.maxWidth = "300px";
-      container.style.maxHeight = "400px";
-      container.style.overflow = "auto";
-      container.style.fontSize = "14px";
-      container.style.zIndex = "1000";
-      const repoWrap = document.createElement("div");
-      repoWrap.style.marginBottom = "8px";
-      const sel = document.createElement("select");
-      sel.style.background = "#333";
-      sel.style.color = "#fff";
-      sel.style.border = "1px solid #666";
-      sel.style.padding = "4px";
-      const opt1 = document.createElement("option");
-      opt1.value = "nikke";
-      opt1.textContent = "Nikke.json";
-      const opt2 = document.createElement("option");
-      opt2.value = "nikkie4";
-      opt2.textContent = "nikkie4.1.json";
-      sel.appendChild(opt1);
-      sel.appendChild(opt2);
-      sel.value = this.currentRepo;
-      sel.onchange = () => {
-        this.currentRepo = sel.value;
-        this.nikkePathParts = null;
-        this.n4ExpandedCharacter = null;
-        this.renderNikkeBrowser();
-      };
-      repoWrap.appendChild(sel);
-      container.appendChild(repoWrap);
-      const list = document.createElement("div");
-      list.className = "nikke-file-list";
-      if (this.currentRepo === "nikke") {
-        const indexData = this.nikkeIndexData;
-        if (!indexData) {
-          const msg = document.createElement("div");
-          msg.textContent = "Nikke index not loaded";
-          list.appendChild(msg);
-        } else {
-          this.renderNikkeFileList(list, indexData);
-        }
-      } else {
-        const n4 = this.nikkie4IndexData;
-        if (!n4) {
-          const msg = document.createElement("div");
-          msg.textContent = "nikkie4 index not loaded";
-          list.appendChild(msg);
-        } else {
-          this.renderNikkie4FileList(list, n4);
-        }
-      }
-      container.appendChild(list);
-      document.body.appendChild(container);
-    }
-    renderNikkeFileList(list, indexData) {
-      const node = this.nikkePathParts && this.nikkePathParts.length ? this.resolveNodeByPath(indexData, this.nikkePathParts) || null : indexData;
-      const crumbs = document.createElement("div");
-      crumbs.style.marginBottom = "8px";
-      const rootCrumb = document.createElement("a");
-      rootCrumb.textContent = "/";
-      rootCrumb.style.color = "#4a9eff";
-      rootCrumb.style.cursor = "pointer";
-      rootCrumb.onclick = (e2) => {
-        e2.preventDefault();
-        this.nikkePathParts = null;
-        this.renderNikkeBrowser();
-      };
-      crumbs.appendChild(rootCrumb);
-      const parts = this.nikkePathParts || [];
-      parts.forEach((part, idx) => {
-        crumbs.appendChild(document.createTextNode(" / "));
-        const c2 = document.createElement("a");
-        c2.textContent = part;
-        c2.style.color = "#4a9eff";
-        c2.style.cursor = "pointer";
-        c2.onclick = (e2) => {
-          e2.preventDefault();
-          this.nikkePathParts = parts.slice(0, idx + 1);
-          this.renderNikkeBrowser();
-        };
-        crumbs.appendChild(c2);
-      });
-      list.appendChild(crumbs);
-      if (this.nikkePathParts && this.nikkePathParts.length) {
-        const upRow = document.createElement("div");
-        upRow.style.padding = "4px";
-        upRow.style.cursor = "pointer";
-        upRow.style.borderRadius = "4px";
-        upRow.innerHTML = '<span style="margin-right: 8px;">\u2B06\uFE0F</span>..';
-        upRow.onmouseover = () => upRow.style.background = "rgba(255,255,255,0.1)";
-        upRow.onmouseout = () => upRow.style.background = "";
-        upRow.onclick = () => {
-          this.nikkePathParts = this.nikkePathParts.slice(0, -1);
-          this.renderNikkeBrowser();
-        };
-        list.appendChild(upRow);
-      }
-      for (const child of node?.children || []) {
-        const row = document.createElement("div");
-        row.style.padding = "4px";
-        row.style.cursor = "pointer";
-        row.style.borderRadius = "4px";
-        row.innerHTML = '<span style="margin-right: 8px;">\u{1F4C1}</span>' + child.name;
-        row.onmouseover = () => row.style.background = "rgba(255,255,255,0.1)";
-        row.onmouseout = () => row.style.background = "";
-        row.onclick = () => {
-          this.nikkePathParts = [...this.nikkePathParts || [], child.name];
-          this.renderNikkeBrowser();
-        };
-        list.appendChild(row);
-      }
-      const files = node?.files || [];
-      const modelFiles = files.filter(
-        (f2) => f2.endsWith(".skel") || f2.endsWith(".atlas")
-      );
-      for (const f2 of modelFiles) {
-        const row = document.createElement("div");
-        row.style.padding = "4px";
-        row.style.borderRadius = "4px";
-        const icon = f2.endsWith(".skel") ? "\u{1F9B4}" : "\u{1F5CE}";
-        row.innerHTML = `<span style="margin-right: 8px;">${icon}</span>${f2}`;
-        list.appendChild(row);
-      }
-      if (modelFiles.length) {
-        const loadBtn = document.createElement("button");
-        loadBtn.textContent = "Load Model from This Folder";
-        loadBtn.style.marginTop = "8px";
-        loadBtn.style.padding = "8px 12px";
-        loadBtn.style.background = "#4a9eff";
-        loadBtn.style.color = "#fff";
-        loadBtn.style.border = "none";
-        loadBtn.style.borderRadius = "4px";
-        loadBtn.style.cursor = "pointer";
-        loadBtn.onclick = () => {
-          this.tryLoadModelForPath(this.nikkePathParts || []);
-        };
-        list.appendChild(loadBtn);
-      }
-    }
-    renderNikkie4FileList(list, n4) {
-      let src = n4;
-      if (!n4.skins && Array.isArray(n4)) {
-        const found = n4.find((x2) => x2 && x2.skins && Array.isArray(x2.skins));
-        if (found) src = found;
-      }
-      for (const ch of src.skins || []) {
-        const row = document.createElement("div");
-        row.style.padding = "4px";
-        row.style.cursor = "pointer";
-        row.style.borderRadius = "4px";
-        row.innerHTML = `<span style="margin-right: 8px;">\u{1F464}</span>${ch.name}`;
-        const skinContainer = document.createElement("div");
-        skinContainer.style.display = this.n4ExpandedCharacter === ch.name ? "block" : "none";
-        for (const s2 of ch.skins || []) {
-          const skinRow = document.createElement("div");
-          skinRow.style.padding = "4px 4px 4px 22px";
-          skinRow.style.cursor = "pointer";
-          skinRow.style.borderRadius = "4px";
-          skinRow.innerHTML = `<span style="margin-right: 8px;">\u{1F4C1}</span>${s2.name} (${s2.skin})`;
-          skinRow.onmouseover = () => skinRow.style.background = "rgba(255,255,255,0.1)";
-          skinRow.onmouseout = () => skinRow.style.background = "";
-          skinRow.onclick = () => {
-            this.nikkePathParts = ["dotgg", ch.name, s2.skin];
-            this.tryLoadModelForPath(this.nikkePathParts);
-          };
-          skinContainer.appendChild(skinRow);
-        }
-        row.onmouseover = () => row.style.background = "rgba(255,255,255,0.1)";
-        row.onmouseout = () => row.style.background = "";
-        row.onclick = () => {
-          const open = skinContainer.style.display === "block";
-          skinContainer.style.display = open ? "none" : "block";
-          this.n4ExpandedCharacter = open ? null : ch.name;
-        };
-        list.appendChild(row);
-        list.appendChild(skinContainer);
-      }
-    }
-    renderHeadControls() {
-      const existing = document.getElementById("head-controls");
-      if (existing) existing.remove();
-      const wrap = document.createElement("div");
-      wrap.id = "head-controls";
-      wrap.style.position = "absolute";
-      wrap.style.top = "8px";
-      wrap.style.right = "8px";
-      wrap.style.background = "rgba(0,0,0,0.8)";
-      wrap.style.color = "#fff";
-      wrap.style.padding = "12px";
-      wrap.style.font = "12px/1.4 monospace";
-      wrap.style.borderRadius = "8px";
-      wrap.style.zIndex = "1000";
-      wrap.style.minWidth = "240px";
-      const title = document.createElement("div");
-      title.textContent = "Head Controls";
-      title.style.fontWeight = "bold";
-      title.style.marginBottom = "8px";
-      wrap.appendChild(title);
-      this.addSlider(
-        wrap,
-        "Nodes from head",
-        this.chainLength,
-        1,
-        5,
-        1,
-        (val) => {
-          this.chainLength = val;
-        }
-      );
-      this.addSlider(
-        wrap,
-        "Rotation scale",
-        this.maxTurnScale,
-        0,
-        2,
-        0.05,
-        (val) => {
-          this.maxTurnScale = val;
-        }
-      );
-      this.addSlider(
-        wrap,
-        "Parallax scale",
-        this.parallaxScale,
-        0,
-        10,
-        0.05,
-        (val) => {
-          this.parallaxScale = val;
-        }
-      );
-      this.addSlider(
-        wrap,
-        "Bend scale",
-        this.headBendScale,
-        0,
-        2,
-        0.05,
-        (val) => {
-          this.headBendScale = val;
-        }
-      );
-      this.addSlider(
-        wrap,
-        "Eye parallax",
-        this.eyeParallaxScale,
-        0,
-        10,
-        0.1,
-        (val) => {
-          this.eyeParallaxScale = val;
-        }
-      );
-      this.addSlider(
-        wrap,
-        "Parallax time (ms)",
-        this.parallaxLagSeconds * 1e3,
-        50,
-        1e3,
-        10,
-        (val) => {
-          this.parallaxLagSeconds = val / 1e3;
-        }
-      );
-      this.addSlider(
-        wrap,
-        "Rotation time (ms)",
-        this.rotationLagSeconds * 1e3,
-        50,
-        1e3,
-        10,
-        (val) => {
-          this.rotationLagSeconds = val / 1e3;
-        }
-      );
-      this.addSlider(wrap, "Zoom", this.cameraZoom, 0.1, 3, 0.05, (val) => {
-        this.cameraZoom = val;
-        this.userAdjustedZoom = true;
-        this.holder.scale.set(this.cameraZoom);
-        this.holder.x = this.app.screen.width / 2;
-        this.holder.y = this.app.screen.height / 2;
-      });
-      document.body.appendChild(wrap);
-    }
-    addSlider(parent, label, value, min, max, step, onChange) {
-      const container = document.createElement("div");
-      container.style.marginBottom = "8px";
-      const labelEl = document.createElement("label");
-      labelEl.textContent = `${label}: ${value.toFixed(2)}`;
-      labelEl.style.display = "block";
-      labelEl.style.marginBottom = "4px";
-      container.appendChild(labelEl);
-      const slider = document.createElement("input");
-      slider.type = "range";
-      slider.min = String(min);
-      slider.max = String(max);
-      slider.step = String(step);
-      slider.value = String(value);
-      slider.style.width = "200px";
-      slider.style.accentColor = "#4a9eff";
-      slider.addEventListener("input", () => {
-        const newValue = parseFloat(slider.value);
-        onChange(newValue);
-        labelEl.textContent = `${label}: ${newValue.toFixed(2)}`;
-      });
-      container.appendChild(slider);
-      parent.appendChild(container);
-    }
-    mergeNikkie4IntoIndex(indexRoot, n4) {
-      try {
-        const top = indexRoot;
-        if (!n4) return;
-        let src = n4;
-        if (!n4.skins && Array.isArray(n4)) {
-          const found = n4.find(
-            (x2) => x2 && x2.skins && Array.isArray(x2.skins)
-          );
-          if (found) src = found;
-        }
-        if (!src.skins || !Array.isArray(src.skins)) return;
-        top.children = top.children || [];
-        for (const entry of src.skins) {
-          const name = entry.name || entry._id || "unknown";
-          let folder = top.children.find(
-            (c2) => String(c2.name || "").toLowerCase() === String(name).toLowerCase()
-          );
-          if (!folder) {
-            folder = { name, children: [], files: [] };
-            top.children.push(folder);
-          }
-          folder._dotgg = folder._dotgg || [];
-          if (entry.skins && Array.isArray(entry.skins)) {
-            folder.children = folder.children || [];
-            for (const s2 of entry.skins) {
-              folder._dotgg.push({ name: s2.name, skin: s2.skin });
-              const skinFolderName = String(s2.skin || s2.name);
-              const exists = folder.children.some(
-                (c2) => String(c2.name || "").toLowerCase() === skinFolderName.toLowerCase()
-              );
-              if (!exists) {
-                folder.children.push({
-                  name: skinFolderName,
-                  files: [skinFolderName + ".skel", skinFolderName + ".atlas"]
-                });
-              }
-            }
-          }
-        }
-      } catch (e2) {
-      }
-    }
   };
   _PixiSpineDemo.NIKKE_BASE = "https://nikke-db-legacy.pages.dev/l2d/";
-  _PixiSpineDemo.DOTGG_BASE = "https://dotgg.gg/nikke/l2d/";
+  _PixiSpineDemo.DOTGG_BASE = "https://codeberg.org/alesha229/nikke/src/branch/main";
   var PixiSpineDemo = _PixiSpineDemo;
   var style = document.createElement("style");
-  style.textContent = `
-  body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-  }
-  
-  .nikke-file-list {
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  
-  .nikke-file-list::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  .nikke-file-list::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
-  }
-  
-  .nikke-file-list::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.3);
-    border-radius: 4px;
-  }
-  
-  .nikke-file-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.5);
-  }
-`;
-  document.head.appendChild(style);
   window.addEventListener("load", () => {
     new PixiSpineDemo();
   });

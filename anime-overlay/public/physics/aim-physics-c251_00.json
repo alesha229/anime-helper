@@ -1,0 +1,323 @@
+{
+  "FireShakeMinForce": 4.0,
+  "FireShakeMaxForce": 5.0,
+  "CharacterResourceId": null,
+  "BoneSpringPhysicsSettingCollection": {
+    "@_aim_hair_back_2": {
+      "Shiftiness": 130.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_3": {
+      "Shiftiness": 250.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_0": {
+      "Shiftiness": 130.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_1": {
+      "Shiftiness": 250.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_10": {
+      "Shiftiness": 130.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_11": {
+      "Shiftiness": 150.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_19": {
+      "Shiftiness": 130.0,
+      "Damping": 7.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_20": {
+      "Shiftiness": 250.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_24": {
+      "Shiftiness": 130.0,
+      "Damping": 7.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_25": {
+      "Shiftiness": 250.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_33": {
+      "Shiftiness": 130.0,
+      "Damping": 7.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_34": {
+      "Shiftiness": 250.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_side_1": {
+      "Shiftiness": 130.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_side_2": {
+      "Shiftiness": 250.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_42": {
+      "Shiftiness": 130.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_aim_hair_back_43": {
+      "Shiftiness": 33.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@hip_r2": {
+      "Shiftiness": 600.0,
+      "Damping": 3.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.0
+    },
+    "@hip_l2": {
+      "Shiftiness": 600.0,
+      "Damping": 2.5,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@aim_body_d5": {
+      "Shiftiness": 100.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@aim_body_d6": {
+      "Shiftiness": 100.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@aim_body_d7": {
+      "Shiftiness": 100.0,
+      "Damping": 6.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    }
+  },
+  "EnableSupportSpring": true
+}

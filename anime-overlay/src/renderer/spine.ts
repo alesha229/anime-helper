@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import * as spine from "@esotericsoftware/spine-phaser";
+import { send } from "process";
 
 class SpineDemo extends Phaser.Scene {
   private holder!: Phaser.GameObjects.Container;
@@ -76,7 +77,7 @@ class SpineDemo extends Phaser.Scene {
 
   preload() {
     const params = new URLSearchParams(window.location.search);
-    window.overlayAPI.setZoomFactor(0.5);
+    window.overlayAPI.setZoomFactor(1);
     window.overlayAPI.enterFullscreen();
     this.nikkeModelKey = params.get("nikke");
     const nikkePath = params.get("nikkePath") || params.get("path");
@@ -187,14 +188,16 @@ class SpineDemo extends Phaser.Scene {
       // On any character key / Enter / Space etc. play aim_fire once
       try {
         // Ensure animation exists by attempting to set it; fallback to current idle if not
-        this.spineboy.animationState.setAnimation(1, "aim_fire", false);
-        // After aim_fire completes, return to idle loop
-        this.spineboy.animationState.addAnimation(
-          1,
-          this.currentIdleAnimation,
-          true,
-          0
-        );
+      const track = this.spineboy.animationState.getCurrent(4);
+
+  // если стреляем уже – ничего не трогаем
+  if (track && track.animation.name === 'aim_fire' && !track.isComplete()) return;
+
+  // иначе запускаем стрельбу
+  this.spineboy.animationState.setAnimation(4, 'aim_fire', false);
+  this.spineboy.animationState.timeScale = 0.7
+  // по окончании стрельбы сами вернёмся в idle
+  this.spineboy.animationState.addAnimation(4, this.currentIdleAnimation, true, 0);
       } catch (err) {
         // ignore if animation missing
       }
@@ -344,6 +347,7 @@ class SpineDemo extends Phaser.Scene {
         this.isUiHidden = !this.isUiHidden;
         if (this.isUiHidden) {
           btn.textContent = "Show UI";
+
           // hide known chrome elements but keep model and this button visible
           const el = document.getElementById("head-controls");
           if (el) el.style.display = "none";
@@ -351,6 +355,16 @@ class SpineDemo extends Phaser.Scene {
           if (nik) nik.style.display = "none";
           // enable click-through via overlayAPI
           try {
+            
+            const b = btn.getBoundingClientRect();
+            (window as any).overlayAPI?.reportPinBounds({
+              x: b.left,
+              y: b.top,
+              w: b.width,
+              h: b.height
+            });
+          
+
             (window as any).overlayAPI?.toggleClickThrough?.(true);
             this.clickThroughEnabled = true;
           } catch {}
@@ -361,6 +375,7 @@ class SpineDemo extends Phaser.Scene {
           const nik = document.getElementById("nikke-browser");
           if (nik) nik.style.display = "block";
           try {
+
             (window as any).overlayAPI?.toggleClickThrough?.(false);
             this.clickThroughEnabled = false;
           } catch {}
@@ -368,25 +383,11 @@ class SpineDemo extends Phaser.Scene {
       };
       document.body.appendChild(btn);
       this.uiToggleButton = btn;
-      // create debug dot for visualizing cursor->canvas mapping
-      try {
-        const dd = document.createElement("div");
-        dd.id = "overlay-debug-dot";
-        dd.style.position = "absolute";
-        dd.style.width = "12px";
-        dd.style.height = "12px";
-        dd.style.borderRadius = "50%";
-        dd.style.background = "rgba(255,0,0,0.9)";
-        dd.style.pointerEvents = "none";
-        dd.style.zIndex = "100001";
-        dd.style.transform = "translate(-50%, -50%)";
-        dd.style.display = "none";
-        document.body.appendChild(dd);
-        this.debugDot = dd;
-      } catch {}
+
     } catch {}
   }
 
+  
   private setupSpineboyDrag() {
     if (!this.spineboy) return;
     this.spineboy.setInteractive({ cursor: "grab" });
@@ -440,6 +441,7 @@ class SpineDemo extends Phaser.Scene {
     this.fitContentToViewport();
     this.isOffsetCalibrated = false;
     this.parallaxInitialized = false;
+    
   }
 
   private setupHeadAndPointer() {

@@ -43,7 +43,7 @@ export const app = new PIXI.Application({
 // where the expected elements (e.g. #model, #controls) don't exist.
 if (document.getElementById("model") && document.getElementById("controls")) {
   (async function () {
-    window.overlayAPI.setZoomFactor(1);
+    window.overlayAPI?.enterFullscreen?.();
     const MODELS = config.MODELS;
     const LAST_MODEL_KEY = config.LAST_MODEL_KEY;
     const ping = async (url: string) => {
@@ -1606,38 +1606,66 @@ if (document.getElementById("model") && document.getElementById("controls")) {
 
         const $ = (id) => document.getElementById(id);
         // UI toggle helpers
-        const controlsWrap = $("controls");
-        const toggleUIBtn = $("toggleUI");
-        const showUIBtn = $("showUIBtn");
-        const UI_HIDDEN_KEY = "anime_overlay_ui_hidden_v1";
-        function setUIHidden(hidden) {
-          try {
-            if (!controlsWrap || !showUIBtn) return;
-            if (hidden) {
-              controlsWrap.classList.add("hidden");
-              showUIBtn.classList.remove("hidden");
-              localStorage.setItem(UI_HIDDEN_KEY, "1");
-            } else {
-              controlsWrap.classList.remove("hidden");
-              showUIBtn.classList.add("hidden");
-              localStorage.setItem(UI_HIDDEN_KEY, "0");
-            }
-          } catch {}
-        }
-        try {
-          const saved = localStorage.getItem(UI_HIDDEN_KEY) || "0";
-          setUIHidden(saved === "1");
-        } catch {}
-        try {
-          if (toggleUIBtn)
-            toggleUIBtn.addEventListener("click", () => {
-              const hidden =
-                controlsWrap && controlsWrap.classList.contains("hidden");
-              setUIHidden(!hidden);
-            });
-          if (showUIBtn)
-            showUIBtn.addEventListener("click", () => setUIHidden(false));
-        } catch {}
+const controlsWrap = document.getElementById('controls');
+const toggleUIBtn  = document.getElementById('toggleUI');
+const showUIBtn    = document.getElementById('showUIBtn');
+const UI_HIDDEN_KEY = 'anime_overlay_ui_hidden_v1';
+
+function setUIHidden(hidden: boolean) {
+  try {
+    if (!controlsWrap || !showUIBtn) return;
+
+    if (hidden) {
+      controlsWrap.classList.add('hidden');
+      showUIBtn.classList.remove('hidden');
+      localStorage.setItem(UI_HIDDEN_KEY, '1');
+    } else {
+      controlsWrap.classList.remove('hidden');
+      showUIBtn.classList.add('hidden');
+      localStorage.setItem(UI_HIDDEN_KEY, '0');
+    }
+
+    /* ➜  сообщаем main-процессу переключить click-through */
+    if (window.overlayAPI) {
+      // используем уже существующий канал, который у вас есть
+      window.overlayAPI.toggleClickThrough(hidden);
+    }
+  } catch {}
+}
+
+/* восстанавливаем сохранённое состояние */
+try {
+  const saved = localStorage.getItem(UI_HIDDEN_KEY) || '0';
+  setUIHidden(saved === '1');
+} catch {}
+
+/* вешаем обработчики на старые кнопки */
+try {
+  if (toggleUIBtn)
+    toggleUIBtn.addEventListener('click', () => {
+      const hidden = controlsWrap && controlsWrap.classList.contains('hidden');
+      setUIHidden(!hidden);          // скрыть / показать
+      // window.overlayAPI?.enterFullscreen?.();
+    });
+
+  if (showUIBtn)
+    showUIBtn.addEventListener('click', () => setUIHidden(false),sendBounds());
+} catch {}
+window.overlayAPI.onRequestBounds(() => sendBounds());
+/* сообщаем main процессу актуальные bounds кнопки */
+function sendBounds() {
+  const b = showUIBtn.getBoundingClientRect();
+  window.overlayAPI.reportPinBounds({
+    x: b.left,
+    y: b.top,
+    w: b.width,
+    h: b.height
+  });
+}
+/* первый раз и при любом изменении размера */
+
+window.addEventListener('resize', sendBounds);
+window.addEventListener('DOMContentLoaded',sendBounds)
         const timerDisplay = $("timerDisplay");
         const timerLabel = $("timerLabel");
         const startBtn = $("startBtn");
@@ -2014,15 +2042,9 @@ if (document.getElementById("model") && document.getElementById("controls")) {
         pauseBtn.disabled = true;
         startBtn.disabled = false;
         // controls
-        const pinBtn = document.getElementById("pin");
+   
         const opacityInput = document.getElementById("opacity");
-        let pinned = false;
-        pinBtn.addEventListener("click", async () => {
-          pinned = !pinned;
-          pinBtn.textContent = pinned ? "Pinned" : "Pin";
-          if (window.overlayAPI)
-            await window.overlayAPI.toggleClickThrough(pinned);
-        });
+
 
         opacityInput.addEventListener("input", () => {
           try {

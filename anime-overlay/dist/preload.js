@@ -3,6 +3,7 @@
 // src/preload.ts
 var import_electron = require("electron");
 import_electron.contextBridge.exposeInMainWorld("overlayAPI", {
+  onRequestBounds: (cb) => import_electron.ipcRenderer.on("request-pin-bounds", cb),
   toggleClickThrough: (enabled) => import_electron.ipcRenderer.invoke("overlay-toggle-click-through", enabled),
   close: () => import_electron.ipcRenderer.send("overlay-close"),
   setOpacity: (v) => import_electron.ipcRenderer.send("overlay-set-opacity", v),
@@ -26,6 +27,9 @@ import_electron.contextBridge.exposeInMainWorld("overlayAPI", {
         console.error(e);
       }
     });
-  }
+  },
+  onUIMode: (cb) => import_electron.ipcRenderer.on("ui-mode", (_ev, m) => cb(m)),
+  /* просим рендер отдать актуальные bounds кнопки */
+  reportPinBounds: (b) => import_electron.ipcRenderer.send("report-pin-bounds", b)
 });
 //# sourceMappingURL=preload.js.map

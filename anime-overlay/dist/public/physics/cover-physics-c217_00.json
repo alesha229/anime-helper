@@ -1,0 +1,2513 @@
+{
+  "FireShakeMinForce": 1.0,
+  "FireShakeMaxForce": 5.0,
+  "CharacterResourceId": null,
+  "BoneSpringPhysicsSettingCollection": {
+    "@_c_booby_l": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_booby_l2": {
+      "Shiftiness": 100.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 150.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 2.0
+    },
+    "@_c_booby_r": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_booby_r2": {
+      "Shiftiness": 90.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.8
+    },
+    "@_c_hair_f_3": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_4": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_5": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_6": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_8": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_9": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_10": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_11": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_13": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_14": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_15": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_16": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_18": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_19": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_20": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_21": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_22": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_23": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_24": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_25": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_27": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_28": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_29": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_30": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_32": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_33": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_34": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_36": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_37": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_38": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_40": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_41": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_42": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_44": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_45": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_46": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_47": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_48": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_49": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_51": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_52": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_53": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_54": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_55": {
+      "Shiftiness": 200.0,
+      "Damping": 9.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_57": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_58": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_59": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_60": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_61": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_f_63": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_64": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_65": {
+      "Shiftiness": 100.0,
+      "Damping": 3.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.1
+    },
+    "@_c_hair_f_66": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_f_67": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_f_68": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_f_69": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_70": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_f_71": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_f_72": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_f_73": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_s_2": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_3": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_4": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_5": {
+      "Shiftiness": 100.0,
+      "Damping": 2.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_s_6": {
+      "Shiftiness": 100.0,
+      "Damping": 2.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_s_7": {
+      "Shiftiness": 100.0,
+      "Damping": 2.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_s_8": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_17": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_10": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_11": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_12": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_13": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_14": {
+      "Shiftiness": 100.0,
+      "Damping": 2.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_s_15": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_s_16": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_2": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_3": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_4": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_5": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_6": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_7": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_8": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_9": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_10": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_11": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_12": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_13": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_14": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_15": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_16": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_17": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_18": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_19": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_20": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_21": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_22": {
+      "Shiftiness": 100.0,
+      "Damping": 2.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_23": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_24": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_25": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_26": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_27": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_28": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_29": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_30": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_31": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_32": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_33": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_34": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_35": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_36": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_37": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_38": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_39": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_40": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_41": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_42": {
+      "Shiftiness": 50.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_76": {
+      "Shiftiness": 50.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_51": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_52": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_53": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_54": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_55": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_56": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_57": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_58": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_43": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_44": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_45": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.2
+    },
+    "@_c_hair_46": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_47": {
+      "Shiftiness": 40.0,
+      "Damping": 8.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.5
+    },
+    "@_c_hair_48": {
+      "Shiftiness": 40.0,
+      "Damping": 8.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.8
+    },
+    "@_c_hair_49": {
+      "Shiftiness": 40.0,
+      "Damping": 8.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.8
+    },
+    "@_c_hair_50": {
+      "Shiftiness": 40.0,
+      "Damping": 8.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_59": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_60": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_61": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_62": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_63": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_64": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_71": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_72": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_73": {
+      "Shiftiness": 40.0,
+      "Damping": 8.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.5
+    },
+    "@_c_hair_74": {
+      "Shiftiness": 40.0,
+      "Damping": 8.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.5
+    },
+    "@_c_hair_75": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_65": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_66": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 200.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_67": {
+      "Shiftiness": 200.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    },
+    "@_c_hair_68": {
+      "Shiftiness": 100.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.7
+    },
+    "@_c_hair_69": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_hair_70": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_thigh_r2": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_thigh_r3": {
+      "Shiftiness": 180.0,
+      "Damping": 11.0,
+      "SupportSpringShiftiness": 250.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.0
+    },
+    "@_c_thigh_l2": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_thigh_l3": {
+      "Shiftiness": 180.0,
+      "Damping": 11.0,
+      "SupportSpringShiftiness": 250.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": false,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 1.0
+    },
+    "@_c_ear_r2": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_ear_r3": {
+      "Shiftiness": 200.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 50.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.1
+    },
+    "@_c_ear_r6": {
+      "Shiftiness": 200.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.1
+    },
+    "@_c_ear_l2": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_ear_l3": {
+      "Shiftiness": 200.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 50.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.1
+    },
+    "@_c_ear_l6": {
+      "Shiftiness": 200.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.1
+    },
+    "@_c_head_7": {
+      "Shiftiness": 100.0,
+      "Damping": 5.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": true,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.5
+    },
+    "@_c_head_8": {
+      "Shiftiness": 100.0,
+      "Damping": 3.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.1
+    },
+    "@_c_head_9": {
+      "Shiftiness": 100.0,
+      "Damping": 10.0,
+      "SupportSpringShiftiness": 100.0,
+      "SupportSpringDamping": 2.0,
+      "FixPosition": false,
+      "LookAtChild": true,
+      "BoneColor": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+      },
+      "Mass": 0.3
+    }
+  },
+  "EnableSupportSpring": true
+}

@@ -121,7 +121,7 @@
   });
   if (document.getElementById("model") && document.getElementById("controls")) {
     (async function() {
-      window.overlayAPI.setZoomFactor(1);
+      window.overlayAPI?.enterFullscreen?.();
       const MODELS2 = config.MODELS;
       const LAST_MODEL_KEY2 = config.LAST_MODEL_KEY;
       const ping2 = async (url) => {
@@ -1377,9 +1377,9 @@
           } catch (e) {
           }
           const $ = (id) => document.getElementById(id);
-          const controlsWrap = $("controls");
-          const toggleUIBtn = $("toggleUI");
-          const showUIBtn = $("showUIBtn");
+          const controlsWrap = document.getElementById("controls");
+          const toggleUIBtn = document.getElementById("toggleUI");
+          const showUIBtn = document.getElementById("showUIBtn");
           const UI_HIDDEN_KEY = "anime_overlay_ui_hidden_v1";
           function setUIHidden(hidden) {
             try {
@@ -1392,6 +1392,9 @@
                 controlsWrap.classList.remove("hidden");
                 showUIBtn.classList.add("hidden");
                 localStorage.setItem(UI_HIDDEN_KEY, "0");
+              }
+              if (window.overlayAPI) {
+                window.overlayAPI.toggleClickThrough(hidden);
               }
             } catch {
             }
@@ -1408,9 +1411,21 @@
                 setUIHidden(!hidden);
               });
             if (showUIBtn)
-              showUIBtn.addEventListener("click", () => setUIHidden(false));
+              showUIBtn.addEventListener("click", () => setUIHidden(false), sendBounds());
           } catch {
           }
+          window.overlayAPI.onRequestBounds(() => sendBounds());
+          function sendBounds() {
+            const b = showUIBtn.getBoundingClientRect();
+            window.overlayAPI.reportPinBounds({
+              x: b.left,
+              y: b.top,
+              w: b.width,
+              h: b.height
+            });
+          }
+          window.addEventListener("resize", sendBounds);
+          window.addEventListener("DOMContentLoaded", sendBounds);
           const timerDisplay = $("timerDisplay");
           const timerLabel = $("timerLabel");
           const startBtn = $("startBtn");
@@ -1738,15 +1753,7 @@
           updateUI();
           pauseBtn.disabled = true;
           startBtn.disabled = false;
-          const pinBtn = document.getElementById("pin");
           const opacityInput = document.getElementById("opacity");
-          let pinned = false;
-          pinBtn.addEventListener("click", async () => {
-            pinned = !pinned;
-            pinBtn.textContent = pinned ? "Pinned" : "Pin";
-            if (window.overlayAPI)
-              await window.overlayAPI.toggleClickThrough(pinned);
-          });
           opacityInput.addEventListener("input", () => {
             try {
               const m = getModel();
