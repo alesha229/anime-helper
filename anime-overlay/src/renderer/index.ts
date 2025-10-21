@@ -951,22 +951,25 @@ if (document.getElementById("model") && document.getElementById("controls")) {
             clearTimeout(modelRef.__idleSnooze);
             modelRef.__idleSnooze = null;
           }
-          modelRef.__idleSnooze = setTimeout(() => {
-            try {
-              if (!getModel() || getModel() !== modelRef) return;
-              if (currentRuntime === "c4") startIdleLoopC4();
-              else
-                startIdleLoop(
-                  Array.from(
-                    new Set(
-                      (getmotionEntries() || []).map((e) =>
-                        String(e.group || "").trim()
+          modelRef.__idleSnooze = setTimeout(
+            () => {
+              try {
+                if (!getModel() || getModel() !== modelRef) return;
+                if (currentRuntime === "c4") startIdleLoopC4();
+                else
+                  startIdleLoop(
+                    Array.from(
+                      new Set(
+                        (getmotionEntries() || []).map((e) =>
+                          String(e.group || "").trim()
+                        )
                       )
-                    )
-                  ).filter(Boolean)
-                );
-            } catch (e) {}
-          }, Math.max(2000, ms || 8000));
+                    ).filter(Boolean)
+                  );
+              } catch (e) {}
+            },
+            Math.max(2000, ms || 8000)
+          );
         } catch (e) {}
       }
 
@@ -1606,66 +1609,71 @@ if (document.getElementById("model") && document.getElementById("controls")) {
 
         const $ = (id) => document.getElementById(id);
         // UI toggle helpers
-const controlsWrap = document.getElementById('controls');
-const toggleUIBtn  = document.getElementById('toggleUI');
-const showUIBtn    = document.getElementById('showUIBtn');
-const UI_HIDDEN_KEY = 'anime_overlay_ui_hidden_v1';
+        const controlsWrap = document.getElementById("controls");
+        const toggleUIBtn = document.getElementById("toggleUI");
+        const showUIBtn = document.getElementById("showUIBtn");
+        const UI_HIDDEN_KEY = "anime_overlay_ui_hidden_v1";
 
-function setUIHidden(hidden: boolean) {
-  try {
-    if (!controlsWrap || !showUIBtn) return;
+        function setUIHidden(hidden: boolean) {
+          try {
+            if (!controlsWrap || !showUIBtn) return;
 
-    if (hidden) {
-      controlsWrap.classList.add('hidden');
-      showUIBtn.classList.remove('hidden');
-      localStorage.setItem(UI_HIDDEN_KEY, '1');
-    } else {
-      controlsWrap.classList.remove('hidden');
-      showUIBtn.classList.add('hidden');
-      localStorage.setItem(UI_HIDDEN_KEY, '0');
-    }
+            if (hidden) {
+              controlsWrap.classList.add("hidden");
+              showUIBtn.classList.remove("hidden");
+              localStorage.setItem(UI_HIDDEN_KEY, "1");
+            } else {
+              controlsWrap.classList.remove("hidden");
+              showUIBtn.classList.add("hidden");
+              localStorage.setItem(UI_HIDDEN_KEY, "0");
+            }
 
-    /* ➜  сообщаем main-процессу переключить click-through */
-    if (window.overlayAPI) {
-      // используем уже существующий канал, который у вас есть
-      window.overlayAPI.toggleClickThrough(hidden);
-    }
-  } catch {}
-}
+            /* ➜  сообщаем main-процессу переключить click-through */
+            if (window.overlayAPI) {
+              // используем уже существующий канал, который у вас есть
+              window.overlayAPI.toggleClickThrough(hidden);
+            }
+          } catch {}
+        }
 
-/* восстанавливаем сохранённое состояние */
-try {
-  const saved = localStorage.getItem(UI_HIDDEN_KEY) || '0';
-  setUIHidden(saved === '1');
-} catch {}
+        /* восстанавливаем сохранённое состояние */
+        try {
+          const saved = localStorage.getItem(UI_HIDDEN_KEY) || "0";
+          setUIHidden(saved === "1");
+        } catch {}
 
-/* вешаем обработчики на старые кнопки */
-try {
-  if (toggleUIBtn)
-    toggleUIBtn.addEventListener('click', () => {
-      const hidden = controlsWrap && controlsWrap.classList.contains('hidden');
-      setUIHidden(!hidden);          // скрыть / показать
-      // window.overlayAPI?.enterFullscreen?.();
-    });
+        /* вешаем обработчики на старые кнопки */
+        try {
+          if (toggleUIBtn)
+            toggleUIBtn.addEventListener("click", () => {
+              const hidden =
+                controlsWrap && controlsWrap.classList.contains("hidden");
+              setUIHidden(!hidden); // скрыть / показать
+              // window.overlayAPI?.enterFullscreen?.();
+            });
 
-  if (showUIBtn)
-    showUIBtn.addEventListener('click', () => setUIHidden(false),sendBounds());
-} catch {}
-window.overlayAPI.onRequestBounds(() => sendBounds());
-/* сообщаем main процессу актуальные bounds кнопки */
-function sendBounds() {
-  const b = showUIBtn.getBoundingClientRect();
-  window.overlayAPI.reportPinBounds({
-    x: b.left,
-    y: b.top,
-    w: b.width,
-    h: b.height
-  });
-}
-/* первый раз и при любом изменении размера */
+          if (showUIBtn)
+            showUIBtn.addEventListener(
+              "click",
+              () => setUIHidden(false),
+              sendBounds()
+            );
+        } catch {}
+        window.overlayAPI.onRequestBounds(() => sendBounds());
+        /* сообщаем main процессу актуальные bounds кнопки */
+        function sendBounds() {
+          const b = showUIBtn.getBoundingClientRect();
+          window.overlayAPI.reportPinBounds({
+            x: b.left,
+            y: b.top,
+            w: b.width,
+            h: b.height,
+          });
+        }
+        /* первый раз и при любом изменении размера */
 
-window.addEventListener('resize', sendBounds);
-window.addEventListener('DOMContentLoaded',sendBounds)
+        window.addEventListener("resize", sendBounds);
+        window.addEventListener("DOMContentLoaded", sendBounds);
         const timerDisplay = $("timerDisplay");
         const timerLabel = $("timerLabel");
         const startBtn = $("startBtn");
@@ -2042,9 +2050,8 @@ window.addEventListener('DOMContentLoaded',sendBounds)
         pauseBtn.disabled = true;
         startBtn.disabled = false;
         // controls
-   
-        const opacityInput = document.getElementById("opacity");
 
+        const opacityInput = document.getElementById("opacity");
 
         opacityInput.addEventListener("input", () => {
           try {
