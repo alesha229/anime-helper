@@ -4,7 +4,7 @@
 // This module encapsulates robust runtime detection, settings rewriting,
 // CDN fallbacks, and PIXI stage attachment.
 
-import { app } from "../index";
+import { app } from "../app";
 import { config } from "../../config";
 const MODELS = config.MODELS;
 const LAST_MODEL_KEY = config.LAST_MODEL_KEY;
@@ -26,6 +26,8 @@ import {
   getavailableGroups,
   setavailableGroups,
 } from "../modelIterations/motionState";
+import { refreshAnimationsUI, startIdleLoop, startIdleLoopC4 } from "../animations/animations";
+import { stopLipSync, startLipSync } from "../lipsync/lipsync";
 let __loadedRuntime: "c2" | "c4" | null = null;
 let __live2d_patches_installed = false;
 

@@ -1,5 +1,5 @@
 import { getModel, setModel } from "../modelStore";
-import { app } from "../index";
+import { app } from "../app";
 
 export function fitModelToCanvas() {
   const model = getModel();
