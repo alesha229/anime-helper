@@ -38967,12 +38967,13 @@ void main(void)\r
         backgroundColor: 0,
         backgroundAlpha: 0,
         antialias: true,
-        resolution: window.devicePixelRatio || 1,
+        resolution: 4,
         autoDensity: true,
         resizeTo: window
       });
       document.body.appendChild(this.app.view);
       this.holder = new Container();
+      this.holder.scale.set(4);
       this.holder.x = this.app.screen.width / 2;
       this.holder.y = this.app.screen.height / 2;
       this.app.stage.addChild(this.holder);

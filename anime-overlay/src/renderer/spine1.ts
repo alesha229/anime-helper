@@ -55,14 +55,15 @@ class PixiSpineDemo {
       backgroundColor: 0x000000,
       backgroundAlpha: 0,
       antialias: true,
-      resolution: window.devicePixelRatio || 1,
+      resolution: 4,
       autoDensity: true,
       resizeTo: window,
     });
 
     document.body.appendChild(this.app.view as HTMLCanvasElement);
-
+    
     this.holder = new PIXI.Container();
+    this.holder.scale.set(4);
     this.holder.x = this.app.screen.width / 2;
     this.holder.y = this.app.screen.height / 2;
     this.app.stage.addChild(this.holder);
